@@ -1,0 +1,865 @@
+/* 1. ✨ 全域套用字體和基本的描邊 */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Noto Sans TC', sans-serif; /* ✨ 設置主要字體為思源黑體 */
+    background-color: #252540; /* 深藍紫色背景，營造夜晚或舞台感 */
+    color: #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden; /* 避免在手機上產生滾動條 */
+}
+
+/* 2. ✨ 核心描邊效果 (模擬深咖啡色描邊) */
+/* 這個選擇器可以涵蓋大部分彈窗、標題和資訊列的文字 */
+#game-container, #modal-overlay *, #birthday-modal-overlay * {
+    /* 使用 text-shadow 模擬 1px 的四方描邊 */
+    text-shadow: 
+        -1px -1px 0 #1c2541,  /* 左上 */
+        1px -1px 0 #1c2541,   /* 右上 */
+        -1px 1px 0 #1c2541,   /* 左下 */
+        1px 1px 0 #1c2541;    /* 右下 */
+    -webkit-font-smoothing: antialiased; /* 確保字體在 Chrome/Safari 上平滑 */
+}
+
+/* 3. ✨ 標題和重點文字加粗 (修改這裡!) */
+/* 讓標題變大 */
+#modal-title, #birthday-modal-content h2, #endgame-stats h3 {
+    font-weight: 700; 
+    font-size: 1.5em; /* 標題用 1.5 倍大小 */
+}
+
+/* 讓 info-bar 的文字加粗，但不放大 */
+#info-bar span {
+    font-weight: 700; /* ✨ 只保留加粗 (Bold) */
+    /* ✨ 移除 font-size: 1.5em; 避免過大 */
+}
+#score-info {
+    position: relative; /* Make it a positioning context for #score-change */
+    display: inline-block; /* Ensure it behaves like a block for positioning */
+}
+
+/* 4. ✨ 按鈕和超連結樣式優化 */
+button {
+    font-weight: 700; /* 按鈕文字加粗 */
+    letter-spacing: 0.05em; /* 稍微增加字距，讓文字不擁擠 */
+    /* 其他按鈕樣式不變 */
+}
+
+/* 5. ✨ 微調彈窗內的行距與字距 */
+#modal-content p, #birthday-modal-content p, #endgame-stats li {
+    line-height: 1.5; /* 增加行距，讓正文更易讀 */
+    letter-spacing: 0.02em; /* 輕微增加字距 */
+}
+
+/* --- 遊戲主容器 --- */
+#game-container {
+    width: 100%;
+    max-width: 800px; /* 在大螢幕上的最大寬度 */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative; /* 為了定位虛擬按鈕 */
+}
+
+/* --- 頂部資訊列 --- */
+#info-bar {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 20px;
+    box-sizing: border-box;
+    font-size: 1.2em;
+    font-weight: bold;
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 10px 10px 0 0;
+    position: relative; /* ✨ 新增：為了定位靜音按鈕 */
+    padding-right: 60px; /* ✨ 新增：在右側留出空間給靜音按鈕 */
+    font-size: 1.2em;
+}
+
+/* --- 遊戲畫布 --- */
+#game-canvas {
+    width: 100%;
+    height: auto;
+    background-color: #e0e0e0; /* 暫時用淺灰色背景，方便看清角色 */
+    border-radius: 0 0 10px 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+}
+
+/* --- 彈窗樣式 (預設隱藏) --- */
+.hidden {
+    display: none !important;
+}
+
+#modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+#modal-content {
+    position: relative;
+    background-color: #333; /* 暗色系背景 */
+    color: white;
+    padding: 30px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    
+    /* ✨ 調整這裡：增加最大寬度 */
+    max-width: 500px; /* 原本可能設為 400px 或更小，建議調到 500px */
+    width: 90%; /* 確保在手機上也不會超出螢幕 */
+    
+    /* ... 其他屬性不變 ... */
+}
+
+#modal-content h2 {
+    margin-top: 0;
+}
+
+#modal-content button {
+    padding: 10px 30px;
+    font-size: 1em;
+    border: none;
+    border-radius: 8px;
+    background-color: #f72585; /* 亮眼的粉紅色 */
+    color: white;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+#question-area button {
+    display: block;
+    width: 100%;
+    margin-top: 10px;
+    background-color: #4361ee; /* 問題選項用藍色 */
+}
+
+
+/* ✨ 新增：答題回饋的樣式 */
+.answer-option {
+    /* 加入一點過渡效果，讓顏色變化更平順 */
+    transition: background-color 0.3s, border 0.3s;
+}
+
+/* 1. 正確答案的樣式 (綠色) - 權重提高 */
+#question-area button.correct-answer {
+    background-color: #2a9d8f !important; /* 深綠色背景 (加上 !important 確保覆蓋) */
+    border: 3px solid #9ef01a !important; /* 亮綠色框線 (加上 !important 確保覆蓋) */
+    color: white !important;
+    position: relative; 
+}
+
+/* 2. 錯誤答案的樣式 (紅色) - 權重提高 */
+#question-area button.incorrect-answer {
+    background-color: #e63946 !important; /* 深紅色背景 (加上 !important 確保覆蓋) */
+    border: 3px solid #ff4d6d !important; /* 亮紅色框線 (加上 !important 確保覆蓋) */
+    color: white !important;
+    opacity: 0.8 !important; 
+    position: relative; 
+}
+
+/* 3. 勾勾樣式 (✓) - 權重提高 */
+#question-area button.correct-answer::after {
+    content: '✓';
+    font-weight: bold;
+    font-size: 1.2em;
+    position: absolute;
+    right: 20px; 
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* 4. 叉叉樣式 (✗) - 權重提高 */
+#question-area button.incorrect-answer::after {
+    content: '✗';
+    font-weight: bold;
+    font-size: 1.2em;
+    position: absolute;
+    right: 20px; 
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* ✨ 新增：問題區域的樣式 */
+#question-area {
+    display: block; /* 確保它在 .hidden 被移除時，是以區塊顯示 */
+    width: 100%;
+}
+
+/* ✨ 新增：問題文字的樣式 */
+#question-text {
+    font-size: 1.2em; /* 讓問題文字大一點 */
+    color: #ffffff;
+    margin-bottom: 20px;
+}
+
+/* --- 移動端虛擬按鈕 (預設顯示) --- */
+#mobile-controls {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    position: absolute;
+    bottom: 20px; /* 定位在畫布下方 */
+    padding: 0 20px;
+    box-sizing: border-box;
+    z-index: 100;
+    pointer-events: none; /* 讓中間區域可以穿透點擊 */
+}
+
+.control-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 3px solid rgba(255, 255, 255, 0.8);
+    background-color: rgba(255, 255, 255, 0.3);
+    color: white;
+    font-size: 2.5em;
+    font-weight: bold;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent; /* 移除手機點擊高光 */
+    pointer-events: auto; /* 讓按鈕可以被點擊 */
+}
+
+/* --- 響應式設計：當螢幕寬度大於 768px (平板/電腦) --- */
+@media (min-width: 768px) {
+    #mobile-controls {
+        display: none; /* 在大螢幕上隱藏虛擬按鈕 */
+    }
+}
+
+/* --- ✨ 新增：靜音按鈕樣式 --- */
+#mute-button {
+    background: none;
+    border: none;
+    font-size: 1.5em; /* 放大圖示 */
+    cursor: pointer;
+    padding: 0 5px;
+    color: white;
+    /* 放在最右邊 */
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+#mute-button.muted {
+    opacity: 0.5; /* 靜音時變暗 */
+}
+
+
+
+#lang-switcher-area span {
+    font-size: 1.5em; /* 地球圖示 */
+    margin-right: 5px;
+}
+
+#lang-switcher-area select {
+    background-color: transparent;
+    color: white;
+    border: none;
+    font-size: 0.9em;
+    font-family: 'Noto Sans TC', sans-serif;
+    font-weight: 700;
+}
+
+/* 讓 select 也有描邊 */
+#lang-switcher-area select, #lang-switcher-area span {
+    text-shadow: -1px -1px 0 #1c2541, 1px -1px 0 #1c2541, -1px 1px 0 #1c2541, 1px 1px 0 #1c2541;
+}
+#lang-switcher-area option {
+    color: black;
+    text-shadow: none;
+}
+
+
+/* --- ✨ 新增：結算統計區樣式 --- */
+#endgame-stats {
+    width: 90%;
+    margin: 20px auto;
+    text-align: left;
+    background-color: rgba(0, 0, 0, 0.2);
+    padding: 15px;
+    border-radius: 10px;
+}
+
+#endgame-stats h3 {
+    text-align: center;
+    margin-top: 0;
+}
+
+#endgame-stats ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+#endgame-stats li {
+    display: flex;
+    justify-content: space-between; /* 讓標題和數字分開 */
+    padding: 5px 0;
+    font-size: 1.1em;
+}
+
+#share-button {
+    background-color: #00b4d8; /* 分享按鈕用亮藍色 */
+    margin-top: 10px;
+}
+
+/* --- ✨ 新增：生日彩蛋彈窗樣式 --- */
+#birthday-modal-overlay {
+    /* 樣式基本和 #modal-overlay 相同 */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.85); /* 背景更暗以示區別 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000; /* 確保在最上層 */
+}
+
+#birthday-modal-content {
+    background-color: #fff; 
+    color: #333; /* ✨ 修正 (請求 2)：設定基礎文字顏色為深灰色 */
+    padding: 20px;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 0 5px 20px rgba(255, 255, 255, 0.3);
+    max-width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    
+    /* ✨ 關鍵修正：移除全域的描邊效果 */
+    text-shadow: none !important; 
+}
+
+#birthday-modal-content h2 {
+    color: #287fa8; /* ✨ 修正 (請求 1)：標題改為水藍色 */
+    margin-top: 0;
+    /* ✨ 關鍵修正：同樣移除描邊 */
+    text-shadow: none !important; 
+}
+
+#birthday-modal-content img {
+    width: 100%;
+    max-width: 400px; /* 限制圖片最大寬度 */
+    border-radius: 10px;
+    margin: 10px 0;
+}
+
+#birthday-modal-content p {
+    font-size: 1.1em;
+    line-height: 1.6;
+    white-space: pre-wrap; 
+    color: #333; /* ✨ 修正 (請求 2)：明確設定文字顏色 */
+    /* ✨ 關鍵修正：同樣移除描邊 */
+    text-shadow: none !important; 
+}
+
+#birthday-modal-content button {
+    background-color: #f72585; 
+    
+    /* ✨ 修正 (請求 3)：強制文字為純白色以增加對比 */
+    color: #FFFFFF !important; 
+    
+    /* ✨ 關鍵修正：同樣移除描邊 */
+    text-shadow: none !important; 
+}
+
+#milestone-result {
+    margin-top: 20px;
+    font-size: 1.3em;
+    font-weight: bold;
+    color: #ffca3a; /* 使用醒目的黃色 */
+}
+
+/* --- ✨ 新增：彈窗頂部 UI 樣式 --- */
+.modal-top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 15px; /* 與下方標題拉開距離 */
+}
+
+#lang-switcher-area {
+    display: flex;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.3);
+    padding: 5px 8px;
+    border-radius: 5px;
+}
+
+#user-id-display {
+    font-family: monospace; /* 使用等寬字體，看起來更像 ID */
+    font-size: 1.1em;
+    color: #ffca3a; /* 醒目的黃色 */
+    margin: 0 5px;
+    /* 移除描邊，讓 ID 更清晰 */
+    text-shadow: none !important; 
+}
+
+#copy-id-button {
+    font-size: 0.8em;
+    padding: 4px 8px;
+    margin: 0;
+    margin-left: 5px;
+    background-color: #00b4d8; /* 複製按鈕用藍色 */
+}
+
+/* --- ✨ 新增：匯入進度區樣式 --- */
+#import-area {
+    margin-top: 15px;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+
+#import-input {
+    flex-grow: 1; /* 佔滿剩餘空間 */
+    padding: 8px;
+    border: 2px solid #4361ee;
+    background-color: #fff;
+    border-radius: 5px;
+    margin-right: 10px;
+    font-size: 0.9em;
+}
+
+#import-button {
+    margin: 0;
+    padding: 8px 12px;
+    font-size: 0.9em;
+    background-color: #4361ee; /* 匯入按鈕用藍色 */
+    white-space: nowrap; /* 確保 "匯入進度" 不換行 */
+}
+
+/* --- ✨ 新增：全域 UI (右上角) --- */
+#global-ui-container {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    z-index: 1001; /* 確保在彈窗之上 */
+    display: flex;
+    align-items: center;
+    gap: 15px; /* 語言和 ID 之間的間距 */
+}
+
+/* 進度 ID 顯示區 */
+#user-id-area {
+    display: flex;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.3);
+    padding: 5px 8px;
+    border-radius: 5px;
+}
+#user-id-display {
+    font-family: monospace;
+    font-size: 1.1em;
+    color: #ffca3a; /* 醒目的黃色 */
+    margin: 0 5px;
+    text-shadow: none !important; /* ID 保持清晰 */
+}
+#copy-id-button {
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    margin-left: 5px;
+    cursor: pointer;
+    line-height: 0; /* 讓圖片按鈕貼合 */
+}
+#copy-id-button img {
+    width: 20px;
+    height: 20px;
+}
+
+/* --- ✨ 新增：彈窗內部 UI 調整 --- */
+
+/* 彈窗右上角的匯入按鈕 */
+#open-import-button {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 1.8em; /* 放大 icon */
+    color: white;
+    padding: 5px;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+#open-import-button:hover {
+    opacity: 1;
+}
+
+/* 匯入 UI 區塊 */
+#import-ui-area {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+#import-input {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid #4361ee;
+    background-color: #fff;
+    border-radius: 5px;
+    margin: 15px 0;
+    font-size: 1em;
+    box-sizing: border-box; /* 確保 padding 不會讓寬度溢出 */
+}
+.import-buttons {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+.import-buttons button {
+    flex-grow: 1; /* 兩個按鈕平分寬度 */
+    margin: 0;
+}
+#import-cancel-button {
+    background-color: #888; /* 取消按鈕用灰色 */
+}
+#import-button {
+    background-color: #4361ee; /* 匯入按鈕用藍色 */
+}
+
+/* ✨ 關鍵修改：加上父層選擇器以提高權重 */
+/* 請找到並修改成以下內容 */
+#modal-content #open-milestone-button {
+    background-color: #4361ee; /* 改為藍色系 */
+    margin-top: 10px; 
+    /* 確保文字顏色也是對的，如果有被通用按鈕覆蓋的話 */
+    color: white; 
+}
+
+/* --- ✨ 新增：個人里程碑彈窗樣式 --- */
+#milestone-modal-overlay {
+    /* 複製 #modal-overlay 的樣式 */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+#milestone-modal-content {
+    /* 複製 #modal-content 的樣式 */
+    background-color: #333;
+    color: white;
+    padding: 30px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    max-width: 500px;
+    width: 90%;
+}
+
+#milestone-modal-content h2 {
+    margin-top: 0;
+    font-weight: 700;
+    font-size: 1.5em;
+}
+
+#milestone-modal-content p {
+    line-height: 1.5;
+    letter-spacing: 0.02em;
+    font-size: 1.1em;
+    margin-bottom: 30px; /* 讓描述和進度條拉開 */
+}
+
+/* --- ✨ 新增：進度條樣式 --- */
+.milestone-progress-bar-container {
+    position: relative;
+    width: 100%;
+    height: 25px;
+    background-color: #fff; /* 白色底條 */
+    border-radius: 15px;
+    margin: 50px 0; /* 上下留白 */
+}
+
+#milestone-progress-bar-fill {
+    position: absolute;
+    height: 100%;
+    background-color: #f72585; /* 粉色進度條 */
+    border-radius: 15px;
+    width: 0%; /* JS 會控制這個寬度 */
+    transition: width 0.5s ease;
+}
+
+/* 顯示目前分數的標籤 */
+#milestone-current-score {
+    position: absolute;
+    left: 10px; /* 顯示在進度條左側 */
+    top: 50%;
+    transform: translateY(-50%);
+    color: #fff; /* 白色文字 */
+    font-weight: 700;
+    font-size: 1.1em;
+    text-shadow: 1px 1px 2px #000; /* 加點陰影使其清晰 */
+    z-index: 2;
+}
+
+/* 門檻標記 (10k, 25k, 50k) */
+.milestone-tier {
+    position: absolute;
+    top: -30px; /* 標記在進度條上方 */
+    transform: translateX(-50%); /* 自身置中 */
+    font-size: 1.1em;
+    font-weight: 700;
+    color: #fff;
+}
+/* 門檻下方的垂直線 */
+.milestone-tier::after {
+    content: '';
+    position: absolute;
+    bottom: -32px; /* 從文字下方連到進度條 */
+    left: 50%;
+    width: 3px;
+    height: 30px; /* 線的長度 */
+    background-color: #fff;
+}
+
+/* 領取獎勵按鈕 */
+.milestone-tier button {
+    position: absolute;
+    top: 60px; /* ✨ 修正：增加與進度條的距離，避免遮擋 */
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 5px 10px;
+    font-size: 0.9em;
+    background-color: #ffca3a; /* 黃色 */
+    color: #333; /* 深色文字 */
+    text-shadow: none !important; /* 移除描邊 */
+    white-space: nowrap; /* 確保文字不換行 */
+    border-radius: 5px; /* ✨ 新增：圓角 */
+    border: 1px solid #333; /* ✨ 新增：深色邊框 */
+}
+
+/* 已領取/已獲得資格 的按鈕樣式 */
+.milestone-tier button.claimed {
+    background-color: #888;
+    color: #ccc;
+    cursor: default;
+}
+
+#milestone-close-button {
+    margin-top: 20px;
+}
+
+/* --- ✨ 新增：通用開始按鈕樣式 --- */
+.start-button-style {
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    padding: 10px 10px;
+    font-size: 1em;
+    border: none;
+    border-radius: 8px;
+    background-color: #4361ee; /* 藍色系 */
+    color: white;
+    cursor: pointer;
+    margin-top: 10px; /* 讓按鈕之間有間距 */
+    display: block; /* ✨ 新增：讓按鈕垂直堆疊 */
+    width: fit-content; /* ✨ 新增：讓按鈕寬度適應內容 */
+    margin-left: auto; /* ✨ 新增：水平置中 */
+    margin-right: auto; /* ✨ 新增：水平置中 */
+}
+
+/* --- ✨ 修改：開始畫面按鈕 (增加間距) --- */
+#open-milestone-button,
+#open-global-milestone-button {
+    /* 這些按鈕現在會使用 .start-button-style 的樣式 */
+}
+
+/* --- ✨ 新增：全體里程碑彈窗樣式 --- */
+#global-milestone-modal-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+#global-milestone-modal-content {
+    background-color: #333;
+    color: white;
+    padding: 30px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    max-width: 500px;
+    width: 90%;
+}
+
+#global-milestone-modal-content h2 {
+    margin-top: 0;
+    font-weight: 700;
+    font-size: 1.5em;
+}
+
+#global-milestone-modal-content p {
+    line-height: 1.5;
+    letter-spacing: 0.02em;
+    font-size: 1.1em;
+    margin-bottom: 30px;
+}
+
+/* (進度條樣式與個人里程碑共用) */
+#global-milestone-progress-bar-fill {
+    position: absolute;
+    height: 100%;
+    background-color: #ffca3a; /* 全體進度用黃色 */
+    border-radius: 15px;
+    width: 0%; 
+    transition: width 0.5s ease;
+}
+
+#global-milestone-current-percent {
+    position: absolute;
+    left: 50%; /* 顯示在中間 */
+    top: 50%;
+    transform: translate(-50%, -50%);
+    color: #333; /* 深色文字 */
+    font-weight: 700;
+    font-size: 1.1em;
+    text-shadow: none;
+    z-index: 2;
+}
+
+/* 結算流程的按鈕群組 */
+.global-milestone-buttons {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 20px;
+}
+.global-milestone-buttons button {
+    flex-grow: 1;
+}
+#global-milestone-share-button {
+    background-color: #00b4d8; /* 分享用藍色 */
+}
+
+/* --- ✨ 修改：結算畫面 (Step 1) --- */
+#endgame-screen-ui {
+    /* 確保它在彈窗內是 flex 佈局 */
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+#endgame-screen-ui h2 {
+    font-weight: 700;
+    font-size: 1.5em;
+}
+#endgame-screen-ui p {
+    font-size: 1.1em;
+    line-height: 1.5;
+}
+#endgame-continue-button {
+    margin-top: 20px;
+}
+
+#score-change {
+    position: absolute;
+    left: calc(100% + 5px); /* Position it 5px to the right of the parent's (score-info) right edge */
+    top: 0; /* Align with the top of score-info */
+    font-size: 1.2em;
+    font-weight: bold;
+    opacity: 0;
+    transition: opacity 0.5s ease-out;
+	text-shadow: none !important;
+    white-space: nowrap; /* Prevent text from wrapping */
+}
+
+#score-change.show {
+    opacity: 1;
+}
+
+#score-change.positive {
+    color: #28a745; /* Green */
+}
+
+#score-change.negative {
+    color: #dc3545; /* Red */
+}
+
+/* ✨ 新增：資源載入進度條樣式 */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #252540;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    transition: opacity 0.3s ease-out;
+}
+
+.loading-overlay.hidden {
+    display: none;
+}
+
+.loading-content {
+    text-align: center;
+    color: white;
+    width: 90%;
+    max-width: 400px;
+}
+
+.loading-content h2 {
+    font-size: 1.8em;
+    margin-bottom: 30px;
+    font-weight: 700;
+    text-shadow: -1px -1px 0 #1c2541, 1px -1px 0 #1c2541, -1px 1px 0 #1c2541, 1px 1px 0 #1c2541;
+}
+
+.loading-progress-container {
+    width: 100%;
+    height: 25px;
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 15px;
+    overflow: hidden;
+    margin-bottom: 15px;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.loading-progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #f72585, #4361ee);
+    border-radius: 15px;
+    width: 0%;
+    transition: width 0.3s ease;
+    box-shadow: 0 0 10px rgba(247, 37, 133, 0.5);
+}
+
+.loading-text {
+    font-size: 1.2em;
+    font-weight: 700;
+    color: #ffca3a;
+    text-shadow: -1px -1px 0 #1c2541, 1px -1px 0 #1c2541, -1px 1px 0 #1c2541, 1px 1px 0 #1c2541;
+}

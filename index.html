@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title id="page-title">小媛寶生日應援：媛來接力</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- ✨ 新增：資源載入進度條 -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="loading-content">
+            <h2 data-i18n-key="loadingTitle">載入中...</h2>
+            <div class="loading-progress-container">
+                <div id="loading-progress-bar" class="loading-progress-bar"></div>
+            </div>
+            <p id="loading-text" class="loading-text">0%</p>
+        </div>
+    </div>
+
+    <div id="game-container">
+        <div id="info-bar">
+            <span id="score-info">
+				<span id="score-label" data-i18n-key="score">分數</span>：
+				<span id="score-display">0</span>
+				<span id="score-change"></span>
+			</span>
+			<span class="info-group">
+				<span id="time-label" data-i18n-key="time">時間</span>：<span id="time-display">60s</span>
+			</span>
+
+			<span class="info-group">
+				<span id="fever-label" data-i18n-key="fever">應援力量</span>：<span id="milestone-progress">0%</span>
+			</span>
+            
+            <button id="mute-button">🔊</button>
+        </div>
+
+        <canvas id="game-canvas" width="800" height="600"></canvas>
+        
+        <div id="mobile-controls">
+            <button id="move-left" class="control-button">←</button>
+            <button id="move-right" class="control-button">→</button>
+        </div>
+    </div>
+
+    <div id="global-ui-container">
+        <div id="lang-switcher-area">
+            <span>🌍</span>
+            <select id="lang-select">
+                <option value="zh-TW">繁體中文</option>
+                <option value="en">English</option>
+            </select>
+        </div>
+        <div id="user-id-area">
+            <span data-i18n-key="transferTitle">進度 ID</span>:
+            <span id="user-id-display">ABC-DEF-GHI</span>
+            <button id="copy-id-button">
+                <img src="./images/copy_icon.png" alt="Copy">
+            </button>
+        </div>
+    </div>
+
+    <div id="modal-overlay" class="hidden">
+        <div id="modal-content">
+        
+            <button id="open-import-button">📥</button>
+
+            <div id="start-screen-ui">
+                <h2 id="modal-title" data-i18n-key="modalStartTitle"></h2>
+                <p id="modal-text" data-i18n-key="modalStartText"></p>
+                <button id="start-button" data-i18n-key="modalStartButton" class="start-button-style"></button>
+                
+                <button id="open-milestone-button" data-i18n-key="milestoneButton" class="start-button-style"></button>
+                
+                <button id="open-global-milestone-button" data-i18n-key="globalMilestoneButton" class="start-button-style"></button>
+            </div>
+            
+            <div id="endgame-screen-ui" class="hidden">
+                <h2 id="endgame-title" data-i18n-key="modalEndTitle"></h2>
+                <p id="endgame-score-text" data-i18n-key="modalEndText"></p>
+                <div id="endgame-stats">
+                    <h3 data-i18n-key="statsTitle">本次應援成果</h3>
+                    <ul>
+                        <li>
+                            <span data-i18n-key="statsPositive">接到物品</span>:
+                            <span id="stats-positive">0</span>
+                        </li>
+                        <li>
+                            <span data-i18n-key="statsNegative">接到障礙物</span>:
+                            <span id="stats-negative">0</span>
+                        </li>
+                        <li>
+                            <span data-i18n-key="statsCorrect">答對問題</span>:
+                            <span id="stats-correct">0</span>
+                        </li>
+                        <li>
+                            <span data-i18n-key="statsWrong">答錯問題</span>:
+                            <span id="stats-wrong">0</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <button id="endgame-continue-button" data-i18n-key="continueButton" class="start-button-style">繼續</button>
+            </div>
+            
+            <div id="question-area" class="hidden">
+                <p id="question-text"></p>
+                <button class="answer-option"></button>
+                <button class="answer-option"></button>
+                <button class="answer-option"></button>
+            </div>
+
+            <div id="import-ui-area" class="hidden">
+                <h2 id="import-title" data-i18n-key="importUITitle">匯入進度</h2>
+                <p id="import-text" data-i18n-key="importUIText">請貼上你的進度ID同步更新進度</p>
+                <input type="text" id="import-input" data-i18n-key-placeholder="importPlaceholder">
+                <div class="import-buttons">
+                    <button id="import-cancel-button" data-i18n-key="importCancelButton" class="start-button-style">取消</button>
+                    <button id="import-button" data-i18n-key="importButton" class="start-button-style">匯入進度</button>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+    <div id="birthday-modal-overlay" class="hidden">
+        <div id="birthday-modal-content">
+            <h2 data-i18n-key="birthdayTitle">🎂 Happy Birthday 🎂</h2>
+            <img src="./images/yuan-birthday-art.png" alt="Yuan Birthday Art">
+            <p id="birthday-message" data-i18n-key="birthdayMessage"></p>
+            <button id="birthday-close-button" data-i18n-key="birthdayCloseButton" class="start-button-style">關閉</button>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="firebase-init.js"></script>
+    <script src="lang.js"></script>
+    <script src="questions.js"></script>
+    <script src="game.js"></script>
+
+    <div id="milestone-modal-overlay" class="hidden">
+        <div id="milestone-modal-content">
+            <h2 data-i18n-key="milestoneTitle">個人里程碑</h2>
+            <p data-i18n-key="milestoneDesc">達成目標累積積分...</p>
+
+            <div class="milestone-progress-bar-container">
+                <div id="milestone-progress-bar-fill"></div>
+                <div id="milestone-current-score">0</div>
+                
+                <div class="milestone-tier" style="left: 20%;">
+                    <span>10,000</span>
+                    <button id="claim-tier1-button" data-i18n-key="milestoneClaimButton" class="hidden"></button>
+                </div>
+                <div class="milestone-tier" style="left: 50%;">
+                    <span>25,000</span>
+                    <button id="claim-tier2-button" data-i18n-key="milestoneTier2" class="hidden"></button>
+                </div>
+                <div class="milestone-tier" style="left: 100%;">
+                    <span>50,000</span>
+                    <button id="claim-tier3-button" data-i18n-key="milestoneTier3" class="hidden"></button>
+                </div>
+            </div>
+
+            <button id="milestone-close-button" data-i18n-key="milestoneConfirmButton" class="start-button-style"></button>
+        </div>
+    </div>
+    <div id="global-milestone-modal-overlay" class="hidden">
+        <div id="global-milestone-modal-content">
+            <h2 data-i18n-key="globalMilestoneTitle">全體應援里程碑</h2>
+            <p data-i18n-key="globalMilestoneDesc">這是所有玩家共同累積的應援力量！</p>
+
+            <div class="milestone-progress-bar-container">
+                <div id="global-milestone-progress-bar-fill"></div> 
+                <div id="global-milestone-current-percent">0%</div> 
+            </div>
+
+            <div class="global-milestone-buttons">
+                <button id="global-milestone-close-button" data-i18n-key="closeButton" class="start-button-style">關閉</button>
+                <button id="global-milestone-restart-button" data-i18n-key="modalRestartButton" class="hidden start-button-style">重新開始</button>
+                <button id="global-milestone-share-button" data-i18n-key="shareButton" class="hidden start-button-style">分享成果</button>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
