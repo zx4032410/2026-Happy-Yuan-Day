@@ -148,12 +148,12 @@ const QUESTION_BANK = [
     {
         id: 'q12',
         'zh-TW': {
-            question: "今年在11/08的演唱會演唱的Solo曲是什麼？",
+            question: "去年在11/08的演唱會 媛媛演唱的Solo曲是什麼？",
             correctAnswer: "我是真的很愛很愛你",
             incorrectAnswers: ["我是真的真的很愛你", "我是真的很喜歡你"]
         },
         'en': {
-            question: "今年在11/08的演唱會演唱的Solo曲是什麼？",
+            question: "去年在11/08的演唱會 媛媛演唱的Solo曲是什麼？",
             correctAnswer: "我是真的很愛很愛你",
             incorrectAnswers: ["我是真的真的很愛你", "我是真的很喜歡你"]
         }
