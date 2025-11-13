@@ -15,10 +15,16 @@ function formatUserID(uuid) {
     return `${p1}-${p2}-${p3}`;
 }
 
+// ✨ 新增：檢查今天是否為生日的共用函式
+function isBirthdayToday() {
+    const today = new Date();
+    // 檢查 1 月 5 日 (月份是 0-indexed, 0 = 1月)
+    return (today.getMonth() === 0 && today.getDate() === 5);
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     
     // --- 初始化 HTML 元素 (✨ 更新) ---
-    const GAME_VERSION = "v1.0";
     const db = firebase.firestore(); 
     const canvas = document.getElementById('game-canvas');
     const ctx = canvas.getContext('2d');
@@ -103,8 +109,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const moveLeftButton = document.getElementById('move-left');
     const moveRightButton = document.getElementById('move-right');
 
-    canvas.width = 800;
-    canvas.height = 600;
+    canvas.width = GAME_CONFIG.CANVAS_WIDTH;
+    canvas.height = GAME_CONFIG.CANVAS_HEIGHT;
 
     // --- 音效初始化區 (不變) ---
     const audio = {};
@@ -128,10 +134,11 @@ document.addEventListener('DOMContentLoaded', function() {
     let score = 0;
     const player = { 
         /* ... (玩家物件不變) ... */ 
-        x: canvas.width / 2 - 50, 
-        y: canvas.height - 120, 
-        width: 100, height: 100, 
-        speed: 7, 
+        x: canvas.width / 2 - GAME_CONFIG.PLAYER.WIDTH / 2, 
+        y: canvas.height - GAME_CONFIG.PLAYER.Y_OFFSET, 
+        width: GAME_CONFIG.PLAYER.WIDTH, 
+        height: GAME_CONFIG.PLAYER.HEIGHT, 
+        speed: GAME_CONFIG.PLAYER.SPEED, 
         image: new Image(), 
         defaultImage: new Image(), 
         winImage: new Image(), 
@@ -141,17 +148,15 @@ document.addEventListener('DOMContentLoaded', function() {
         // ✨ 新增：動畫相關屬性
         currentFrame: 0, // 當前播放的幀索引
         frameCounter: 0,
-        frameRate: 15,   // 每 10 幀遊戲更新切換一次圖片 (數值越大，動畫越慢)
+        frameRate: GAME_CONFIG.PLAYER.ANIMATION_FRAME_RATE,   // 每 10 幀遊戲更新切換一次圖片 (數值越大，動畫越慢)
         idleFrames: [],  // 儲存動畫圖片物件的陣列
         // ...
     };
     const keys = { left: false, right: false };
-    const GAME_TIME_SECONDS = 10; //遊戲倒數時間
-    let timeLeft = GAME_TIME_SECONDS;
+    let timeLeft = GAME_CONFIG.GAME_TIME;
     let gameTimerId = null;
     let isFeverTime = false;
     let feverMeter = 0; 
-    const FEVER_MAX = 100;
     let feverDurationTimer = 0;
     let currentLang = 'zh-TW';
     let isMuted = false;
@@ -173,32 +178,18 @@ document.addEventListener('DOMContentLoaded', function() {
     let stats_feverCount = 0;
     let stats_feverTime = 0;
 
-    // ✨ 新增：獎勵連結和訊息
-    const DIGITAL_CARD_LINK = "https://www.instagram.com/weand_studio/"; // <<< 🚨 請替換成您 Tier 1 獎勵的下載連結
-    const TIER2_QUALIFIED_MESSAGE = "恭喜您達成 Tier 2！您已獲得實體獎品抽獎資格，請等待活動結束後的官方公告。";
-    const TIER3_QUALIFIED_MESSAGE = "恭喜您達成 Tier 3！您已獲得月曆卡抽獎資格，請等待活動結束後的官方公告。";
-
-
     let stats_items_positive = 0, stats_items_negative = 0, stats_questions_correct = 0, stats_questions_wrong = 0;
-    const itemTypes = [ { id: 'heart', src: './images/item-white-heart.png', score: 10, speed: 2.5, probability: 35, type: 'positive' }, 
-                        { id: 'cookie', src: './images/item-bear-cookie.png', score: 25, speed: 3, probability: 25, type: 'positive' }, 
-                        { id: 'guitar', src: './images/item-guitar.png', score: 40, speed: 4, probability: 10, type: 'positive' }, 
-                        { id: 'lightstick', src: './images/item-lightstick.png', score: 80, speed: 5.5, probability: 5, type: 'special' }, 
-                        { id: 'burnt-cookie', src: './images/item-burnt-cookie.png', score: 20, speed: 3.5, probability: 10, type: 'negative' }, 
-                        { id: 'alarm', src: './images/item-alarm-clock.png', score: 35, speed: 4.5, probability: 8, type: 'negative' }, 
-                        { id: 'question', src: './images/question_icon.png', score: 0, speed: 4, probability: 7, type: 'question' }];
     const itemImages = {};
     let fallingItems = [];
-    let baseSpawnInterval = 90, spawnInterval = baseSpawnInterval, spawnTimer = spawnInterval;
+    let baseSpawnInterval = GAME_CONFIG.BASE_SPAWN_INTERVAL, spawnInterval = baseSpawnInterval, spawnTimer = spawnInterval;
 
     // --- 匿名 ID 邏輯 (v10) ---
     let currentUserID = null; 
-    const USER_ID_KEY = 'yuan_fan_uid';
     function getOrCreateUserID() {
-        let userID = localStorage.getItem(USER_ID_KEY);
+        let userID = localStorage.getItem(GAME_CONFIG.USER_ID_KEY);
         if (!userID) {
             userID = generateUUID();
-            localStorage.setItem(USER_ID_KEY, userID);
+            localStorage.setItem(GAME_CONFIG.USER_ID_KEY, userID);
             console.log("新的匿名使用者 ID 已創建:", userID);
         } else {
             console.log("偵測到既有匿名使用者 ID:", userID);
@@ -219,7 +210,7 @@ document.addEventListener('DOMContentLoaded', function() {
         './images/xiao-yuan-bao-idle-6.png'
     ];
     // ✨ 步驟 2：現在才計算總資源數
-    let assetsToLoad = 3 + itemTypes.length + idleFrameSources.length; 
+    let assetsToLoad = 3 + GAME_CONFIG.ITEM_TYPES.length + idleFrameSources.length; 
     let assetsLoaded = 0;
     
     // ✨ 新增：載入進度 UI 元素
@@ -249,8 +240,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 loadingOverlay.style.opacity = '0';
                 setTimeout(() => {
                     loadingOverlay.classList.add('hidden');
-                }, 300); // 等待淡出動畫完成
-            }, 500); // 延遲 0.5 秒後開始淡出
+                }, GAME_CONFIG.UI.LOADING_FADE_DURATION); // 等待淡出動畫完成
+            }, GAME_CONFIG.UI.LOADING_FADE_DELAY); // 延遲 0.5 秒後開始淡出
         }
     }
 
@@ -268,8 +259,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 loadingOverlay.style.opacity = '0';
                 setTimeout(() => {
                     loadingOverlay.classList.add('hidden');
-                }, 300);
-            }, 500);
+                }, GAME_CONFIG.UI.LOADING_FADE_DURATION);
+            }, GAME_CONFIG.UI.LOADING_FADE_DELAY);
         }
     }
 
@@ -288,7 +279,7 @@ document.addEventListener('DOMContentLoaded', function() {
     player.loseImage.onerror = () => onAssetError('loseImage');
 
     // 掉落物圖
-    itemTypes.forEach(type => {
+    GAME_CONFIG.ITEM_TYPES.forEach(type => {
         const img = new Image();
         img.src = type.src;
         img.onload = onAssetLoad;
@@ -318,7 +309,33 @@ document.addEventListener('DOMContentLoaded', function() {
     document.addEventListener('mouseup', () => { keys.left = false; keys.right = false; });
 
     // --- 生成/碰撞/音效/i18n 函式 ---
-    function spawnItem() { /* ... (不變) ... */ const totalProbability = itemTypes.reduce((sum, item) => sum + item.probability, 0); let random = Math.random() * totalProbability; let chosenItemType; for (const itemType of itemTypes) { if (random < itemType.probability) { chosenItemType = itemType; break; } random -= itemType.probability; } if (!chosenItemType || !itemImages[chosenItemType.id] || !itemImages[chosenItemType.id].complete) { return; } fallingItems.push({ x: Math.random() * (canvas.width - 60), y: -60, width: 60, height: 60, speed: chosenItemType.speed, score: chosenItemType.score, type: chosenItemType.type, image: itemImages[chosenItemType.id] }); }
+    function spawnItem() {
+        const totalProbability = GAME_CONFIG.ITEM_TYPES.reduce((sum, item) => sum + item.probability, 0);
+        let random = Math.random() * totalProbability;
+        let chosenItemType;
+        for (const itemType of GAME_CONFIG.ITEM_TYPES) {
+            if (random < itemType.probability) {
+                chosenItemType = itemType;
+                break;
+            }
+            random -= itemType.probability;
+        }
+
+        if (!chosenItemType || !itemImages[chosenItemType.id] || !itemImages[chosenItemType.id].complete) {
+            return;
+        }
+
+        fallingItems.push({
+            x: Math.random() * (canvas.width - GAME_CONFIG.ITEM_DEFAULT_SIZE),
+            y: GAME_CONFIG.ITEM_SPAWN_Y_OFFSET,
+            width: GAME_CONFIG.ITEM_DEFAULT_SIZE,
+            height: GAME_CONFIG.ITEM_DEFAULT_SIZE,
+            speed: chosenItemType.speed,
+            score: chosenItemType.score,
+            type: chosenItemType.type,
+            image: itemImages[chosenItemType.id]
+        });
+    }
     function checkCollision(obj1, obj2) { /* ... (不變) ... */ return obj1.x < obj2.x + obj2.width && obj1.x + obj1.width > obj2.x && obj1.y < obj2.y + obj2.height && obj1.y + obj1.height > obj2.y; }
     function playSound(audioObject, isSFX = true) { if (isMuted) return; if (!audioObject) return; if (isSFX) { audioObject.currentTime = 0; } audioObject.play().catch(error => { console.warn(`音效播放失敗: ${error.message}`); }); }
     
@@ -345,7 +362,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         setTimeout(() => {
             scoreChangeElement.classList.remove('show');
-        }, 500); // Duration should match CSS transition
+        }, GAME_CONFIG.UI.SCORE_CHANGE_DURATION); // Duration should match CSS transition
     }
     
     // --- i18n 語言相關函式 (✨ 更新) ---
@@ -412,7 +429,7 @@ document.addEventListener('DOMContentLoaded', function() {
         await loadPlayerProfile(); 
         
         const currentScore = playerProfile.cumulativeScore;
-        const maxScore = 50000; // Tier 3 門檻
+        const maxScore = GAME_CONFIG.MILESTONES.PERSONAL.TIER_3_SCORE; // Tier 3 門檻
         const progressPercent = Math.min(100, (currentScore / maxScore) * 100);
         milestoneProgressBarFill.style.width = progressPercent + '%';
         milestoneCurrentScore.textContent = currentScore;
@@ -420,7 +437,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const milestoneQualifiedText = i18nStrings[currentLang].milestoneQualified;
         
         // Tier 1 (10,000) - 數位小卡 (可重複領)
-        if (currentScore >= 10000) {
+        if (currentScore >= GAME_CONFIG.MILESTONES.PERSONAL.TIER_1_SCORE) {
             claimTier1Button.classList.remove('hidden');
             claimTier1Button.classList.remove('claimed');
             claimTier1Button.textContent = i18nStrings[currentLang].milestoneDownload;
@@ -429,7 +446,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         // Tier 2 (25,000) - 抽獎券 (領一次)
-        if (currentScore >= 25000) {
+        if (currentScore >= GAME_CONFIG.MILESTONES.PERSONAL.TIER_2_SCORE) {
             claimTier2Button.classList.remove('hidden');
             if (playerProfile.tier2Qualified) {
                 claimTier2Button.classList.add('claimed'); 
@@ -443,7 +460,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         // Tier 3 (50,000) - 抽獎券 (領一次)
-        if (currentScore >= 50000) {
+        if (currentScore >= GAME_CONFIG.MILESTONES.PERSONAL.TIER_3_SCORE) {
             claimTier3Button.classList.remove('hidden');
             if (playerProfile.tier3Qualified) {
                 claimTier3Button.classList.add('claimed');
@@ -557,21 +574,23 @@ document.addEventListener('DOMContentLoaded', function() {
         const isCorrect = clickedButton.dataset.correct === "true";
         answerButtons.forEach(btn => btn.disabled = true);
         if (isCorrect) {
-            let bonusPoints = 100; if (isFeverTime) bonusPoints *= 2; score += bonusPoints;
+            let bonusPoints = GAME_CONFIG.SCORING.CORRECT_ANSWER;
+            if (isFeverTime) bonusPoints *= GAME_CONFIG.SCORING.FEVER_MULTIPLIER;
+            score += bonusPoints;
             player.image = player.winImage; playSound(audio.answerCorrect);
             stats_questions_correct++;
         } else {
-            score -= 50;
+            score += GAME_CONFIG.SCORING.INCORRECT_ANSWER;
             player.image = player.loseImage; playSound(audio.answerIncorrect);
             stats_questions_wrong++;
         }
         scoreDisplay.textContent = score;
-        player.animationTimer = 30;
+        player.animationTimer = GAME_CONFIG.PLAYER.WIN_LOSE_ANIMATION_DURATION;
         let correctButton = null;
         answerButtons.forEach(btn => { if (btn.dataset.correct === "true") { correctButton = btn; } });
         if (isCorrect) { clickedButton.classList.add('correct-answer');
         } else { clickedButton.classList.add('incorrect-answer'); if (correctButton) { correctButton.classList.add('correct-answer'); } }
-        setTimeout(resumeGame, 2000);
+        setTimeout(resumeGame, GAME_CONFIG.UI.POST_ANSWER_DELAY);
     }
 
     function resumeGame() {
@@ -594,8 +613,8 @@ document.addEventListener('DOMContentLoaded', function() {
     function activateFeverTime() {
         if (isFeverTime) return;
         isFeverTime = true;
-        feverDurationTimer = 600;
-        spawnInterval = Math.floor(baseSpawnInterval / 2);
+        feverDurationTimer = GAME_CONFIG.FEVER.DURATION;
+        spawnInterval = Math.floor(baseSpawnInterval * GAME_CONFIG.FEVER.SPAWN_INTERVAL_MULTIPLIER);
         
         // 確保主BGM停止，並且時間歸零
         audio.bgm.pause();
@@ -682,12 +701,8 @@ document.addEventListener('DOMContentLoaded', function() {
         globalMilestoneModal.classList.add('hidden'); // 關閉全體里程碑 (Step 3)
 
         // 檢查日期
-        const today = new Date();
-        // 檢查 2026 年 1 月 5 日 (月份是 0-indexed, 0 = 1月)
-        const isBirthday = (today.getFullYear() === 2026 && today.getMonth() === 0 && today.getDate() === 5);
         // const isBirthday = true; // 測試用
-
-        if (isBirthday) {
+        if (isBirthdayToday()) {
             // ✨ 是生日：顯示彩蛋彈窗
             birthdayMessage.innerHTML = i18nStrings[currentLang].birthdayMessage.replace(/\n/g, '<br>');
             birthdayModal.classList.remove('hidden');
@@ -736,12 +751,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function resetGame() {
         score = 0;
-        timeLeft = GAME_TIME_SECONDS;
+        timeLeft = GAME_CONFIG.GAME_TIME;
         isFeverTime = false;
         feverMeter = 0;
         feverDurationTimer = 0;
         fallingItems = [];
-        player.x = canvas.width / 2 - 50;
+        player.x = canvas.width / 2 - GAME_CONFIG.PLAYER.WIDTH / 2;
         spawnInterval = baseSpawnInterval;
         spawnTimer = spawnInterval;
         
@@ -793,10 +808,6 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        // 判斷是否為生日當天
-        const today = new Date();
-        const isBirthday = (today.getMonth() === 0) && (today.getDate() === 5); // 媛媛生日 1/5
-
         // 1. 建立一個批量寫入操作
         const batch = db.batch();
 
@@ -806,8 +817,8 @@ document.addEventListener('DOMContentLoaded', function() {
             userId: currentUserID,
             score: score,
             timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-            version: GAME_VERSION,
-            isBirthday: isBirthday, // ✨ 加回：是否為生日當天
+            version: GAME_CONFIG.VERSION,
+            isBirthday: isBirthdayToday(), // ✨ 加回：是否為生日當天
             stats: currentStats,     // ✨ 加回：本局遊戲詳細統計
         };
         batch.set(scoreRef, scoreData);
@@ -853,7 +864,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             
             console.log("目前里程碑總分: ", totalScore);
-            const milestoneTarget = 1000000;
+            const milestoneTarget = GAME_CONFIG.MILESTONES.GLOBAL_TARGET;
             progressPercent = Math.min(100, (totalScore / milestoneTarget) * 100).toFixed(1) + '%';
             
             // 更新頂部 info-bar (不變)
@@ -915,31 +926,31 @@ document.addEventListener('DOMContentLoaded', function() {
         switch (tier) {
             case 1:
                 // Tier 1: 數位小卡 (不需更新 Firebase，允許重複點擊下載)
-                successMessage = `恭喜您達成 Tier 1！請點擊以下連結下載您的【${i18nStrings[currentLang].milestoneTier1}】：\n\n${DIGITAL_CARD_LINK}`;
+                successMessage = `恭喜您達成 Tier 1！請點擊以下連結下載您的【${i18nStrings[currentLang].milestoneTier1}】：\n\n${GAME_CONFIG.MILESTONES.REWARDS.TIER_1_URL}`;
                 
                 // 開啟連結在新分頁
-                window.open(DIGITAL_CARD_LINK, '_blank');
+                window.open(GAME_CONFIG.MILESTONES.REWARDS.TIER_1_URL, '_blank');
                 break;
 
             case 2:
                 // Tier 2: 實體抽獎資格 (檢查並更新 Firebase)
-                if (playerProfile.cumulativeScore < 25000) return; // 安全檢查
+                if (playerProfile.cumulativeScore < GAME_CONFIG.MILESTONES.PERSONAL.TIER_2_SCORE) return; // 安全檢查
                 if (playerProfile.tier2Qualified) {
-                    successMessage = TIER2_QUALIFIED_MESSAGE; // 已領過
+                    successMessage = GAME_CONFIG.MILESTONES.REWARDS.TIER_2_MESSAGE; // 已領過
                 } else {
                     tierField = 'tier2Qualified';
-                    successMessage = TIER2_QUALIFIED_MESSAGE; // 剛領取
+                    successMessage = GAME_CONFIG.MILESTONES.REWARDS.TIER_2_MESSAGE; // 剛領取
                 }
                 break;
 
             case 3:
                 // Tier 3: 月曆卡抽獎資格 (檢查並更新 Firebase)
-                if (playerProfile.cumulativeScore < 50000) return; // 安全檢查
+                if (playerProfile.cumulativeScore < GAME_CONFIG.MILESTONES.PERSONAL.TIER_3_SCORE) return; // 安全檢查
                 if (playerProfile.tier3Qualified) {
-                    successMessage = TIER3_QUALIFIED_MESSAGE; // 已領過
+                    successMessage = GAME_CONFIG.MILESTONES.REWARDS.TIER_3_MESSAGE; // 已領過
                 } else {
                     tierField = 'tier3Qualified';
-                    successMessage = TIER3_QUALIFIED_MESSAGE; // 剛領取
+                    successMessage = GAME_CONFIG.MILESTONES.REWARDS.TIER_3_MESSAGE; // 剛領取
                 }
                 break;
             default:
@@ -992,12 +1003,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 let feverBoost = 0;
                 
                 if (item.type === 'positive') {
-                    pointsToChange = item.score; feverBoost = 10; if (isFeverTime) pointsToChange *= 2;
+                    pointsToChange = item.score; 
+                    feverBoost = GAME_CONFIG.FEVER.POSITIVE_ITEM_BOOST; 
+                    if (isFeverTime) pointsToChange *= GAME_CONFIG.SCORING.FEVER_MULTIPLIER;
                     player.image = player.winImage; // ✨ 設定為 Win 圖片
                     playSound(audio.collectPositive);
                     stats_items_positive++;
                 } else if (item.type === 'special') {
-                    pointsToChange = item.score; feverBoost = 25; if (isFeverTime) pointsToChange *= 2;
+                    pointsToChange = item.score; 
+                    feverBoost = GAME_CONFIG.FEVER.SPECIAL_ITEM_BOOST; 
+                    if (isFeverTime) pointsToChange *= GAME_CONFIG.SCORING.FEVER_MULTIPLIER;
                     player.image = player.winImage; // ✨ 設定為 Win 圖片
                     playSound(audio.collectSpecial);
                     stats_items_positive++;
@@ -1010,14 +1025,14 @@ document.addEventListener('DOMContentLoaded', function() {
                     playSound(audio.collectQuestion); showQuestion();
                 }
                 
-                feverMeter = Math.min(FEVER_MAX, feverMeter + feverBoost);
-                if (feverMeter >= FEVER_MAX && !isFeverTime) { activateFeverTime(); }
+                feverMeter = Math.min(GAME_CONFIG.FEVER.MAX_METER, feverMeter + feverBoost);
+                if (feverMeter >= GAME_CONFIG.FEVER.MAX_METER && !isFeverTime) { activateFeverTime(); }
                 
                 if(item.type !== 'question') {
                      score += pointsToChange;
                      showScoreChange(pointsToChange);
                      scoreDisplay.textContent = score; 
-                     player.animationTimer = 30; // ✨ 啟動 Win/Lose 動畫計時器
+                     player.animationTimer = GAME_CONFIG.PLAYER.WIN_LOSE_ANIMATION_DURATION; // ✨ 啟動 Win/Lose 動畫計時器
                  }
                 fallingItems.splice(i, 1);
             }
@@ -1102,7 +1117,7 @@ document.addEventListener('DOMContentLoaded', function() {
             setTimeout(() => {
                 copyIdButton.innerHTML = originalText; // 換回 icon
                 applyLanguage(currentLang); // 確保 i18n 文字正確
-            }, 2000);
+            }, GAME_CONFIG.UI.COPY_SUCCESS_DELAY);
         }).catch(err => { console.error('複製失敗: ', err); alert("複製失敗:\n" + currentUserID); });
     });
     
@@ -1111,9 +1126,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     importButton.addEventListener('click', () => {
         const importID = importInput.value.trim();
-        if (importID.length > 30 && importID.includes('-')) { 
+        if (importID.length > GAME_CONFIG.VALIDATION.IMPORT_ID_MIN_LENGTH && importID.includes('-')) { 
             if (confirm(i18nStrings[currentLang].importConfirm)) {
-                localStorage.setItem(USER_ID_KEY, importID);
+                localStorage.setItem(GAME_CONFIG.USER_ID_KEY, importID);
                 alert(i18nStrings[currentLang].importSuccess);
                 window.location.reload();
             }
@@ -1140,7 +1155,7 @@ document.addEventListener('DOMContentLoaded', function() {
     claimTier2Button.addEventListener('click', (e) => {
         // 如果按鈕顯示「已獲得資格」，點擊時給予提示 (非領取動作)
         if (e.target.classList.contains('claimed')) {
-            alert(TIER2_QUALIFIED_MESSAGE);
+            alert(GAME_CONFIG.MILESTONES.REWARDS.TIER_2_MESSAGE);
             return;
         }
         claimReward(2);
@@ -1149,7 +1164,7 @@ document.addEventListener('DOMContentLoaded', function() {
     claimTier3Button.addEventListener('click', (e) => {
         // 如果按鈕顯示「已獲得資格」，點擊時給予提示 (非領取動作)
         if (e.target.classList.contains('claimed')) {
-            alert(TIER3_QUALIFIED_MESSAGE);
+            alert(GAME_CONFIG.MILESTONES.REWARDS.TIER_3_MESSAGE);
             return;
         }
         claimReward(3);
