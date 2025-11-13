@@ -67,8 +67,6 @@
     <div id="modal-overlay" class="modal-overlay hidden">
         <div id="modal-content" class="modal-content">
         
-            <button id="open-import-button">📥</button>
-
             <div id="start-screen-ui">
                 <h2 id="modal-title" data-i18n-key="modalStartTitle"></h2>
                 <p id="modal-text" data-i18n-key="modalStartText"></p>
@@ -114,15 +112,6 @@
                 <button class="answer-option"></button>
             </div>
 
-            <div id="import-ui-area" class="hidden">
-                <h2 id="import-title" data-i18n-key="importUITitle">匯入進度</h2>
-                <p id="import-text" data-i18n-key="importUIText">請貼上你的進度ID同步更新進度</p>
-                <input type="text" id="import-input" data-i18n-key-placeholder="importPlaceholder">
-                <div class="import-buttons">
-                    <button id="import-cancel-button" data-i18n-key="importCancelButton" class="start-button-style">取消</button>
-                    <button id="import-button" data-i18n-key="importButton" class="start-button-style">匯入進度</button>
-                </div>
-            </div>
             
         </div>
     </div>
@@ -138,6 +127,7 @@
 
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="firebase-init.js"></script>
     <script src="lang.js"></script>
     <script src="questions.js"></script>

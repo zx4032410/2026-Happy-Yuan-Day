@@ -1,10 +1,3 @@
-// ✨ 新增：輔助函式 (放在檔案最頂部，DOMContentLoaded 之外)
-function generateUUID() {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-        var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-        return v.toString(16);
-    });
-}
 // ✨ 新增：格式化 UUID 為 ABC-DEF-GHI
 function formatUserID(uuid) {
     const parts = uuid.split('-');
@@ -25,7 +18,8 @@ function isBirthdayToday() {
 document.addEventListener('DOMContentLoaded', function() {
     
     // --- 初始化 HTML 元素 (✨ 更新) ---
-    const db = firebase.firestore(); 
+    const db = firebase.firestore();
+    const auth = firebase.auth(); // ✨ 1. 新增：取得 Firebase Auth 服務
     const canvas = document.getElementById('game-canvas');
     const ctx = canvas.getContext('2d');
     
@@ -46,8 +40,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // 主彈窗
     const modal = document.getElementById('modal-overlay');
     const modalContent = document.getElementById('modal-content'); // (v10 新增)
-    const openImportButton = document.getElementById('open-import-button'); // (v10 新增)
-    
+    // const openImportButton = document.getElementById('open-import-button'); // ✨ 移除：不再需要 ID 轉移
+
     // 彈窗 1: 開始畫面
     const startScreenUI = document.getElementById('start-screen-ui');
     const modalTitle = document.getElementById('modal-title');
@@ -69,13 +63,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const questionText = document.getElementById('question-text');
     const answerButtons = document.querySelectorAll('.answer-option');
 
-    // 彈窗 4: 匯入畫面 (v10 新增)
-    const importUiArea = document.getElementById('import-ui-area');
-    const importTitle = document.getElementById('import-title');
-    const importText = document.getElementById('import-text');
-    const importInput = document.getElementById('import-input');
-    const importButton = document.getElementById('import-button');
-    const importCancelButton = document.getElementById('import-cancel-button');
+    // 彈窗 4: 匯入畫面 (v10 新增) - ✨ 移除
+    // const importUiArea = document.getElementById('import-ui-area');
+    // const importTitle = document.getElementById('import-title');
+    // const importText = document.getElementById('import-text');
+    // const importInput = document.getElementById('import-input');
+    // const importButton = document.getElementById('import-button');
+    // const importCancelButton = document.getElementById('import-cancel-button');
     
     // ✨ 新增：個人里程碑彈窗元素
     const openMilestoneButton = document.getElementById('open-milestone-button');
@@ -183,21 +177,41 @@ document.addEventListener('DOMContentLoaded', function() {
     let fallingItems = [];
     let baseSpawnInterval = GAME_CONFIG.BASE_SPAWN_INTERVAL, spawnInterval = baseSpawnInterval, spawnTimer = spawnInterval;
 
-    // --- 匿名 ID 邏輯 (v10) ---
+    // --- ✨ 2. Firebase 匿名登入與初始化 ---
     let currentUserID = null; 
-    function getOrCreateUserID() {
-        let userID = localStorage.getItem(GAME_CONFIG.USER_ID_KEY);
-        if (!userID) {
-            userID = generateUUID();
-            localStorage.setItem(GAME_CONFIG.USER_ID_KEY, userID);
-            console.log("新的匿名使用者 ID 已創建:", userID);
-        } else {
-            console.log("偵測到既有匿名使用者 ID:", userID);
-        }
-        return userID;
+
+    function handleAuthentication() {
+        auth.onAuthStateChanged(async (user) => {
+            if (user) {
+                // --- 使用者已登入 (無論是剛登入還是之前就登入過) ---
+                currentUserID = user.uid;
+                console.log("Firebase 匿名登入成功，UID:", currentUserID);
+                
+                // 更新 UI 並載入遊戲資料
+                userIdDisplay.textContent = formatUserID(currentUserID);
+                await loadPlayerProfile();
+                await loadTotalMilestoneScore();
+                
+                // 顯示開始畫面，遊戲準備就緒
+                showStartModalText();
+
+            } else {
+                // --- 使用者未登入，執行匿名登入 ---
+                console.log("使用者未登入，正在嘗試匿名登入...");
+                try {
+                    await auth.signInAnonymously();
+                    // 登入成功後，onAuthStateChanged 會再次被觸發，並執行上面 if (user) 的區塊
+                    console.log("匿名登入請求成功。");
+                } catch (error) {
+                    console.error("Firebase 匿名登入失敗:", error);
+                    // 可以在此處顯示錯誤訊息給使用者
+                    modalTitle.textContent = "登入失敗";
+                    modalText.textContent = "無法連線至伺服器以驗證您的身份，請檢查網路連線後重新整理頁面。";
+                    modal.classList.remove('hidden');
+                }
+            }
+        });
     }
-    currentUserID = getOrCreateUserID();
-    userIdDisplay.textContent = formatUserID(currentUserID); // 更新全域 UI
 
     // --- 資源載入 ---
     // ✨ 步驟 1：先定義所有要載入的動畫幀
@@ -407,21 +421,13 @@ document.addEventListener('DOMContentLoaded', function() {
         startScreenUI.classList.remove('hidden');
         endgameScreenUI.classList.add('hidden'); // 隱藏結算
         questionArea.classList.add('hidden');
-        importUiArea.classList.add('hidden');
-        openImportButton.classList.remove('hidden');
+        // importUiArea.classList.add('hidden'); // ✨ 移除
+        // openImportButton.classList.remove('hidden'); // ✨ 移除
         
         modal.classList.remove('hidden');
     } 
     
-    // 顯示匯入畫面
-    function showImportUI() {
-        startScreenUI.classList.add('hidden');
-        endgameScreenUI.classList.add('hidden');
-        questionArea.classList.add('hidden');
-        openImportButton.classList.add('hidden'); // 隱藏匯入按鈕
-        
-        importUiArea.classList.remove('hidden');
-    }
+    // ✨ 移除 showImportUI() 函式
 
     // ✨ 修改：顯示個人里程碑彈窗 (加入流程控制)
     async function showMilestoneModal(isEndGameFlow = false) {
@@ -555,8 +561,8 @@ document.addEventListener('DOMContentLoaded', function() {
         // 隱藏其他 UI，顯示問答 UI
         startScreenUI.classList.add('hidden');
         endgameScreenUI.classList.add('hidden');
-        importUiArea.classList.add('hidden');
-        openImportButton.classList.add('hidden');
+        // importUiArea.classList.add('hidden'); // ✨ 移除
+        // openImportButton.classList.add('hidden'); // ✨ 移除
         
         questionArea.classList.remove('hidden');
         
@@ -675,8 +681,8 @@ document.addEventListener('DOMContentLoaded', function() {
         // 2. 顯示/隱藏正確的彈窗元素
         startScreenUI.classList.add('hidden'); // 隱藏開始畫面
         questionArea.classList.add('hidden');
-        importUiArea.classList.add('hidden');
-        openImportButton.classList.add('hidden');
+        // importUiArea.classList.add('hidden'); // ✨ 移除
+        // openImportButton.classList.add('hidden'); // ✨ 移除
         
         endgameScreenUI.classList.remove('hidden'); // ✨ 顯示結算 Step 1
         
@@ -1096,9 +1102,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // ========================================================================
     // --- 遊戲啟動邏輯 (✨ 更新: 綁定新按鈕) ---
     // ========================================================================
-    gameLoop();
-    loadTotalMilestoneScore(); // (舊有)
-    loadPlayerProfile(); // ✨ 新增：遊戲載入時，讀取一次個人資料
     
     // --- 綁定主要按鈕 ---
     startButton.onclick = startGame;
@@ -1107,7 +1110,7 @@ document.addEventListener('DOMContentLoaded', function() {
     langSelect.addEventListener('change', (event) => { applyLanguage(event.target.value); });
     birthdayCloseButton.addEventListener('click', restartGame);
 
-    // --- 綁定 ID 轉移按鈕 ---
+    // --- 綁定 ID 複製按鈕 (不再需要轉移) ---
     copyIdButton.addEventListener('click', () => {
         if (!navigator.clipboard) { alert("瀏覽器不支援，請手動選取複製您的完整 ID:\n" + currentUserID); return; }
         navigator.clipboard.writeText(currentUserID).then(() => {
@@ -1121,21 +1124,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }).catch(err => { console.error('複製失敗: ', err); alert("複製失敗:\n" + currentUserID); });
     });
     
-    openImportButton.addEventListener('click', showImportUI);
-    importCancelButton.addEventListener('click', showStartModalText); // 點擊取消，回到開始畫面
-
-    importButton.addEventListener('click', () => {
-        const importID = importInput.value.trim();
-        if (importID.length > GAME_CONFIG.VALIDATION.IMPORT_ID_MIN_LENGTH && importID.includes('-')) { 
-            if (confirm(i18nStrings[currentLang].importConfirm)) {
-                localStorage.setItem(GAME_CONFIG.USER_ID_KEY, importID);
-                alert(i18nStrings[currentLang].importSuccess);
-                window.location.reload();
-            }
-        } else {
-            alert(i18nStrings[currentLang].importError);
-        }
-    });
+    // ✨ 移除 ID 轉移相關的事件監聽
 
     // ✨ 新增：綁定個人里程碑按鈕
     openMilestoneButton.addEventListener('click', () => showMilestoneModal(false)); // 傳入 false
@@ -1170,8 +1159,8 @@ document.addEventListener('DOMContentLoaded', function() {
         claimReward(3);
     });
 
-    // --- 啟動 ---
+    // --- ✨ 3. 啟動 ---
+    gameLoop();
     detectLanguage();
-    importInput.placeholder = i18nStrings[currentLang].importPlaceholder;
-    showStartModalText(); // 顯示開始畫面
+    handleAuthentication(); // ✨ 啟動認證流程，取代舊的啟動方式
 });

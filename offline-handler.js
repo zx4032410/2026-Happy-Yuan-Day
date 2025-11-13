@@ -12,16 +12,20 @@ document.addEventListener('DOMContentLoaded', () => {
         if (loadingOverlay) {
             loadingOverlay.classList.add('hidden');
         }
-        offlineOverlay.classList.remove('hidden');
+        if (offlineOverlay) {
+            offlineOverlay.classList.remove('hidden');
+        }
     };
 
     // 重試按鈕的邏輯：重新載入頁面
-    retryButton.addEventListener('click', () => {
-        // 顯示一個短暫的「正在重試...」提示，然後重載
-        retryButton.textContent = '正在重試...';
-        retryButton.disabled = true;
-        window.location.reload();
-    });
+    if (retryButton) {
+        retryButton.addEventListener('click', () => {
+            // 顯示一個短暫的「正在重試...」提示，然後重載
+            retryButton.textContent = '正在重試...';
+            retryButton.disabled = true;
+            window.location.reload();
+        });
+    }
 
     // 監聽瀏覽器的離線事件
     window.addEventListener('offline', () => {

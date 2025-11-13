@@ -20,7 +20,7 @@ const GAME_CONFIG = {
     },
 
     // 遊戲規則
-    GAME_TIME: 10, // 遊戲時間（秒）
+    GAME_TIME: 15, // 遊戲時間（秒）
     BASE_SPAWN_INTERVAL: 90, // 基礎生成間隔（幀），數字越小越快
     
     // Fever Time 設定
