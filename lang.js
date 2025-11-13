@@ -60,22 +60,40 @@ const i18nStrings = {
         shareSuccess: "分享文案已複製到剪貼簿！",
         shareFailure: "複製失敗，請手動複製！",
         loadingTitle: "載入中...",
+        // ✨ 新增 (IG 抽獎)
+        igPromptTitle: "登錄抽獎資訊",
+        igPromptText: "為了讓主辦方能聯繫到您，請留下您的 IG 帳號作為抽獎憑證。",
+        igPromptPlaceholder: "請輸入您的 IG 帳號",
+        igSubmitButton: "提交",
+        igCancelButton: "取消",
+        igSaveSuccess: "儲存成功！祝您中獎！",
+        igSaveError: "儲存失敗，請檢查網路連線後再試。",
+        igAlreadyEntered: "您已使用 @{handle} 參與抽獎。點擊可修改。",
+        igEmptyInputError: "請輸入您的 IG 帳號！",
+        // ✨ 新增 (垂直里程碑)
+        milestoneYourScore: "你的總積分",
+        milestoneTier1Title: "第一階段：10,000分",
+        milestoneTier1Desc: "獎勵：數位小卡",
+        milestoneTier2Title: "第二階段：25,000分",
+        milestoneTier2Desc: "獎勵：實體抽獎資格",
+        milestoneTier3Title: "第三階段：50,000分",
+        milestoneTier3Desc: "獎勵：限定月曆卡抽獎",
     },
     'en': {
         score: "Score",
         time: "Time",
         fever: "Fever",
-        // 開始彈窗
+        // Start Modal
         modalStartTitle: "Yuan's Birthday Support!",
         modalStartText: "Catch items Yuan loves to build up support power!",
         modalStartButton: "Start Game",
-        // 結束彈窗
+        // End Modal
         modalEndTitle: "Game Over!",
         modalEndText: "You earned {score} support points for Yuan!",
         modalRestartButton: "Restart",
         modalQuestionTitle: "Support Quiz!",
         
-        // ✨ 新增 (結算畫面)
+        // Stats
         statsTitle: "Support Results",
         statsPositive: "Items Caught",
         statsNegative: "Obstacles Hit",
@@ -85,12 +103,12 @@ const i18nStrings = {
         shareText: "I just got {score} points in Yuan's Birthday Support Game! Come join us and collect points! #HappyYuanDay",
         copiedText: "Copied!",
 
-        // ✨ 新增 (生日彩蛋)
+        // Birthday Modal
         birthdayTitle: "🎂 Happy Birthday 🎂",
         birthdayMessage: "Today is January 5th, Yuan's Birthday!\nThank you for supporting her today. Have a wonderful day!",
         birthdayCloseButton: "Close",
 
-        // ✨ 新增 (進度ID轉移)
+        // ID Transfer
         transferTitle: "Progress ID",
         copyButton: "Copy",
         copiedButton: "Copied!",
@@ -102,7 +120,7 @@ const i18nStrings = {
         importUITitle: "Import Progress",
         importUIText: "Please paste your Progress ID to sync progress",
         importCancelButton: "Cancel",
-        // ✨ 新增 (個人里程碑)
+        // Personal Milestones
         milestoneButton: "Milestones",
         milestoneTitle: "Personal Milestones",
         milestoneDesc: "Reach score goals to get digital cards and chances to win grand prizes!",
@@ -113,14 +131,32 @@ const i18nStrings = {
         milestoneTier3: "Calender Raffle",
         milestoneQualified: "Qualified",
         milestoneDownload: "Download Reward",
-        // ✨ 新增 (全體里程碑 與 流程控制)
+        // Global Milestones
         globalMilestoneButton: "Global Milestone",
         globalMilestoneTitle: "Global Support Progress",
         globalMilestoneDesc: "This is the total support power collected by all players!",
         continueButton: "Continue",
         closeButton: "Close",
-        // ✨ 修正：分享文案模板
+        // Share Text
         shareTextTemplate: "🌟 Result out! I scored {score} points for Yuan in the [Yuan's Birthday Support Game]! 🎉\n\nMy total cumulative support score is {cumulativeScore}! Let's hit the Global Milestone of {globalProgress} together!\n\n👉 Challenge me: [Game Link]\n#2026happyyuanday #GENBLUE",
         loadingTitle: "Loading...",
+        // IG Raffle
+        igPromptTitle: "Raffle Registration",
+        igPromptText: "To ensure the organizer can contact you, please provide your IG handle for the raffle.",
+        igPromptPlaceholder: "Enter your IG handle",
+        igSubmitButton: "Submit",
+        igCancelButton: "Cancel",
+        igSaveSuccess: "Saved successfully! Good luck in the draw!",
+        igSaveError: "Save failed. Please check your connection and try again.",
+        igAlreadyEntered: "You have already entered the raffle with @{handle}. Click to edit.",
+        igEmptyInputError: "Please enter your IG handle!",
+        // Vertical Milestones
+        milestoneYourScore: "Your Total Score",
+        milestoneTier1Title: "Tier 1: 10,000 Points",
+        milestoneTier1Desc: "Reward: Digital Photocard",
+        milestoneTier2Title: "Tier 2: 25,000 Points",
+        milestoneTier2Desc: "Reward: Raffle Entry",
+        milestoneTier3Title: "Tier 3: 50,000 Points",
+        milestoneTier3Desc: "Reward: Limited Calendar Card Raffle",
     }
 };

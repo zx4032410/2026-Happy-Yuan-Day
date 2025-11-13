@@ -112,6 +112,17 @@
                 <button class="answer-option"></button>
             </div>
 
+            <!-- ✨ 新增：IG 抽獎資訊輸入介面 -->
+            <div id="ig-prompt-area" class="hidden">
+                <h2 id="ig-prompt-title" data-i18n-key="igPromptTitle"></h2>
+                <p id="ig-prompt-text" data-i18n-key="igPromptText"></p>
+                <input type="text" id="ig-input" data-i18n-key-placeholder="igPromptPlaceholder">
+                <div class="import-buttons">
+                    <button id="ig-cancel-button" data-i18n-key="igCancelButton" class="start-button-style"></button>
+                    <button id="ig-submit-button" data-i18n-key="igSubmitButton" class="start-button-style"></button>
+                </div>
+            </div>
+
             
         </div>
     </div>
@@ -140,21 +151,41 @@
             <h2 data-i18n-key="milestoneTitle">個人里程碑</h2>
             <p data-i18n-key="milestoneDesc">達成目標累積積分...</p>
 
-            <div class="milestone-progress-bar-container">
-                <div id="milestone-progress-bar-fill"></div>
-                <div id="milestone-current-score">0</div>
-                
-                <div class="milestone-tier" style="left: 20%;">
-                    <span>10,000</span>
-                    <button id="claim-tier1-button" data-i18n-key="milestoneClaimButton" class="hidden"></button>
+            <div class="milestone-score-header">
+                <span data-i18n-key="milestoneYourScore">你的總積分</span>
+                <span id="milestone-current-score">0</span>
+            </div>
+
+            <div class="milestone-tiers-list">
+                <!-- Tier 1 -->
+                <div class="milestone-tier-row" id="milestone-tier-1">
+                    <div class="milestone-tier-info">
+                        <h3 data-i18n-key="milestoneTier1Title">第一階段：10,000分</h3>
+                        <p data-i18n-key="milestoneTier1Desc">獎勵：數位小卡</p>
+                    </div>
+                    <div class="milestone-tier-action">
+                        <button id="claim-tier1-button"></button>
+                    </div>
                 </div>
-                <div class="milestone-tier" style="left: 50%;">
-                    <span>25,000</span>
-                    <button id="claim-tier2-button" data-i18n-key="milestoneTier2" class="hidden"></button>
+                <!-- Tier 2 -->
+                <div class="milestone-tier-row" id="milestone-tier-2">
+                    <div class="milestone-tier-info">
+                        <h3 data-i18n-key="milestoneTier2Title">第二階段：25,000分</h3>
+                        <p data-i18n-key="milestoneTier2Desc">獎勵：實體抽獎資格</p>
+                    </div>
+                    <div class="milestone-tier-action">
+                        <button id="claim-tier2-button"></button>
+                    </div>
                 </div>
-                <div class="milestone-tier" style="left: 100%;">
-                    <span>50,000</span>
-                    <button id="claim-tier3-button" data-i18n-key="milestoneTier3" class="hidden"></button>
+                <!-- Tier 3 -->
+                <div class="milestone-tier-row" id="milestone-tier-3">
+                    <div class="milestone-tier-info">
+                        <h3 data-i18n-key="milestoneTier3Title">第三階段：50,000分</h3>
+                        <p data-i18n-key="milestoneTier3Desc">獎勵：限定月曆卡抽獎</p>
+                    </div>
+                    <div class="milestone-tier-action">
+                        <button id="claim-tier3-button"></button>
+                    </div>
                 </div>
             </div>
 

@@ -264,895 +264,1751 @@ button:active {
 }
 
 /* 行動裝置彈窗優化 */
+
 @media (max-width: 767px) {
+
     .modal-overlay {
+
         padding: var(--spacing-sm);
-        align-items: flex-start;
-        padding-top: 10vh;
+
+        align-items: center; /* ✨ 修正：改為 center 讓彈窗垂直置中 */
+
+        padding-top: 0; /* ✨ 修正：移除頂部間距 */
+
     }
+
     
+
     .modal-content {
+
         padding: var(--spacing-lg);
+
         max-height: 85vh;
+
         border-radius: var(--border-radius-md);
+
     }
+
     
+
     .modal-content h2 {
+
         font-size: var(--font-size-lg);
+
     }
+
 }
+
+
 
 /* ========================================================================
+
    ✨ 按鈕樣式系統
+
    ======================================================================== */
+
 /* 預設按鈕樣式 */
+
 .btn {
+
     padding: var(--spacing-sm) var(--spacing-xl);
+
     font-size: var(--font-size-base);
+
     border-radius: var(--border-radius-md);
+
     margin-top: var(--spacing-sm);
+
     font-weight: 700;
+
     letter-spacing: 0.05em;
+
 }
+
+
 
 /* 按鈕顏色變體 */
+
 .btn-primary {
+
     background-color: var(--color-accent-pink);
+
     color: var(--color-text-primary);
+
 }
+
+
 
 .btn-secondary {
+
     background-color: var(--color-accent-blue);
+
     color: var(--color-text-primary);
+
 }
+
+
 
 .btn-success {
+
     background-color: var(--color-accent-green);
+
     color: var(--color-text-primary);
+
 }
+
+
 
 .btn-info {
+
     background-color: var(--color-accent-cyan);
+
     color: var(--color-text-primary);
+
 }
+
+
 
 .btn-warning {
+
     background-color: var(--color-accent-yellow);
+
     color: var(--color-text-secondary);
+
 }
+
+
 
 .btn-danger {
+
     background-color: var(--color-accent-red);
+
     color: var(--color-text-primary);
+
 }
+
+
 
 .btn-gray {
+
     background-color: var(--color-button-gray);
+
     color: var(--color-text-primary);
+
 }
+
+
 
 /* 通用開始按鈕樣式 */
+
 .start-button-style {
+
     font-weight: 700;
+
     letter-spacing: 0.05em;
+
     padding: var(--spacing-sm) var(--spacing-lg);
+
     font-size: var(--font-size-base);
+
     border: none;
+
     border-radius: var(--border-radius-md);
+
     background-color: var(--color-accent-blue);
+
     color: var(--color-text-primary);
+
     cursor: pointer;
+
     margin-top: var(--spacing-sm);
+
     display: block;
+
     width: fit-content;
+
     margin-left: auto;
+
     margin-right: auto;
+
     transition: all var(--transition-fast) ease;
+
 }
+
+
 
 .start-button-style:hover {
+
     opacity: 0.9;
+
     transform: translateY(-1px);
+
 }
+
+
 
 .start-button-style:active {
+
     transform: translateY(0) scale(0.98);
+
 }
+
+
 
 /* 問題選項按鈕 */
+
 #question-area button {
+
     display: block;
+
     width: 100%;
+
     margin-top: var(--spacing-sm);
+
     background-color: var(--color-accent-blue);
+
     padding: var(--spacing-md);
+
     font-size: var(--font-size-base);
+
 }
 
+
+
 /* 行動裝置按鈕優化 */
+
 @media (max-width: 767px) {
+
     .btn, .start-button-style {
+
         padding: var(--spacing-md) var(--spacing-lg);
+
         font-size: var(--font-size-md);
+
         min-height: 44px; /* 符合觸控標準 */
+
         width: 100%;
+
         max-width: 100%;
+
     }
+
     
+
     #question-area button {
+
         padding: var(--spacing-lg);
+
         font-size: var(--font-size-md);
+
         min-height: 48px;
+
     }
+
 }
+
+
+
 
 
 /* ✨ 新增：答題回饋的樣式 */
+
 .answer-option {
+
     /* 加入一點過渡效果，讓顏色變化更平順 */
+
     transition: background-color 0.3s, border 0.3s;
+
 }
+
+
 
 /* 1. 正確答案的樣式 (綠色) - 權重提高 */
+
 #question-area button.correct-answer {
+
     background-color: var(--color-accent-green) !important;
+
     border: 3px solid var(--color-accent-light-green) !important;
+
     color: var(--color-text-primary) !important;
+
     position: relative; 
+
 }
+
+
 
 /* 2. 錯誤答案的樣式 (紅色) - 權重提高 */
+
 #question-area button.incorrect-answer {
+
     background-color: var(--color-accent-red) !important;
+
     border: 3px solid var(--color-accent-light-red) !important;
+
     color: var(--color-text-primary) !important;
+
     opacity: 0.8 !important; 
+
     position: relative; 
+
 }
+
+
 
 /* 3. 勾勾樣式 (✓) - 權重提高 */
+
 #question-area button.correct-answer::after {
+
     content: '✓';
+
     font-weight: bold;
+
     font-size: 1.2em;
+
     position: absolute;
+
     right: 20px; 
+
     top: 50%;
+
     transform: translateY(-50%);
+
 }
+
+
 
 /* 4. 叉叉樣式 (✗) - 權重提高 */
+
 #question-area button.incorrect-answer::after {
+
     content: '✗';
+
     font-weight: bold;
+
     font-size: 1.2em;
+
     position: absolute;
+
     right: 20px; 
+
     top: 50%;
+
     transform: translateY(-50%);
+
 }
+
+
 
 /* ✨ 新增：問題區域的樣式 */
+
 #question-area {
+
     display: block; /* 確保它在 .hidden 被移除時，是以區塊顯示 */
+
     width: 100%;
+
 }
+
+
 
 /* ✨ 新增：問題文字的樣式 */
+
 #question-text {
+
     font-size: var(--font-size-lg);
+
     color: var(--color-text-primary);
+
     margin-bottom: var(--spacing-lg);
+
     line-height: 1.6;
+
 }
+
+
 
 @media (max-width: 767px) {
+
     #question-text {
+
         font-size: var(--font-size-md);
+
         margin-bottom: var(--spacing-md);
+
     }
+
 }
+
+
 
 /* ========================================================================
+
    ✨ 行動裝置控制按鈕
+
    ======================================================================== */
+
 #mobile-controls {
+
     display: flex;
+
     justify-content: space-between;
+
     width: 100%;
+
     position: absolute;
+
     bottom: var(--spacing-lg);
+
     padding: 0 var(--spacing-lg);
+
     box-sizing: border-box;
+
     z-index: var(--z-index-base);
+
     pointer-events: none;
+
     gap: var(--spacing-md);
+
 }
+
+
 
 .control-button {
+
     width: 70px;
+
     height: 70px;
+
     border-radius: var(--border-radius-full);
+
     border: 3px solid rgba(255, 255, 255, 0.8);
+
     background-color: rgba(255, 255, 255, 0.3);
+
     color: var(--color-text-primary);
+
     font-size: 2em;
+
     font-weight: bold;
+
     cursor: pointer;
+
     -webkit-tap-highlight-color: transparent;
+
     pointer-events: auto;
+
     transition: all var(--transition-fast) ease;
+
     display: flex;
+
     align-items: center;
+
     justify-content: center;
+
 }
+
+
 
 .control-button:active {
+
     transform: scale(0.9);
+
     background-color: rgba(255, 255, 255, 0.5);
+
 }
+
+
 
 /* 響應式設計：當螢幕寬度大於 768px (平板/電腦) */
+
 @media (min-width: 768px) {
+
     #mobile-controls {
+
         display: none;
+
     }
+
 }
+
+
 
 /* 小螢幕優化 */
+
 @media (max-width: 480px) {
+
     .control-button {
+
         width: 60px;
+
         height: 60px;
+
         font-size: 1.8em;
+
     }
+
     
+
     #mobile-controls {
+
         bottom: var(--spacing-md);
+
         padding: 0 var(--spacing-md);
+
     }
+
 }
+
+
 
 /* --- ✨ 新增：靜音按鈕樣式 --- */
+
 #mute-button {
+
     background: none;
+
     border: none;
+
     font-size: 1.5em; /* 放大圖示 */
+
     cursor: pointer;
+
     padding: 0 5px;
+
     color: white;
+
     /* 放在最右邊 */
+
     position: absolute;
+
     right: 20px;
+
     top: 50%;
+
     transform: translateY(-50%);
+
 }
 
+
+
 #mute-button.muted {
+
     opacity: 0.5; /* 靜音時變暗 */
+
 }
+
+
+
+
 
 
 
 #lang-switcher-area span {
+
     font-size: 1.5em; /* 地球圖示 */
+
     margin-right: 5px;
+
 }
+
+
 
 #lang-switcher-area select {
+
     background-color: transparent;
+
     color: white;
+
     border: none;
+
     font-size: 0.9em;
+
     font-family: 'Noto Sans TC', sans-serif;
+
     font-weight: 700;
+
 }
 
+
+
 /* 讓 select 也有描邊 */
+
 #lang-switcher-area select, #lang-switcher-area span {
+
     text-shadow: -1px -1px 0 #1c2541, 1px -1px 0 #1c2541, -1px 1px 0 #1c2541, 1px 1px 0 #1c2541;
+
 }
+
 #lang-switcher-area option {
+
     color: black;
+
     text-shadow: none;
+
 }
+
+
+
 
 
 /* --- ✨ 新增：結算統計區樣式 --- */
+
 #endgame-stats {
+
     width: 90%;
+
     margin: var(--spacing-lg) auto;
+
     text-align: left;
+
     background-color: rgba(0, 0, 0, 0.2);
+
     padding: var(--spacing-md);
+
     border-radius: var(--border-radius-lg);
+
 }
 
+
+
 @media (max-width: 767px) {
+
     #endgame-stats {
+
         width: 100%;
+
         padding: var(--spacing-sm);
+
         font-size: var(--font-size-sm);
+
     }
+
     
+
     #endgame-stats li {
+
         font-size: var(--font-size-base);
+
         padding: var(--spacing-xs) 0;
+
     }
+
 }
+
+
 
 #endgame-stats h3 {
+
     text-align: center;
+
     margin-top: 0;
+
 }
+
+
 
 #endgame-stats ul {
+
     list-style-type: none;
+
     padding: 0;
+
     margin: 0;
+
 }
+
+
 
 #endgame-stats li {
+
     display: flex;
+
     justify-content: space-between; /* 讓標題和數字分開 */
+
     padding: 5px 0;
+
     font-size: 1.1em;
+
 }
+
+
 
 #share-button {
+
     background-color: var(--color-accent-cyan);
+
     margin-top: var(--spacing-sm);
+
 }
+
+
 
 /* --- ✨ 新增：生日彩蛋彈窗樣式 --- */
+
 #birthday-modal-overlay {
+
     /* 樣式基本和 #modal-overlay 相同 */
+
     position: fixed;
+
     top: 0;
+
     left: 0;
+
     width: 100%;
+
     height: 100%;
+
     background-color: rgba(0, 0, 0, 0.85); /* 背景更暗以示區別 */
+
     display: flex;
+
     justify-content: center;
+
     align-items: center;
+
     z-index: 2000; /* 確保在最上層 */
+
 }
+
+
 
 #birthday-modal-content {
+
     background-color: #fff; 
+
     color: #333; /* ✨ 修正 (請求 2)：設定基礎文字顏色為深灰色 */
+
     padding: 20px;
+
     border-radius: 15px;
+
     text-align: center;
+
     box-shadow: 0 5px 20px rgba(255, 255, 255, 0.3);
+
     max-width: 90%;
+
     max-height: 90vh;
+
     overflow-y: auto;
+
     
+
     /* ✨ 關鍵修正：移除全域的描邊效果 */
+
     text-shadow: none !important; 
+
 }
+
+
 
 #birthday-modal-content h2 {
+
     color: #287fa8; /* ✨ 修正 (請求 1)：標題改為水藍色 */
+
     margin-top: 0;
+
     /* ✨ 關鍵修正：同樣移除描邊 */
+
     text-shadow: none !important; 
+
 }
+
+
 
 #birthday-modal-content img {
+
     width: 100%;
+
     max-width: 400px; /* 限制圖片最大寬度 */
+
     border-radius: 10px;
+
     margin: 10px 0;
+
 }
+
+
 
 #birthday-modal-content p {
+
     font-size: 1.1em;
+
     line-height: 1.6;
+
     white-space: pre-wrap; 
+
     color: #333; /* ✨ 修正 (請求 2)：明確設定文字顏色 */
+
     /* ✨ 關鍵修正：同樣移除描邊 */
+
     text-shadow: none !important; 
+
 }
+
+
 
 #birthday-modal-content button {
+
     background-color: #f72585; 
+
     
+
     /* ✨ 修正 (請求 3)：強制文字為純白色以增加對比 */
+
     color: #FFFFFF !important; 
+
     
+
     /* ✨ 關鍵修正：同樣移除描邊 */
+
     text-shadow: none !important; 
+
 }
+
+
 
 #milestone-result {
+
     margin-top: var(--spacing-lg);
+
     font-size: 1.3em;
+
     font-weight: bold;
+
     color: var(--color-accent-yellow);
+
 }
+
+
 
 /* --- ✨ 新增：彈窗頂部 UI 樣式 --- */
+
 .modal-top-row {
+
     display: flex;
+
     justify-content: space-between;
+
     align-items: center;
+
     width: 100%;
+
     margin-bottom: 15px; /* 與下方標題拉開距離 */
+
 }
+
+
 
 #lang-switcher-area {
+
     display: flex;
+
     align-items: center;
+
     background-color: rgba(0, 0, 0, 0.3);
+
     padding: 5px 8px;
+
     border-radius: 5px;
+
 }
+
+
 
 #user-id-display {
+
     font-family: monospace;
+
     font-size: var(--font-size-md);
+
     color: var(--color-accent-yellow);
+
     margin: 0 var(--spacing-xs);
+
     text-shadow: none !important; 
+
 }
 
+
+
 #copy-id-button {
+
     font-size: var(--font-size-xs);
+
     padding: 4px 8px;
+
     margin: 0;
+
     margin-left: var(--spacing-xs);
+
     background-color: var(--color-accent-cyan);
+
 }
+
+
 
 /* --- ✨ 新增：匯入進度區樣式 --- */
+
 #import-area {
+
     margin-top: 15px;
+
     width: 100%;
+
     display: flex;
+
     justify-content: space-between;
+
 }
+
+
 
 #import-input {
+
     flex-grow: 1;
+
     padding: var(--spacing-sm);
+
     border: 2px solid var(--color-accent-blue);
+
     background-color: var(--color-text-primary);
+
     border-radius: var(--border-radius-sm);
+
     margin-right: var(--spacing-sm);
+
     font-size: var(--font-size-sm);
+
 }
+
+
 
 #import-button {
+
     margin: 0;
+
     padding: var(--spacing-sm) var(--spacing-md);
+
     font-size: var(--font-size-sm);
+
     background-color: var(--color-accent-blue);
+
     white-space: nowrap;
+
 }
+
+
 
 /* --- ✨ 新增：全域 UI (右上角) --- */
+
 #global-ui-container {
+
     position: absolute;
+
     top: var(--spacing-sm);
+
     right: var(--spacing-lg);
+
     z-index: 1001;
+
     display: flex;
+
     align-items: center;
+
     gap: var(--spacing-md);
+
     flex-wrap: wrap;
+
     justify-content: flex-end;
+
 }
+
+
 
 @media (max-width: 767px) {
+
     #global-ui-container {
+
         top: var(--spacing-xs);
+
         right: var(--spacing-sm);
+
         gap: var(--spacing-xs);
+
         font-size: var(--font-size-sm);
+
     }
+
     
+
     #lang-switcher-area,
+
     #user-id-area {
+
         font-size: var(--font-size-xs);
+
         padding: var(--spacing-xs) var(--spacing-sm);
+
     }
+
 }
 
+
+
 /* 進度 ID 顯示區 */
+
 #user-id-area {
+
     display: flex;
+
     align-items: center;
+
     background-color: rgba(0, 0, 0, 0.3);
+
     padding: 5px 8px;
+
     border-radius: 5px;
+
 }
+
 #user-id-display {
+
     font-family: monospace;
+
     font-size: var(--font-size-md);
+
     color: var(--color-accent-yellow);
+
     margin: 0 var(--spacing-xs);
+
     text-shadow: none !important;
+
 }
+
 #copy-id-button {
+
     background: none;
+
     border: none;
+
     padding: 0;
+
     margin: 0;
+
     margin-left: 5px;
+
     cursor: pointer;
+
     line-height: 0; /* 讓圖片按鈕貼合 */
+
 }
+
 #copy-id-button img {
+
     width: 20px;
+
     height: 20px;
+
 }
+
+
 
 /* --- ✨ 新增：彈窗內部 UI 調整 --- */
 
+
+
 /* 彈窗右上角的匯入按鈕 */
+
 #open-import-button {
+
     position: absolute;
+
     top: 15px;
+
     right: 15px;
+
     background: none;
+
     border: none;
+
     font-size: 1.8em; /* 放大 icon */
+
     color: white;
+
     padding: 5px;
+
     cursor: pointer;
+
     opacity: 0.7;
+
     transition: opacity 0.2s;
+
 }
+
 #open-import-button:hover {
+
     opacity: 1;
+
 }
+
+
 
 /* 匯入 UI 區塊 */
+
 #import-ui-area {
+
     width: 100%;
+
     display: flex;
+
     flex-direction: column;
-}
-#import-input {
-    width: 100%;
-    padding: var(--spacing-sm);
-    border: 2px solid var(--color-accent-blue);
-    background-color: var(--color-text-primary);
-    border-radius: var(--border-radius-sm);
-    margin: var(--spacing-md) 0;
-    font-size: var(--font-size-base);
-    box-sizing: border-box;
-    min-height: 44px;
+
 }
 
+#import-input {
+
+    width: 100%;
+
+    padding: var(--spacing-sm);
+
+    border: 2px solid var(--color-accent-blue);
+
+    background-color: var(--color-text-primary);
+
+    border-radius: var(--border-radius-sm);
+
+    margin: var(--spacing-md) 0;
+
+    font-size: var(--font-size-base);
+
+    box-sizing: border-box;
+
+    min-height: 44px;
+
+}
+
+
+
 @media (max-width: 767px) {
+
     #import-input {
+
         font-size: var(--font-size-md);
+
         padding: var(--spacing-md);
+
     }
+
 }
+
 .import-buttons {
+
     display: flex;
+
     justify-content: space-between;
+
     gap: 10px;
+
 }
+
 .import-buttons button {
+
     flex-grow: 1; /* 兩個按鈕平分寬度 */
+
     margin: 0;
+
 }
+
 #import-cancel-button {
+
     background-color: var(--color-button-gray);
+
 }
+
+
 
 #import-button {
+
     background-color: var(--color-accent-blue);
+
 }
+
+
 
 /* ✨ 關鍵修改：加上父層選擇器以提高權重 */
+
 /* 請找到並修改成以下內容 */
+
 #modal-content #open-milestone-button {
+
     background-color: var(--color-accent-blue);
+
     margin-top: var(--spacing-sm);
+
     color: var(--color-text-primary);
+
 }
 
-/* --- ✨ 個人里程碑彈窗樣式 (使用共用類別) --- */
-/* #milestone-modal-overlay 和 #milestone-modal-content 使用共用類別 */
+
+
+/* --- ✨ 個人里程碑彈窗樣式 (垂直列表新版) --- */
+
+#milestone-modal-content {
+
+    max-width: 550px; /* 稍微加寬以容納內容 */
+
+}
+
+
 
 #milestone-modal-content p {
+
     line-height: 1.5;
+
     letter-spacing: 0.02em;
+
     font-size: var(--font-size-md);
-    margin-bottom: var(--spacing-xl);
+
+    margin-bottom: var(--spacing-lg);
+
 }
 
-/* --- ✨ 新增：進度條樣式 --- */
-.milestone-progress-bar-container {
-    position: relative;
-    width: 100%;
-    height: 25px;
-    background-color: var(--color-text-primary);
-    border-radius: var(--border-radius-xl);
-    margin: var(--spacing-xxl) 0;
+
+
+.milestone-score-header {
+
+    background-color: rgba(0, 0, 0, 0.2);
+
+    padding: var(--spacing-sm) var(--spacing-md);
+
+    border-radius: var(--border-radius-md);
+
+    margin-bottom: var(--spacing-lg);
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    font-size: var(--font-size-lg);
+
 }
 
-@media (max-width: 767px) {
-    .milestone-progress-bar-container {
-        height: 20px;
-        margin: var(--spacing-xl) 0;
-    }
-    
-    .milestone-tier {
-        font-size: var(--font-size-sm);
-    }
-}
 
-#milestone-progress-bar-fill {
-    position: absolute;
-    height: 100%;
-    background-color: var(--color-accent-pink);
-    border-radius: var(--border-radius-xl);
-    width: 0%;
-    transition: width var(--transition-slow) ease;
-}
 
-/* 顯示目前分數的標籤 */
 #milestone-current-score {
-    position: absolute;
-    left: var(--spacing-sm);
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--color-text-primary);
+
     font-weight: 700;
-    font-size: var(--font-size-md);
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
-    z-index: 2;
+
+    color: var(--color-accent-yellow);
+
+    font-size: var(--font-size-xl);
+
 }
 
-@media (max-width: 767px) {
-    #milestone-current-score {
-        font-size: var(--font-size-sm);
-        left: var(--spacing-xs);
-    }
+
+
+.milestone-tiers-list {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: var(--spacing-sm);
+
 }
 
-/* 門檻標記 (10k, 25k, 50k) */
-.milestone-tier {
-    position: absolute;
-    top: -30px;
-    transform: translateX(-50%);
+
+
+.milestone-tier-row {
+
+    background-color: rgba(255, 255, 255, 0.05);
+
+    border: 1px solid rgba(255, 255, 255, 0.2);
+
+    border-radius: var(--border-radius-md);
+
+    padding: var(--spacing-md);
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    gap: var(--spacing-md);
+
+    transition: all var(--transition-normal);
+
+}
+
+
+
+.milestone-tier-row.disabled {
+
+    opacity: 0.5;
+
+    background-color: transparent;
+
+}
+
+
+
+.milestone-tier-info {
+
+    text-align: left;
+
+    flex-grow: 1;
+
+}
+
+
+
+.milestone-tier-info h3 {
+
+    margin: 0 0 var(--spacing-xs) 0;
+
     font-size: var(--font-size-md);
-    font-weight: 700;
+
     color: var(--color-text-primary);
-}
-/* 門檻下方的垂直線 */
-.milestone-tier::after {
-    content: '';
-    position: absolute;
-    bottom: -32px;
-    left: 50%;
-    width: 3px;
-    height: 30px;
-    background-color: var(--color-text-primary);
+
 }
 
-/* 領取獎勵按鈕 */
-.milestone-tier button {
-    position: absolute;
-    top: 60px;
-    left: 50%;
-    transform: translateX(-50%);
-    padding: var(--spacing-xs) var(--spacing-sm);
+
+
+.milestone-tier-info p {
+
+    margin: 0;
+
     font-size: var(--font-size-sm);
+
+    color: rgba(255, 255, 255, 0.8);
+
+    letter-spacing: normal;
+
+    line-height: normal;
+
+}
+
+
+
+.milestone-tier-action button {
+
+    padding: var(--spacing-sm) var(--spacing-md);
+
+    font-size: var(--font-size-sm);
+
     background-color: var(--color-accent-yellow);
+
     color: var(--color-text-secondary);
+
     text-shadow: none !important;
+
     white-space: nowrap;
+
     border-radius: var(--border-radius-sm);
+
     border: 1px solid var(--color-text-secondary);
+
     min-height: auto;
+
+    font-weight: 700;
+
 }
 
-/* 已領取/已獲得資格 的按鈕樣式 */
-.milestone-tier button.claimed {
+
+
+.milestone-tier-action button.claimed {
+
     background-color: var(--color-button-gray);
+
     color: var(--color-button-gray-text);
-    cursor: default;
+
+    cursor: pointer; /* 允許再次點擊修改 */
+
 }
 
-@media (max-width: 767px) {
-    .milestone-tier button {
-        font-size: var(--font-size-xs);
-        padding: var(--spacing-xs);
-        top: 50px;
-    }
+
+
+.milestone-tier-row.disabled .milestone-tier-action button {
+
+    background-color: var(--color-button-gray);
+
+    color: var(--color-button-gray-text);
+
+    cursor: not-allowed;
+
 }
+
+
 
 #milestone-close-button {
-    margin-top: 20px;
+
+    margin-top: var(--spacing-lg);
+
 }
 
-/* 已在上方定義 .start-button-style */
+
 
 /* --- ✨ 全體里程碑彈窗樣式 (使用共用類別) --- */
+
 /* #global-milestone-modal-overlay 和 #global-milestone-modal-content 使用共用類別 */
 
+
+
 #global-milestone-modal-content p {
+
     line-height: 1.5;
+
     letter-spacing: 0.02em;
+
     font-size: var(--font-size-md);
+
     margin-bottom: var(--spacing-xl);
+
 }
+
+
 
 /* (進度條樣式與個人里程碑共用) */
+
 #global-milestone-progress-bar-fill {
+
     position: absolute;
+
     height: 100%;
+
     background-color: var(--color-accent-yellow);
+
     border-radius: var(--border-radius-xl);
+
     width: 0%;
+
     transition: width var(--transition-slow) ease;
+
 }
+
+
 
 #global-milestone-current-percent {
+
     position: absolute;
+
     left: 50%;
+
     top: 50%;
+
     transform: translate(-50%, -50%);
+
     color: var(--color-text-secondary);
+
     font-weight: 700;
+
     font-size: var(--font-size-md);
+
     text-shadow: none;
+
     z-index: 2;
+
 }
 
+
+
 @media (max-width: 767px) {
+
     #global-milestone-current-percent {
+
         font-size: var(--font-size-sm);
+
     }
+
 }
+
+
 
 /* 結算流程的按鈕群組 */
+
 .global-milestone-buttons {
+
     display: flex;
+
     justify-content: space-between;
+
     gap: var(--spacing-sm);
+
     margin-top: var(--spacing-lg);
+
     flex-wrap: wrap;
+
 }
+
+
 
 .global-milestone-buttons button {
+
     flex-grow: 1;
+
     min-width: 120px;
+
 }
+
+
 
 #global-milestone-share-button {
+
     background-color: var(--color-accent-cyan);
+
 }
 
+
+
 @media (max-width: 767px) {
+
     .global-milestone-buttons {
+
         flex-direction: column;
+
     }
+
     
+
     .global-milestone-buttons button {
+
         width: 100%;
+
         min-width: auto;
+
     }
+
 }
+
+
 
 /* --- ✨ 修改：結算畫面 (Step 1) --- */
+
 #endgame-screen-ui {
+
     /* 確保它在彈窗內是 flex 佈局 */
+
     display: flex;
+
     flex-direction: column;
+
     width: 100%;
+
 }
+
 #endgame-screen-ui h2 {
+
     font-weight: 700;
+
     font-size: 1.5em;
+
 }
+
 #endgame-screen-ui p {
+
     font-size: 1.1em;
+
     line-height: 1.5;
+
 }
+
 #endgame-continue-button {
+
     margin-top: 20px;
+
 }
+
+
 
 #score-change {
+
     position: absolute;
+
     left: calc(100% + 5px); /* Position it 5px to the right of the parent's (score-info) right edge */
+
     top: 0; /* Align with the top of score-info */
+
     font-size: 1.2em;
+
     font-weight: bold;
+
     opacity: 0;
+
     transition: opacity 0.5s ease-out;
+
 	text-shadow: none !important;
+
     white-space: nowrap; /* Prevent text from wrapping */
+
 }
+
+
 
 #score-change.show {
+
     opacity: 1;
+
 }
+
+
 
 #score-change.positive {
+
     color: var(--color-accent-green);
+
 }
+
+
 
 #score-change.negative {
+
     color: var(--color-accent-red);
+
 }
+
+
 
 /* ✨ 新增：資源載入進度條樣式 */
+
 .loading-overlay {
+
     position: fixed;
+
     top: 0;
+
     left: 0;
+
     width: 100%;
+
     height: 100%;
+
     background-color: var(--color-bg-primary);
+
     display: flex;
+
     justify-content: center;
+
     align-items: center;
+
     z-index: var(--z-index-loading);
+
     transition: opacity var(--transition-normal) ease-out;
+
 }
+
+
 
 .loading-overlay.hidden {
+
     display: none;
+
 }
+
+
 
 .loading-content {
+
     text-align: center;
+
     color: white;
+
     width: 90%;
+
     max-width: 400px;
+
 }
+
+
 
 .loading-content h2 {
+
     font-size: 1.8em;
+
     margin-bottom: 30px;
+
     font-weight: 700;
+
     text-shadow: -1px -1px 0 #1c2541, 1px -1px 0 #1c2541, -1px 1px 0 #1c2541, 1px 1px 0 #1c2541;
+
 }
+
+
 
 .loading-progress-container {
+
     width: 100%;
+
     height: 25px;
+
     background-color: rgba(255, 255, 255, 0.2);
+
     border-radius: var(--border-radius-xl);
+
     overflow: hidden;
+
     margin-bottom: var(--spacing-md);
+
     box-shadow: var(--shadow-sm);
+
 }
+
+
 
 .loading-progress-bar {
+
     height: 100%;
+
     background: linear-gradient(90deg, var(--color-accent-pink), var(--color-accent-blue));
+
     border-radius: var(--border-radius-xl);
+
     width: 0%;
+
     transition: width var(--transition-normal) ease;
+
     box-shadow: var(--shadow-glow);
+
 }
+
+
 
 .loading-text {
+
     font-size: var(--font-size-lg);
+
     font-weight: 700;
+
     color: var(--color-accent-yellow);
+
     text-shadow: -1px -1px 0 var(--color-text-shadow), 1px -1px 0 var(--color-text-shadow), -1px 1px 0 var(--color-text-shadow), 1px 1px 0 var(--color-text-shadow);
+
 }
 
+
+
 @media (max-width: 767px) {
+
     .loading-content h2 {
+
         font-size: var(--font-size-xl);
+
         margin-bottom: var(--spacing-lg);
+
     }
+
     
+
     .loading-text {
+
         font-size: var(--font-size-md);
+
     }
+
 }
