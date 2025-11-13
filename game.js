@@ -1123,12 +1123,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // ✨ 新增：綁定個人里程碑按鈕
-    openMilestoneButton.addEventListener('click', showMilestoneModal);
-    milestoneCloseButton.addEventListener('click', () => {
-        milestoneModal.classList.add('hidden');
-    });
-
-    // ✨ 新增：綁定個人里程碑按鈕
     openMilestoneButton.addEventListener('click', () => showMilestoneModal(false)); // 傳入 false
     milestoneCloseButton.addEventListener('click', () => {
         milestoneModal.classList.add('hidden');
