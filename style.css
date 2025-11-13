@@ -1,34 +1,112 @@
+/* ========================================================================
+   ✨ CSS 變數定義 (統一管理顏色、間距、字體大小等)
+   ======================================================================== */
+:root {
+    /* 顏色系統 */
+    --color-bg-primary: #252540;
+    --color-bg-secondary: #333;
+    --color-bg-overlay: rgba(0, 0, 0, 0.7);
+    --color-bg-overlay-dark: rgba(0, 0, 0, 0.85);
+    --color-text-primary: #ffffff;
+    --color-text-secondary: #333;
+    --color-text-shadow: #1c2541;
+    --color-accent-pink: #f72585;
+    --color-accent-blue: #4361ee;
+    --color-accent-yellow: #ffca3a;
+    --color-accent-cyan: #00b4d8;
+    --color-accent-green: #2a9d8f;
+    --color-accent-red: #e63946;
+    --color-accent-light-green: #9ef01a;
+    --color-accent-light-red: #ff4d6d;
+    --color-accent-water-blue: #287fa8;
+    --color-button-gray: #888;
+    --color-button-gray-text: #ccc;
+    
+    /* 間距系統 */
+    --spacing-xs: 5px;
+    --spacing-sm: 10px;
+    --spacing-md: 15px;
+    --spacing-lg: 20px;
+    --spacing-xl: 30px;
+    --spacing-xxl: 50px;
+    
+    /* 字體大小系統 */
+    --font-size-xs: 0.8em;
+    --font-size-sm: 0.9em;
+    --font-size-base: 1em;
+    --font-size-md: 1.1em;
+    --font-size-lg: 1.2em;
+    --font-size-xl: 1.5em;
+    --font-size-xxl: 1.8em;
+    
+    /* 圓角系統 */
+    --border-radius-sm: 5px;
+    --border-radius-md: 8px;
+    --border-radius-lg: 10px;
+    --border-radius-xl: 15px;
+    --border-radius-full: 50%;
+    
+    /* 陰影系統 */
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 5px 20px rgba(255, 255, 255, 0.3);
+    --shadow-glow: 0 0 10px rgba(247, 37, 133, 0.5);
+    
+    /* 過渡動畫 */
+    --transition-fast: 0.2s;
+    --transition-normal: 0.3s;
+    --transition-slow: 0.5s;
+    
+    /* Z-index 層級 */
+    --z-index-base: 100;
+    --z-index-modal: 1000;
+    --z-index-modal-high: 2000;
+    --z-index-loading: 9999;
+}
+
+/* 行動裝置變數覆蓋 */
+@media (max-width: 767px) {
+    :root {
+        --spacing-md: 12px;
+        --spacing-lg: 16px;
+        --spacing-xl: 24px;
+        --font-size-base: 0.95em;
+        --font-size-md: 1em;
+        --font-size-lg: 1.1em;
+        --font-size-xl: 1.3em;
+        --font-size-xxl: 1.6em;
+    }
+}
+
 /* 1. ✨ 全域套用字體和基本的描邊 */
 body {
     margin: 0;
     padding: 0;
-    font-family: 'Noto Sans TC', sans-serif; /* ✨ 設置主要字體為思源黑體 */
-    background-color: #252540; /* 深藍紫色背景，營造夜晚或舞台感 */
-    color: #ffffff;
+    font-family: 'Noto Sans TC', sans-serif;
+    background-color: var(--color-bg-primary);
+    color: var(--color-text-primary);
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
-    overflow: hidden; /* 避免在手機上產生滾動條 */
+    overflow: hidden;
 }
 
 /* 2. ✨ 核心描邊效果 (模擬深咖啡色描邊) */
 /* 這個選擇器可以涵蓋大部分彈窗、標題和資訊列的文字 */
-#game-container, #modal-overlay *, #birthday-modal-overlay * {
-    /* 使用 text-shadow 模擬 1px 的四方描邊 */
+#game-container, .modal-overlay * {
     text-shadow: 
-        -1px -1px 0 #1c2541,  /* 左上 */
-        1px -1px 0 #1c2541,   /* 右上 */
-        -1px 1px 0 #1c2541,   /* 左下 */
-        1px 1px 0 #1c2541;    /* 右下 */
-    -webkit-font-smoothing: antialiased; /* 確保字體在 Chrome/Safari 上平滑 */
+        -1px -1px 0 var(--color-text-shadow),
+        1px -1px 0 var(--color-text-shadow),
+        -1px 1px 0 var(--color-text-shadow),
+        1px 1px 0 var(--color-text-shadow);
+    -webkit-font-smoothing: antialiased;
 }
 
-/* 3. ✨ 標題和重點文字加粗 (修改這裡!) */
-/* 讓標題變大 */
-#modal-title, #birthday-modal-content h2, #endgame-stats h3 {
-    font-weight: 700; 
-    font-size: 1.5em; /* 標題用 1.5 倍大小 */
+/* 3. ✨ 標題和重點文字加粗 */
+.modal-title, .modal-content h2, #endgame-stats h3 {
+    font-weight: 700;
+    font-size: var(--font-size-xl);
 }
 
 /* 讓 info-bar 的文字加粗，但不放大 */
@@ -41,17 +119,24 @@ body {
     display: inline-block; /* Ensure it behaves like a block for positioning */
 }
 
-/* 4. ✨ 按鈕和超連結樣式優化 */
+/* 4. ✨ 按鈕基礎樣式 */
 button {
-    font-weight: 700; /* 按鈕文字加粗 */
-    letter-spacing: 0.05em; /* 稍微增加字距，讓文字不擁擠 */
-    /* 其他按鈕樣式不變 */
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    border: none;
+    cursor: pointer;
+    transition: all var(--transition-fast) ease;
+    -webkit-tap-highlight-color: transparent;
+}
+
+button:active {
+    transform: scale(0.98);
 }
 
 /* 5. ✨ 微調彈窗內的行距與字距 */
-#modal-content p, #birthday-modal-content p, #endgame-stats li {
-    line-height: 1.5; /* 增加行距，讓正文更易讀 */
-    letter-spacing: 0.02em; /* 輕微增加字距 */
+.modal-content p, #endgame-stats li {
+    line-height: 1.5;
+    letter-spacing: 0.02em;
 }
 
 /* --- 遊戲主容器 --- */
@@ -69,15 +154,29 @@ button {
     width: 100%;
     display: flex;
     justify-content: space-between;
-    padding: 10px 20px;
+    align-items: center;
+    padding: var(--spacing-sm) var(--spacing-lg);
     box-sizing: border-box;
-    font-size: 1.2em;
+    font-size: var(--font-size-lg);
     font-weight: bold;
     background-color: rgba(0, 0, 0, 0.2);
-    border-radius: 10px 10px 0 0;
-    position: relative; /* ✨ 新增：為了定位靜音按鈕 */
-    padding-right: 60px; /* ✨ 新增：在右側留出空間給靜音按鈕 */
-    font-size: 1.2em;
+    border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
+    position: relative;
+    padding-right: 60px;
+    gap: var(--spacing-sm);
+}
+
+@media (max-width: 767px) {
+    #info-bar {
+        padding: var(--spacing-xs) var(--spacing-md);
+        font-size: var(--font-size-base);
+        padding-right: 50px;
+        flex-wrap: wrap;
+    }
+    
+    #info-bar .info-group {
+        font-size: var(--font-size-sm);
+    }
 }
 
 /* --- 遊戲畫布 --- */
@@ -89,60 +188,202 @@ button {
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
 }
 
-/* --- 彈窗樣式 (預設隱藏) --- */
+/* ========================================================================
+   ✨ 共用彈窗樣式系統
+   ======================================================================== */
 .hidden {
     display: none !important;
 }
 
-#modal-overlay {
+/* 共用彈窗 Overlay */
+.modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.7);
+    background-color: var(--color-bg-overlay);
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 1000;
+    z-index: var(--z-index-modal);
+    padding: var(--spacing-md);
+    box-sizing: border-box;
 }
 
-#modal-content {
+/* 共用彈窗 Content */
+.modal-content {
     position: relative;
-    background-color: #333; /* 暗色系背景 */
-    color: white;
-    padding: 30px;
-    border-radius: 10px;
+    background-color: var(--color-bg-secondary);
+    color: var(--color-text-primary);
+    padding: var(--spacing-xl);
+    border-radius: var(--border-radius-lg);
     text-align: center;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-    
-    /* ✨ 調整這裡：增加最大寬度 */
-    max-width: 500px; /* 原本可能設為 400px 或更小，建議調到 500px */
-    width: 90%; /* 確保在手機上也不會超出螢幕 */
-    
-    /* ... 其他屬性不變 ... */
+    box-shadow: var(--shadow-md);
+    max-width: 500px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-sizing: border-box;
 }
 
-#modal-content h2 {
+.modal-content h2 {
     margin-top: 0;
+    font-weight: 700;
+    font-size: var(--font-size-xl);
 }
 
-#modal-content button {
-    padding: 10px 30px;
-    font-size: 1em;
+/* 特定彈窗覆蓋樣式 */
+/* #modal-overlay 和 #modal-content 使用 .modal-overlay 和 .modal-content 共用類別 */
+
+#birthday-modal-overlay {
+    background-color: var(--color-bg-overlay-dark);
+    z-index: var(--z-index-modal-high);
+}
+
+#birthday-modal-content {
+    background-color: var(--color-text-primary);
+    color: var(--color-text-secondary);
+    text-shadow: none !important;
+}
+
+#birthday-modal-content h2 {
+    color: var(--color-accent-water-blue);
+    text-shadow: none !important;
+}
+
+#birthday-modal-content p {
+    color: var(--color-text-secondary);
+    text-shadow: none !important;
+}
+
+#birthday-modal-content button {
+    background-color: var(--color-accent-pink);
+    color: var(--color-text-primary) !important;
+    text-shadow: none !important;
+}
+
+/* 行動裝置彈窗優化 */
+@media (max-width: 767px) {
+    .modal-overlay {
+        padding: var(--spacing-sm);
+        align-items: flex-start;
+        padding-top: 10vh;
+    }
+    
+    .modal-content {
+        padding: var(--spacing-lg);
+        max-height: 85vh;
+        border-radius: var(--border-radius-md);
+    }
+    
+    .modal-content h2 {
+        font-size: var(--font-size-lg);
+    }
+}
+
+/* ========================================================================
+   ✨ 按鈕樣式系統
+   ======================================================================== */
+/* 預設按鈕樣式 */
+.btn {
+    padding: var(--spacing-sm) var(--spacing-xl);
+    font-size: var(--font-size-base);
+    border-radius: var(--border-radius-md);
+    margin-top: var(--spacing-sm);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+}
+
+/* 按鈕顏色變體 */
+.btn-primary {
+    background-color: var(--color-accent-pink);
+    color: var(--color-text-primary);
+}
+
+.btn-secondary {
+    background-color: var(--color-accent-blue);
+    color: var(--color-text-primary);
+}
+
+.btn-success {
+    background-color: var(--color-accent-green);
+    color: var(--color-text-primary);
+}
+
+.btn-info {
+    background-color: var(--color-accent-cyan);
+    color: var(--color-text-primary);
+}
+
+.btn-warning {
+    background-color: var(--color-accent-yellow);
+    color: var(--color-text-secondary);
+}
+
+.btn-danger {
+    background-color: var(--color-accent-red);
+    color: var(--color-text-primary);
+}
+
+.btn-gray {
+    background-color: var(--color-button-gray);
+    color: var(--color-text-primary);
+}
+
+/* 通用開始按鈕樣式 */
+.start-button-style {
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    padding: var(--spacing-sm) var(--spacing-lg);
+    font-size: var(--font-size-base);
     border: none;
-    border-radius: 8px;
-    background-color: #f72585; /* 亮眼的粉紅色 */
-    color: white;
+    border-radius: var(--border-radius-md);
+    background-color: var(--color-accent-blue);
+    color: var(--color-text-primary);
     cursor: pointer;
-    margin-top: 10px;
+    margin-top: var(--spacing-sm);
+    display: block;
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+    transition: all var(--transition-fast) ease;
 }
 
+.start-button-style:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+.start-button-style:active {
+    transform: translateY(0) scale(0.98);
+}
+
+/* 問題選項按鈕 */
 #question-area button {
     display: block;
     width: 100%;
-    margin-top: 10px;
-    background-color: #4361ee; /* 問題選項用藍色 */
+    margin-top: var(--spacing-sm);
+    background-color: var(--color-accent-blue);
+    padding: var(--spacing-md);
+    font-size: var(--font-size-base);
+}
+
+/* 行動裝置按鈕優化 */
+@media (max-width: 767px) {
+    .btn, .start-button-style {
+        padding: var(--spacing-md) var(--spacing-lg);
+        font-size: var(--font-size-md);
+        min-height: 44px; /* 符合觸控標準 */
+        width: 100%;
+        max-width: 100%;
+    }
+    
+    #question-area button {
+        padding: var(--spacing-lg);
+        font-size: var(--font-size-md);
+        min-height: 48px;
+    }
 }
 
 
@@ -154,17 +395,17 @@ button {
 
 /* 1. 正確答案的樣式 (綠色) - 權重提高 */
 #question-area button.correct-answer {
-    background-color: #2a9d8f !important; /* 深綠色背景 (加上 !important 確保覆蓋) */
-    border: 3px solid #9ef01a !important; /* 亮綠色框線 (加上 !important 確保覆蓋) */
-    color: white !important;
+    background-color: var(--color-accent-green) !important;
+    border: 3px solid var(--color-accent-light-green) !important;
+    color: var(--color-text-primary) !important;
     position: relative; 
 }
 
 /* 2. 錯誤答案的樣式 (紅色) - 權重提高 */
 #question-area button.incorrect-answer {
-    background-color: #e63946 !important; /* 深紅色背景 (加上 !important 確保覆蓋) */
-    border: 3px solid #ff4d6d !important; /* 亮紅色框線 (加上 !important 確保覆蓋) */
-    color: white !important;
+    background-color: var(--color-accent-red) !important;
+    border: 3px solid var(--color-accent-light-red) !important;
+    color: var(--color-text-primary) !important;
     opacity: 0.8 !important; 
     position: relative; 
 }
@@ -199,42 +440,76 @@ button {
 
 /* ✨ 新增：問題文字的樣式 */
 #question-text {
-    font-size: 1.2em; /* 讓問題文字大一點 */
-    color: #ffffff;
-    margin-bottom: 20px;
+    font-size: var(--font-size-lg);
+    color: var(--color-text-primary);
+    margin-bottom: var(--spacing-lg);
+    line-height: 1.6;
 }
 
-/* --- 移動端虛擬按鈕 (預設顯示) --- */
+@media (max-width: 767px) {
+    #question-text {
+        font-size: var(--font-size-md);
+        margin-bottom: var(--spacing-md);
+    }
+}
+
+/* ========================================================================
+   ✨ 行動裝置控制按鈕
+   ======================================================================== */
 #mobile-controls {
     display: flex;
     justify-content: space-between;
     width: 100%;
     position: absolute;
-    bottom: 20px; /* 定位在畫布下方 */
-    padding: 0 20px;
+    bottom: var(--spacing-lg);
+    padding: 0 var(--spacing-lg);
     box-sizing: border-box;
-    z-index: 100;
-    pointer-events: none; /* 讓中間區域可以穿透點擊 */
+    z-index: var(--z-index-base);
+    pointer-events: none;
+    gap: var(--spacing-md);
 }
 
 .control-button {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
+    width: 70px;
+    height: 70px;
+    border-radius: var(--border-radius-full);
     border: 3px solid rgba(255, 255, 255, 0.8);
     background-color: rgba(255, 255, 255, 0.3);
-    color: white;
-    font-size: 2.5em;
+    color: var(--color-text-primary);
+    font-size: 2em;
     font-weight: bold;
     cursor: pointer;
-    -webkit-tap-highlight-color: transparent; /* 移除手機點擊高光 */
-    pointer-events: auto; /* 讓按鈕可以被點擊 */
+    -webkit-tap-highlight-color: transparent;
+    pointer-events: auto;
+    transition: all var(--transition-fast) ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-/* --- 響應式設計：當螢幕寬度大於 768px (平板/電腦) --- */
+.control-button:active {
+    transform: scale(0.9);
+    background-color: rgba(255, 255, 255, 0.5);
+}
+
+/* 響應式設計：當螢幕寬度大於 768px (平板/電腦) */
 @media (min-width: 768px) {
     #mobile-controls {
-        display: none; /* 在大螢幕上隱藏虛擬按鈕 */
+        display: none;
+    }
+}
+
+/* 小螢幕優化 */
+@media (max-width: 480px) {
+    .control-button {
+        width: 60px;
+        height: 60px;
+        font-size: 1.8em;
+    }
+    
+    #mobile-controls {
+        bottom: var(--spacing-md);
+        padding: 0 var(--spacing-md);
     }
 }
 
@@ -286,11 +561,24 @@ button {
 /* --- ✨ 新增：結算統計區樣式 --- */
 #endgame-stats {
     width: 90%;
-    margin: 20px auto;
+    margin: var(--spacing-lg) auto;
     text-align: left;
     background-color: rgba(0, 0, 0, 0.2);
-    padding: 15px;
-    border-radius: 10px;
+    padding: var(--spacing-md);
+    border-radius: var(--border-radius-lg);
+}
+
+@media (max-width: 767px) {
+    #endgame-stats {
+        width: 100%;
+        padding: var(--spacing-sm);
+        font-size: var(--font-size-sm);
+    }
+    
+    #endgame-stats li {
+        font-size: var(--font-size-base);
+        padding: var(--spacing-xs) 0;
+    }
 }
 
 #endgame-stats h3 {
@@ -312,8 +600,8 @@ button {
 }
 
 #share-button {
-    background-color: #00b4d8; /* 分享按鈕用亮藍色 */
-    margin-top: 10px;
+    background-color: var(--color-accent-cyan);
+    margin-top: var(--spacing-sm);
 }
 
 /* --- ✨ 新增：生日彩蛋彈窗樣式 --- */
@@ -380,10 +668,10 @@ button {
 }
 
 #milestone-result {
-    margin-top: 20px;
+    margin-top: var(--spacing-lg);
     font-size: 1.3em;
     font-weight: bold;
-    color: #ffca3a; /* 使用醒目的黃色 */
+    color: var(--color-accent-yellow);
 }
 
 /* --- ✨ 新增：彈窗頂部 UI 樣式 --- */
@@ -404,20 +692,19 @@ button {
 }
 
 #user-id-display {
-    font-family: monospace; /* 使用等寬字體，看起來更像 ID */
-    font-size: 1.1em;
-    color: #ffca3a; /* 醒目的黃色 */
-    margin: 0 5px;
-    /* 移除描邊，讓 ID 更清晰 */
+    font-family: monospace;
+    font-size: var(--font-size-md);
+    color: var(--color-accent-yellow);
+    margin: 0 var(--spacing-xs);
     text-shadow: none !important; 
 }
 
 #copy-id-button {
-    font-size: 0.8em;
+    font-size: var(--font-size-xs);
     padding: 4px 8px;
     margin: 0;
-    margin-left: 5px;
-    background-color: #00b4d8; /* 複製按鈕用藍色 */
+    margin-left: var(--spacing-xs);
+    background-color: var(--color-accent-cyan);
 }
 
 /* --- ✨ 新增：匯入進度區樣式 --- */
@@ -429,32 +716,49 @@ button {
 }
 
 #import-input {
-    flex-grow: 1; /* 佔滿剩餘空間 */
-    padding: 8px;
-    border: 2px solid #4361ee;
-    background-color: #fff;
-    border-radius: 5px;
-    margin-right: 10px;
-    font-size: 0.9em;
+    flex-grow: 1;
+    padding: var(--spacing-sm);
+    border: 2px solid var(--color-accent-blue);
+    background-color: var(--color-text-primary);
+    border-radius: var(--border-radius-sm);
+    margin-right: var(--spacing-sm);
+    font-size: var(--font-size-sm);
 }
 
 #import-button {
     margin: 0;
-    padding: 8px 12px;
-    font-size: 0.9em;
-    background-color: #4361ee; /* 匯入按鈕用藍色 */
-    white-space: nowrap; /* 確保 "匯入進度" 不換行 */
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: var(--font-size-sm);
+    background-color: var(--color-accent-blue);
+    white-space: nowrap;
 }
 
 /* --- ✨ 新增：全域 UI (右上角) --- */
 #global-ui-container {
     position: absolute;
-    top: 10px;
-    right: 20px;
-    z-index: 1001; /* 確保在彈窗之上 */
+    top: var(--spacing-sm);
+    right: var(--spacing-lg);
+    z-index: 1001;
     display: flex;
     align-items: center;
-    gap: 15px; /* 語言和 ID 之間的間距 */
+    gap: var(--spacing-md);
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+@media (max-width: 767px) {
+    #global-ui-container {
+        top: var(--spacing-xs);
+        right: var(--spacing-sm);
+        gap: var(--spacing-xs);
+        font-size: var(--font-size-sm);
+    }
+    
+    #lang-switcher-area,
+    #user-id-area {
+        font-size: var(--font-size-xs);
+        padding: var(--spacing-xs) var(--spacing-sm);
+    }
 }
 
 /* 進度 ID 顯示區 */
@@ -467,10 +771,10 @@ button {
 }
 #user-id-display {
     font-family: monospace;
-    font-size: 1.1em;
-    color: #ffca3a; /* 醒目的黃色 */
-    margin: 0 5px;
-    text-shadow: none !important; /* ID 保持清晰 */
+    font-size: var(--font-size-md);
+    color: var(--color-accent-yellow);
+    margin: 0 var(--spacing-xs);
+    text-shadow: none !important;
 }
 #copy-id-button {
     background: none;
@@ -514,13 +818,21 @@ button {
 }
 #import-input {
     width: 100%;
-    padding: 10px;
-    border: 2px solid #4361ee;
-    background-color: #fff;
-    border-radius: 5px;
-    margin: 15px 0;
-    font-size: 1em;
-    box-sizing: border-box; /* 確保 padding 不會讓寬度溢出 */
+    padding: var(--spacing-sm);
+    border: 2px solid var(--color-accent-blue);
+    background-color: var(--color-text-primary);
+    border-radius: var(--border-radius-sm);
+    margin: var(--spacing-md) 0;
+    font-size: var(--font-size-base);
+    box-sizing: border-box;
+    min-height: 44px;
+}
+
+@media (max-width: 767px) {
+    #import-input {
+        font-size: var(--font-size-md);
+        padding: var(--spacing-md);
+    }
 }
 .import-buttons {
     display: flex;
@@ -532,59 +844,29 @@ button {
     margin: 0;
 }
 #import-cancel-button {
-    background-color: #888; /* 取消按鈕用灰色 */
+    background-color: var(--color-button-gray);
 }
+
 #import-button {
-    background-color: #4361ee; /* 匯入按鈕用藍色 */
+    background-color: var(--color-accent-blue);
 }
 
 /* ✨ 關鍵修改：加上父層選擇器以提高權重 */
 /* 請找到並修改成以下內容 */
 #modal-content #open-milestone-button {
-    background-color: #4361ee; /* 改為藍色系 */
-    margin-top: 10px; 
-    /* 確保文字顏色也是對的，如果有被通用按鈕覆蓋的話 */
-    color: white; 
+    background-color: var(--color-accent-blue);
+    margin-top: var(--spacing-sm);
+    color: var(--color-text-primary);
 }
 
-/* --- ✨ 新增：個人里程碑彈窗樣式 --- */
-#milestone-modal-overlay {
-    /* 複製 #modal-overlay 的樣式 */
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.7);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-}
-
-#milestone-modal-content {
-    /* 複製 #modal-content 的樣式 */
-    background-color: #333;
-    color: white;
-    padding: 30px;
-    border-radius: 10px;
-    text-align: center;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-    max-width: 500px;
-    width: 90%;
-}
-
-#milestone-modal-content h2 {
-    margin-top: 0;
-    font-weight: 700;
-    font-size: 1.5em;
-}
+/* --- ✨ 個人里程碑彈窗樣式 (使用共用類別) --- */
+/* #milestone-modal-overlay 和 #milestone-modal-content 使用共用類別 */
 
 #milestone-modal-content p {
     line-height: 1.5;
     letter-spacing: 0.02em;
-    font-size: 1.1em;
-    margin-bottom: 30px; /* 讓描述和進度條拉開 */
+    font-size: var(--font-size-md);
+    margin-bottom: var(--spacing-xl);
 }
 
 /* --- ✨ 新增：進度條樣式 --- */
@@ -592,174 +874,174 @@ button {
     position: relative;
     width: 100%;
     height: 25px;
-    background-color: #fff; /* 白色底條 */
-    border-radius: 15px;
-    margin: 50px 0; /* 上下留白 */
+    background-color: var(--color-text-primary);
+    border-radius: var(--border-radius-xl);
+    margin: var(--spacing-xxl) 0;
+}
+
+@media (max-width: 767px) {
+    .milestone-progress-bar-container {
+        height: 20px;
+        margin: var(--spacing-xl) 0;
+    }
+    
+    .milestone-tier {
+        font-size: var(--font-size-sm);
+    }
 }
 
 #milestone-progress-bar-fill {
     position: absolute;
     height: 100%;
-    background-color: #f72585; /* 粉色進度條 */
-    border-radius: 15px;
-    width: 0%; /* JS 會控制這個寬度 */
-    transition: width 0.5s ease;
+    background-color: var(--color-accent-pink);
+    border-radius: var(--border-radius-xl);
+    width: 0%;
+    transition: width var(--transition-slow) ease;
 }
 
 /* 顯示目前分數的標籤 */
 #milestone-current-score {
     position: absolute;
-    left: 10px; /* 顯示在進度條左側 */
+    left: var(--spacing-sm);
     top: 50%;
     transform: translateY(-50%);
-    color: #fff; /* 白色文字 */
+    color: var(--color-text-primary);
     font-weight: 700;
-    font-size: 1.1em;
-    text-shadow: 1px 1px 2px #000; /* 加點陰影使其清晰 */
+    font-size: var(--font-size-md);
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
     z-index: 2;
+}
+
+@media (max-width: 767px) {
+    #milestone-current-score {
+        font-size: var(--font-size-sm);
+        left: var(--spacing-xs);
+    }
 }
 
 /* 門檻標記 (10k, 25k, 50k) */
 .milestone-tier {
     position: absolute;
-    top: -30px; /* 標記在進度條上方 */
-    transform: translateX(-50%); /* 自身置中 */
-    font-size: 1.1em;
+    top: -30px;
+    transform: translateX(-50%);
+    font-size: var(--font-size-md);
     font-weight: 700;
-    color: #fff;
+    color: var(--color-text-primary);
 }
 /* 門檻下方的垂直線 */
 .milestone-tier::after {
     content: '';
     position: absolute;
-    bottom: -32px; /* 從文字下方連到進度條 */
+    bottom: -32px;
     left: 50%;
     width: 3px;
-    height: 30px; /* 線的長度 */
-    background-color: #fff;
+    height: 30px;
+    background-color: var(--color-text-primary);
 }
 
 /* 領取獎勵按鈕 */
 .milestone-tier button {
     position: absolute;
-    top: 60px; /* ✨ 修正：增加與進度條的距離，避免遮擋 */
+    top: 60px;
     left: 50%;
     transform: translateX(-50%);
-    padding: 5px 10px;
-    font-size: 0.9em;
-    background-color: #ffca3a; /* 黃色 */
-    color: #333; /* 深色文字 */
-    text-shadow: none !important; /* 移除描邊 */
-    white-space: nowrap; /* 確保文字不換行 */
-    border-radius: 5px; /* ✨ 新增：圓角 */
-    border: 1px solid #333; /* ✨ 新增：深色邊框 */
+    padding: var(--spacing-xs) var(--spacing-sm);
+    font-size: var(--font-size-sm);
+    background-color: var(--color-accent-yellow);
+    color: var(--color-text-secondary);
+    text-shadow: none !important;
+    white-space: nowrap;
+    border-radius: var(--border-radius-sm);
+    border: 1px solid var(--color-text-secondary);
+    min-height: auto;
 }
 
 /* 已領取/已獲得資格 的按鈕樣式 */
 .milestone-tier button.claimed {
-    background-color: #888;
-    color: #ccc;
+    background-color: var(--color-button-gray);
+    color: var(--color-button-gray-text);
     cursor: default;
+}
+
+@media (max-width: 767px) {
+    .milestone-tier button {
+        font-size: var(--font-size-xs);
+        padding: var(--spacing-xs);
+        top: 50px;
+    }
 }
 
 #milestone-close-button {
     margin-top: 20px;
 }
 
-/* --- ✨ 新增：通用開始按鈕樣式 --- */
-.start-button-style {
-    font-weight: 700;
-    letter-spacing: 0.05em;
-    padding: 10px 10px;
-    font-size: 1em;
-    border: none;
-    border-radius: 8px;
-    background-color: #4361ee; /* 藍色系 */
-    color: white;
-    cursor: pointer;
-    margin-top: 10px; /* 讓按鈕之間有間距 */
-    display: block; /* ✨ 新增：讓按鈕垂直堆疊 */
-    width: fit-content; /* ✨ 新增：讓按鈕寬度適應內容 */
-    margin-left: auto; /* ✨ 新增：水平置中 */
-    margin-right: auto; /* ✨ 新增：水平置中 */
-}
+/* 已在上方定義 .start-button-style */
 
-/* --- ✨ 修改：開始畫面按鈕 (增加間距) --- */
-#open-milestone-button,
-#open-global-milestone-button {
-    /* 這些按鈕現在會使用 .start-button-style 的樣式 */
-}
-
-/* --- ✨ 新增：全體里程碑彈窗樣式 --- */
-#global-milestone-modal-overlay {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background-color: rgba(0, 0, 0, 0.7);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-}
-
-#global-milestone-modal-content {
-    background-color: #333;
-    color: white;
-    padding: 30px;
-    border-radius: 10px;
-    text-align: center;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-    max-width: 500px;
-    width: 90%;
-}
-
-#global-milestone-modal-content h2 {
-    margin-top: 0;
-    font-weight: 700;
-    font-size: 1.5em;
-}
+/* --- ✨ 全體里程碑彈窗樣式 (使用共用類別) --- */
+/* #global-milestone-modal-overlay 和 #global-milestone-modal-content 使用共用類別 */
 
 #global-milestone-modal-content p {
     line-height: 1.5;
     letter-spacing: 0.02em;
-    font-size: 1.1em;
-    margin-bottom: 30px;
+    font-size: var(--font-size-md);
+    margin-bottom: var(--spacing-xl);
 }
 
 /* (進度條樣式與個人里程碑共用) */
 #global-milestone-progress-bar-fill {
     position: absolute;
     height: 100%;
-    background-color: #ffca3a; /* 全體進度用黃色 */
-    border-radius: 15px;
-    width: 0%; 
-    transition: width 0.5s ease;
+    background-color: var(--color-accent-yellow);
+    border-radius: var(--border-radius-xl);
+    width: 0%;
+    transition: width var(--transition-slow) ease;
 }
 
 #global-milestone-current-percent {
     position: absolute;
-    left: 50%; /* 顯示在中間 */
+    left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
-    color: #333; /* 深色文字 */
+    color: var(--color-text-secondary);
     font-weight: 700;
-    font-size: 1.1em;
+    font-size: var(--font-size-md);
     text-shadow: none;
     z-index: 2;
+}
+
+@media (max-width: 767px) {
+    #global-milestone-current-percent {
+        font-size: var(--font-size-sm);
+    }
 }
 
 /* 結算流程的按鈕群組 */
 .global-milestone-buttons {
     display: flex;
     justify-content: space-between;
-    gap: 10px;
-    margin-top: 20px;
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-lg);
+    flex-wrap: wrap;
 }
+
 .global-milestone-buttons button {
     flex-grow: 1;
+    min-width: 120px;
 }
+
 #global-milestone-share-button {
-    background-color: #00b4d8; /* 分享用藍色 */
+    background-color: var(--color-accent-cyan);
+}
+
+@media (max-width: 767px) {
+    .global-milestone-buttons {
+        flex-direction: column;
+    }
+    
+    .global-milestone-buttons button {
+        width: 100%;
+        min-width: auto;
+    }
 }
 
 /* --- ✨ 修改：結算畫面 (Step 1) --- */
@@ -798,11 +1080,11 @@ button {
 }
 
 #score-change.positive {
-    color: #28a745; /* Green */
+    color: var(--color-accent-green);
 }
 
 #score-change.negative {
-    color: #dc3545; /* Red */
+    color: var(--color-accent-red);
 }
 
 /* ✨ 新增：資源載入進度條樣式 */
@@ -812,12 +1094,12 @@ button {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: #252540;
+    background-color: var(--color-bg-primary);
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 9999;
-    transition: opacity 0.3s ease-out;
+    z-index: var(--z-index-loading);
+    transition: opacity var(--transition-normal) ease-out;
 }
 
 .loading-overlay.hidden {
@@ -842,24 +1124,35 @@ button {
     width: 100%;
     height: 25px;
     background-color: rgba(255, 255, 255, 0.2);
-    border-radius: 15px;
+    border-radius: var(--border-radius-xl);
     overflow: hidden;
-    margin-bottom: 15px;
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+    margin-bottom: var(--spacing-md);
+    box-shadow: var(--shadow-sm);
 }
 
 .loading-progress-bar {
     height: 100%;
-    background: linear-gradient(90deg, #f72585, #4361ee);
-    border-radius: 15px;
+    background: linear-gradient(90deg, var(--color-accent-pink), var(--color-accent-blue));
+    border-radius: var(--border-radius-xl);
     width: 0%;
-    transition: width 0.3s ease;
-    box-shadow: 0 0 10px rgba(247, 37, 133, 0.5);
+    transition: width var(--transition-normal) ease;
+    box-shadow: var(--shadow-glow);
 }
 
 .loading-text {
-    font-size: 1.2em;
+    font-size: var(--font-size-lg);
     font-weight: 700;
-    color: #ffca3a;
-    text-shadow: -1px -1px 0 #1c2541, 1px -1px 0 #1c2541, -1px 1px 0 #1c2541, 1px 1px 0 #1c2541;
+    color: var(--color-accent-yellow);
+    text-shadow: -1px -1px 0 var(--color-text-shadow), 1px -1px 0 var(--color-text-shadow), -1px 1px 0 var(--color-text-shadow), 1px 1px 0 var(--color-text-shadow);
+}
+
+@media (max-width: 767px) {
+    .loading-content h2 {
+        font-size: var(--font-size-xl);
+        margin-bottom: var(--spacing-lg);
+    }
+    
+    .loading-text {
+        font-size: var(--font-size-md);
+    }
 }
