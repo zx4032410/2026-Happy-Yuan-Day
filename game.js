@@ -608,8 +608,8 @@ async function switchShareFormat(format) {
     
     // 更新提示文字
     const tipText = format === 'story' 
-        ? '✨ 已選擇限時動態格式 (9:16)，最適合 IG 限動分享'
-        : '✨ 已選擇方形格式 (1:1)，適合所有平台';
+        ? i18nStrings[currentLang].shareTipStory
+        : i18nStrings[currentLang].shareTipSquare;
     document.getElementById('share-tip').textContent = tipText;
     
     // 重新生成圖卡

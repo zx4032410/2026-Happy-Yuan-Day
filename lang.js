@@ -81,6 +81,8 @@ const i18nStrings = {
         milestoneIgLabel: "IG 帳號：",
         milestoneIgEditButton: "修改",
         tier3ClaimSuccess: "抽獎順利！您已獲得限定月曆卡抽獎資格，請等待活動結束後的官方公告。",
+        shareTipStory: "✨ 已選擇限時動態格式 (9:16)，最適合 IG 限動分享",
+        shareTipSquare: "✨ 已選擇方形格式 (1:1)，適合所有平台",
     },
     'en': {
         score: "Score",
@@ -164,5 +166,7 @@ const i18nStrings = {
         milestoneIgLabel: "IG Handle:",
         milestoneIgEditButton: "Edit",
         tier3ClaimSuccess: "Raffle entry successful! You have qualified for the Limited Calendar Card Raffle. Please wait for the official announcement after the event ends.",
+        shareTipStory: "✨ Story format (9:16) selected, best for IG Stories.",
+        shareTipSquare: "✨ Square format (1:1) selected, suitable for all platforms.",
     }
 };
