@@ -16,6 +16,23 @@ function isBirthdayToday() {
 }
 document.addEventListener('DOMContentLoaded', function() {
     
+    // ✨ 修正：添加全局錯誤處理器來忽略瀏覽器擴充功能產生的錯誤
+    window.addEventListener('error', function(event) {
+        // 忽略來自 content_script.js 的擴充功能錯誤
+        if (event.filename && event.filename.includes('content_script.js')) {
+            event.preventDefault();
+            return true;
+        }
+    }, true);
+    
+    // 忽略未捕獲的 Promise 錯誤（擴充功能可能產生的）
+    window.addEventListener('unhandledrejection', function(event) {
+        if (event.reason && event.reason.stack && event.reason.stack.includes('content_script.js')) {
+            event.preventDefault();
+            return true;
+        }
+    });
+    
     // --- 初始化 HTML 元素 (✨ 更新) ---
     const db = firebase.firestore();
     const auth = firebase.auth(); // ✨ 1. 新增：取得 Firebase Auth 服務
@@ -74,6 +91,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const milestoneCloseButton = document.getElementById('milestone-close-button');
     const milestoneProgressBarFill = document.getElementById('milestone-progress-bar-fill');
     const milestoneCurrentScore = document.getElementById('milestone-current-score');
+    const milestoneIgDisplay = document.getElementById('milestone-ig-display');
+    const milestoneIgHandle = document.getElementById('milestone-ig-handle');
+    const milestoneIgEditButton = document.getElementById('milestone-ig-edit-button');
     const claimTier1Button = document.getElementById('claim-tier1-button');
     const claimTier2Button = document.getElementById('claim-tier2-button');
     const claimTier3Button = document.getElementById('claim-tier3-button');
@@ -161,6 +181,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let fallingItems = [];
     let baseSpawnInterval = GAME_CONFIG.BASE_SPAWN_INTERVAL, spawnInterval = baseSpawnInterval, spawnTimer = spawnInterval;
     let currentClaimingTier = null; // ✨ 新增：用來追蹤正在領取哪個 Tier
+    let wasMilestoneModalOpen = false; // ✨ 新增：用來追蹤顯示 IG 輸入畫面時，個人里程碑視窗是否原本是開著的
 
     // --- ✨ 2. Firebase 匿名登入與初始化 ---
     let currentUserID = null; 
@@ -248,10 +269,24 @@ document.addEventListener('DOMContentLoaded', function() {
         modal.classList.remove('hidden');
     } 
 
-    // ✨ 新增：顯示 IG 輸入畫面
+    // ✨ 修改：顯示 IG 輸入畫面（支援修改模式）
     function showIgPrompt(tier) {
-        currentClaimingTier = tier; // 記錄正在領取的獎勵
+        currentClaimingTier = tier; // 記錄正在領取的獎勵（null 表示修改模式）
         hideAllModalScreens();
+        
+        // ✨ 修正：如果個人里程碑視窗是開著的，暫時隱藏它
+        wasMilestoneModalOpen = !milestoneModal.classList.contains('hidden');
+        if (wasMilestoneModalOpen) {
+            milestoneModal.classList.add('hidden');
+        }
+        
+        // ✨ 修正：動態設置更多屬性來防止瀏覽器擴充功能干擾
+        igInput.setAttribute('autocomplete', 'off');
+        igInput.setAttribute('data-lpignore', 'true');
+        igInput.setAttribute('data-1p-ignore', 'true');
+        igInput.setAttribute('data-bwignore', 'true');
+        igInput.setAttribute('data-form-type', 'other');
+        igInput.setAttribute('name', 'ig-handle-input'); // 設置一個非標準的 name 屬性
         
         // 如果玩家已經填過，預先填入輸入框
         if (playerProfile.instagramHandle) {
@@ -262,14 +297,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
         igPromptArea.classList.remove('hidden');
         modal.classList.remove('hidden');
+        
+        // ✨ 延遲焦點，避免擴充功能在元素顯示時立即觸發
+        setTimeout(() => {
+            igInput.focus();
+        }, 100);
     }
 
     // ✨ 新增：隱藏 IG 輸入畫面
     function hideIgPrompt() {
         igPromptArea.classList.add('hidden');
-        // 判斷應該回到哪個畫面，這裡預設回到個人里程碑
-        if (!milestoneModal.classList.contains('hidden')) {
-            modal.classList.add('hidden'); // 如果是從里程碑來的，關閉主彈窗
+        modal.classList.add('hidden'); // 關閉主彈窗
+        
+        // ✨ 修正：如果之前個人里程碑視窗是開著的，重新顯示它
+        if (wasMilestoneModalOpen) {
+            wasMilestoneModalOpen = false; // 重置標記
+            showMilestoneModal(false); // 重新顯示個人里程碑視窗
         } else {
             showStartModalText(); // 否則回到開始畫面
         }
@@ -281,6 +324,14 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const currentScore = playerProfile.cumulativeScore;
         milestoneCurrentScore.textContent = new Intl.NumberFormat().format(currentScore);
+
+        // ✨ 新增：顯示或隱藏 IG 帳號區域
+        if (playerProfile.instagramHandle) {
+            milestoneIgHandle.textContent = playerProfile.instagramHandle;
+            milestoneIgDisplay.classList.remove('hidden');
+        } else {
+            milestoneIgDisplay.classList.add('hidden');
+        }
 
         const tiers = [
             { id: 1, score: GAME_CONFIG.MILESTONES.PERSONAL.TIER_1_SCORE, element: document.getElementById('milestone-tier-1'), button: claimTier1Button, qualified: playerProfile.claimedTier1 },
@@ -394,11 +445,88 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // --- 資料庫相關函式 (✨ 重大更新) ---
 
-    async function uploadScore(score) { if (!currentUserID || !db) { console.log("尚未取得 UserID 或 DB，無法上傳分數。"); return; } const batch = db.batch(); const scoreRef = db.collection('scores').doc(); const scoreData = { userId: currentUserID, score: score, timestamp: firebase.firestore.FieldValue.serverTimestamp(), version: GAME_CONFIG.VERSION, isBirthday: isBirthdayToday(), stats: currentStats, }; batch.set(scoreRef, scoreData); const playerRef = db.collection('players').doc(currentUserID); const playerData = { cumulativeScore: firebase.firestore.FieldValue.increment(score), lastPlayed: firebase.firestore.FieldValue.serverTimestamp(), }; batch.set(playerRef, playerData, { merge: true }); try { await batch.commit(); console.log("分數上傳與個人總分累加成功 (Batch Commit)！"); playerProfile.cumulativeScore += score; } catch (error) { console.error("分數上傳或個人總分累加失敗:", error); } }
+    async function uploadScore(score) { 
+        if (!currentUserID || !db) { 
+            console.log("尚未取得 UserID 或 DB，無法上傳分數。"); 
+            return; 
+        } 
+        
+        const batch = db.batch(); 
+        const scoreRef = db.collection('scores').doc(); 
+        const scoreData = { 
+            userId: currentUserID, 
+            score: score, 
+            timestamp: firebase.firestore.FieldValue.serverTimestamp(), 
+            version: GAME_CONFIG.VERSION, 
+            isBirthday: isBirthdayToday(), 
+            stats: currentStats, 
+        }; 
+        batch.set(scoreRef, scoreData); 
+        
+        const playerRef = db.collection('players').doc(currentUserID); 
+        
+        // 檢查玩家資料是否存在以及缺少哪些欄位
+        try {
+            const playerDoc = await playerRef.get();
+            const existingData = playerDoc.exists ? playerDoc.data() : {};
+            
+            // 定義所有必要的欄位及其預設值
+            const requiredFields = {
+                claimedTier1: false,
+                tier2Qualified: false,
+                tier3Qualified: false,
+                instagramHandle: null
+            };
+            
+            // 檢查缺少的欄位
+            const missingFields = {};
+            let hasMissingFields = false;
+            for (const [field, defaultValue] of Object.entries(requiredFields)) {
+                if (!(field in existingData)) {
+                    missingFields[field] = defaultValue;
+                    hasMissingFields = true;
+                }
+            }
+            
+            if (!playerDoc.exists) {
+                // 如果玩家資料不存在，建立完整的初始資料
+                const initialPlayerData = {
+                    cumulativeScore: score,
+                    lastPlayed: firebase.firestore.FieldValue.serverTimestamp(),
+                    ...requiredFields
+                };
+                batch.set(playerRef, initialPlayerData);
+                console.log("建立新的玩家資料，包含所有必要欄位");
+            } else if (hasMissingFields) {
+                // 如果玩家資料存在但缺少某些欄位，補上缺少的欄位
+                const updateData = {
+                    cumulativeScore: firebase.firestore.FieldValue.increment(score),
+                    lastPlayed: firebase.firestore.FieldValue.serverTimestamp(),
+                    ...missingFields
+                };
+                batch.set(playerRef, updateData, { merge: true });
+                console.log("更新玩家資料並補上缺少的欄位:", Object.keys(missingFields));
+            } else {
+                // 如果玩家資料已存在且完整，只更新分數相關欄位
+                const playerData = {
+                    cumulativeScore: firebase.firestore.FieldValue.increment(score),
+                    lastPlayed: firebase.firestore.FieldValue.serverTimestamp(),
+                };
+                batch.set(playerRef, playerData, { merge: true });
+                console.log("更新現有玩家資料的分數");
+            }
+            
+            await batch.commit();
+            console.log("分數上傳與個人總分累加成功 (Batch Commit)！"); 
+            playerProfile.cumulativeScore += score;
+        } catch (error) { 
+            console.error("分數上傳或個人總分累加失敗:", error); 
+        } 
+    }
     async function loadTotalMilestoneScore(isEndGame = false) { if (!db) return '0%'; let totalScore = 0; let progressPercent = '0%'; try { const querySnapshot = await db.collection("scores").get(); querySnapshot.forEach((doc) => { totalScore += doc.data().score; }); console.log("目前里程碑總分: ", totalScore); const milestoneTarget = GAME_CONFIG.MILESTONES.GLOBAL_TARGET; progressPercent = Math.min(100, (totalScore / milestoneTarget) * 100).toFixed(1) + '%'; milestoneProgress.textContent = progressPercent; } catch (error) { console.error("讀取總分失敗: ", error); } return progressPercent; }
     async function loadPlayerProfile() { if (!currentUserID || !db) { console.log("尚未取得 UserID 或 DB，無法讀取個人資料。"); return; } const playerRef = db.collection('players').doc(currentUserID); try { const doc = await playerRef.get(); if (doc.exists) { console.log("成功讀取玩家資料:", doc.data()); playerProfile = { ...{ cumulativeScore: 0, claimedTier1: false, tier2Qualified: false, tier3Qualified: false, instagramHandle: null }, ...doc.data() }; } else { console.log("找不到玩家資料，將在遊戲結束後自動建立。"); } } catch (error) { console.error("讀取玩家資料失敗:", error); } }
     
-    // ✨ 新增：提交 IG 帳號
+    // ✨ 修改：提交 IG 帳號（支援修改模式）
     async function submitIgHandle() {
         const handle = igInput.value.trim();
         if (!handle) {
@@ -412,28 +540,46 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         const playerRef = db.collection('players').doc(currentUserID);
-        const tierField = `tier${currentClaimingTier}Qualified`;
 
         try {
             igSubmitButton.disabled = true; // 防止重複點擊
-            await playerRef.update({
-                instagramHandle: handle,
-                [tierField]: true
-            });
-
-            // 更新本地資料
-            playerProfile.instagramHandle = handle;
-            playerProfile[tierField] = true;
+            
+            if (currentClaimingTier) {
+                // 領取獎勵模式：更新 IG 帳號並標記對應 tier 為已獲得資格
+                const tierField = `tier${currentClaimingTier}Qualified`;
+                await playerRef.update({
+                    instagramHandle: handle,
+                    [tierField]: true
+                });
+                playerProfile.instagramHandle = handle;
+                playerProfile[tierField] = true;
+            } else {
+                // 修改模式：只更新 IG 帳號
+                await playerRef.update({
+                    instagramHandle: handle
+                });
+                playerProfile.instagramHandle = handle;
+            }
 
             alert(i18nStrings[currentLang].igSaveSuccess);
             hideIgPrompt();
             showMilestoneModal(); // 重新整理里程碑畫面
 
         } catch (error) {
-            console.error(`更新 Tier ${currentClaimingTier} 資格失敗:`, error);
+            console.error('更新 IG 帳號失敗:', error);
             alert(i18nStrings[currentLang].igSaveError);
         } finally {
             igSubmitButton.disabled = false; // 解除按鈕鎖定
+        }
+    }
+
+    // ✨ 新增：修改 IG 帳號
+    function editIgHandle() {
+        // 如果已經有 IG 帳號，顯示修改畫面
+        if (playerProfile.instagramHandle) {
+            // 設定為修改模式（不指定 tier，只更新 IG 帳號）
+            currentClaimingTier = null;
+            showIgPrompt(null);
         }
     }
 
@@ -459,9 +605,38 @@ document.addEventListener('DOMContentLoaded', function() {
                 window.open(GAME_CONFIG.MILESTONES.REWARDS.TIER_1_URL, '_blank');
                 break;
             case 2:
+                // Tier 2: 如果已獲得資格，不做任何事；否則顯示輸入 IG 畫面
+                if (playerProfile.tier2Qualified) {
+                    // 已經獲得資格，不需要再次輸入
+                    return;
+                } else {
+                    // 未獲得資格，顯示輸入 IG 畫面
+                    showIgPrompt(tier);
+                }
+                break;
             case 3:
-                // Tier 2 & 3: 顯示輸入 IG 畫面
-                showIgPrompt(tier);
+                // Tier 3: 如果已獲得資格，不做任何事；如果已有 IG 帳號，直接顯示成功訊息；否則顯示輸入畫面
+                if (playerProfile.tier3Qualified) {
+                    // 已經獲得資格，不需要再次處理
+                    return;
+                } else if (playerProfile.instagramHandle) {
+                    // 已有 IG 帳號但未獲得資格，直接標記為已獲得資格並顯示成功訊息
+                    const playerRef = db.collection('players').doc(currentUserID);
+                    try {
+                        await playerRef.update({
+                            tier3Qualified: true
+                        });
+                        playerProfile.tier3Qualified = true;
+                        alert(i18nStrings[currentLang].tier3ClaimSuccess || i18nStrings[currentLang].igSaveSuccess);
+                        showMilestoneModal(); // 重新整理里程碑畫面
+                    } catch (error) {
+                        console.error('更新 Tier 3 資格失敗:', error);
+                        alert(i18nStrings[currentLang].igSaveError);
+                    }
+                } else {
+                    // 沒有 IG 帳號，顯示輸入畫面
+                    showIgPrompt(tier);
+                }
                 break;
             default:
                 return;
@@ -519,6 +694,31 @@ document.addEventListener('DOMContentLoaded', function() {
     // ✨ 新增：IG 抽獎介面按鈕綁定
     igCancelButton.addEventListener('click', hideIgPrompt);
     igSubmitButton.addEventListener('click', submitIgHandle);
+    
+    // ✨ 新增：IG 帳號修改按鈕綁定
+    if (milestoneIgEditButton) {
+        milestoneIgEditButton.addEventListener('click', editIgHandle);
+    }
+    
+    // ✨ 修正：在初始化時就設置輸入欄位的防護屬性
+    if (igInput) {
+        igInput.setAttribute('autocomplete', 'off');
+        igInput.setAttribute('data-lpignore', 'true');
+        igInput.setAttribute('data-1p-ignore', 'true');
+        igInput.setAttribute('data-bwignore', 'true');
+        igInput.setAttribute('data-form-type', 'other');
+        igInput.setAttribute('name', 'ig-handle-input');
+        
+        // 添加事件監聽器來阻止擴充功能的預設行為
+        igInput.addEventListener('focus', function(e) {
+            // 阻止某些擴充功能的行為
+            e.stopPropagation();
+        }, true);
+        
+        igInput.addEventListener('click', function(e) {
+            e.stopPropagation();
+        }, true);
+    }
 
     // --- ✨ 3. 啟動 ---
     gameLoop();

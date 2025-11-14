@@ -78,6 +78,9 @@ const i18nStrings = {
         milestoneTier2Desc: "獎勵：實體抽獎資格",
         milestoneTier3Title: "第三階段：50,000分",
         milestoneTier3Desc: "獎勵：限定月曆卡抽獎",
+        milestoneIgLabel: "IG 帳號：",
+        milestoneIgEditButton: "修改",
+        tier3ClaimSuccess: "抽獎順利！您已獲得限定月曆卡抽獎資格，請等待活動結束後的官方公告。",
     },
     'en': {
         score: "Score",
@@ -158,5 +161,8 @@ const i18nStrings = {
         milestoneTier2Desc: "Reward: Raffle Entry",
         milestoneTier3Title: "Tier 3: 50,000 Points",
         milestoneTier3Desc: "Reward: Limited Calendar Card Raffle",
+        milestoneIgLabel: "IG Handle:",
+        milestoneIgEditButton: "Edit",
+        tier3ClaimSuccess: "Raffle entry successful! You have qualified for the Limited Calendar Card Raffle. Please wait for the official announcement after the event ends.",
     }
 };

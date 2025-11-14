@@ -121,7 +121,7 @@
             <div id="ig-prompt-area" class="hidden">
                 <h2 id="ig-prompt-title" data-i18n-key="igPromptTitle"></h2>
                 <p id="ig-prompt-text" data-i18n-key="igPromptText"></p>
-                <input type="text" id="ig-input" data-i18n-key-placeholder="igPromptPlaceholder">
+                <input type="text" id="ig-input" data-i18n-key-placeholder="igPromptPlaceholder" autocomplete="off" data-lpignore="true" data-1p-ignore data-bwignore>
                 <div class="import-buttons">
                     <button id="ig-cancel-button" data-i18n-key="igCancelButton" class="start-button-style"></button>
                     <button id="ig-submit-button" data-i18n-key="igSubmitButton" class="start-button-style"></button>
@@ -159,6 +159,13 @@
             <div class="milestone-score-header">
                 <span data-i18n-key="milestoneYourScore">你的總積分</span>
                 <span id="milestone-current-score">0</span>
+            </div>
+
+            <!-- ✨ 新增：IG 帳號顯示區域 -->
+            <div id="milestone-ig-display" class="milestone-ig-display hidden">
+                <span data-i18n-key="milestoneIgLabel">IG 帳號：</span>
+                <span id="milestone-ig-handle"></span>
+                <button id="milestone-ig-edit-button" data-i18n-key="milestoneIgEditButton" class="milestone-ig-edit-button">修改</button>
             </div>
 
             <div class="milestone-tiers-list">
