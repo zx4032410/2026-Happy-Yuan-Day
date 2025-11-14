@@ -1,3 +1,20 @@
+// ✨ 新增：Canvas roundRect 相容性處理
+if (!CanvasRenderingContext2D.prototype.roundRect) {
+    CanvasRenderingContext2D.prototype.roundRect = function(x, y, width, height, radius) {
+        this.beginPath();
+        this.moveTo(x + radius, y);
+        this.lineTo(x + width - radius, y);
+        this.quadraticCurveTo(x + width, y, x + width, y + radius);
+        this.lineTo(x + width, y + height - radius);
+        this.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+        this.lineTo(x + radius, y + height);
+        this.quadraticCurveTo(x, y + height, x, y + height - radius);
+        this.lineTo(x, y + radius);
+        this.quadraticCurveTo(x, y, x + radius, y);
+        this.closePath();
+    };
+}
+
 // ✨ 新增：格式化 UUID 為 ABC-DEF-GHI
 function formatUserID(uuid) {
     const parts = uuid.split('-');
@@ -416,30 +433,336 @@ document.addEventListener('DOMContentLoaded', function() {
     function activateFeverTime() { if (isFeverTime) return; isFeverTime = true; feverDurationTimer = GAME_CONFIG.FEVER.DURATION; spawnInterval = Math.floor(baseSpawnInterval * GAME_CONFIG.FEVER.SPAWN_INTERVAL_MULTIPLIER); audio.bgm.pause(); audio.bgm.currentTime = 0; audio.bgmFever.loop = true; playSound(audio.bgmFever, false); console.log("FEVER TIME ACTIVATED!"); }    
     function endFeverTime() { if (!isFeverTime) return; isFeverTime = false; feverMeter = 0; feverDurationTimer = 0; spawnInterval = baseSpawnInterval; audio.bgmFever.pause(); audio.bgmFever.currentTime = 0; playSound(audio.bgm, false); console.log("FEVER TIME ENDED."); }    
 
-    function endGame() {
-        gameStarted = false;
-        clearGameTimers();
-        audio.bgm.pause(); audio.bgm.currentTime = 0;
-        audio.bgmFever.pause(); audio.bgmFever.currentTime = 0;
-        playSound(audio.gameOver);
-        
-        endgameTitle.textContent = i18nStrings[currentLang].modalEndTitle;
-        endgameScoreText.textContent = i18nStrings[currentLang].modalEndText.replace('{score}', score);
-        statsPositive.textContent = stats_items_positive; 
-        statsNegative.textContent = stats_items_negative;
-        statsCorrect.textContent = stats_questions_correct;
-        statsWrong.textContent = stats_questions_wrong;
-        
-        currentStats = { statsPositive: stats_items_positive, statsNegative: stats_items_negative, statsCorrect: stats_questions_correct, statsWrong: stats_questions_wrong, statsTime: totalGameTime, statsFeverCount: stats_feverCount, statsFeverTime: stats_feverTime, };
+    // --- ✨ 新增：分享功能相關函式 ---
 
-        hideAllModalScreens();
-        endgameScreenUI.classList.remove('hidden');
-        modal.classList.remove('hidden');
+// 全域變數儲存當前選擇的格式
+let currentShareFormat = 'square'; // 'square' 或 'story'
 
-        if (score > 0) { uploadScore(score); }
-        endgameContinueButton.onclick = showPersonalMilestoneStep;
+/**
+ * 生成 QR Code 的 Data URL
+ * @param {string} url - 要編碼的網址
+ * @param {number} size - QR Code 大小
+ * @returns {string} Data URL
+ */
+function generateQRCode(url, size = 4) {
+    const qr = qrcode(0, 'M'); // 0 = 自動選擇最佳版本, 'M' = 中等錯誤修正
+    qr.addData(url);
+    qr.make();
+    return qr.createDataURL(size); // size 是每個模組的像素大小
+}
+
+/**
+ * 生成成績圖卡
+ * @param {Object} gameStats - 遊戲統計資料
+ * @param {string} format - 圖卡格式 ('square' 或 'story')
+ * @returns {Promise<string>} 圖片 Data URL
+ */
+async function generateScoreCard(gameStats, format = 'square') {
+    return new Promise((resolve) => {
+        const canvas = document.getElementById('scoreCardCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // 根據格式設定 Canvas 尺寸
+        if (format === 'story') {
+            // Instagram 限時動態最佳尺寸
+            canvas.width = 1080;
+            canvas.height = 1920;
+        } else {
+            // 通用方形格式 (適合貼文)
+            canvas.width = 1080;
+            canvas.height = 1080;
+        }
+        
+        const width = canvas.width;
+        const height = canvas.height;
+        
+        // 繪製背景漸層
+        const gradient = ctx.createLinearGradient(0, 0, 0, height);
+        gradient.addColorStop(0, '#667eea');
+        gradient.addColorStop(1, '#764ba2');
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, width, height);
+        
+        // 計算內容區域 (根據格式調整)
+        const padding = 80;
+        const contentWidth = width - (padding * 2);
+        const contentHeight = height - (padding * 2);
+        
+        // 繪製白色內容區塊
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+        ctx.roundRect(padding, padding, contentWidth, contentHeight, 30);
+        ctx.fill();
+        
+        // 計算垂直間距 (根據格式調整)
+        const isStory = format === 'story';
+        const titleY = isStory ? 200 : 180;
+        const subtitleY = titleY + 60;
+        const dividerY = subtitleY + 40;
+        const statsStartY = dividerY + 80;
+        const statsSpacing = isStory ? 100 : 90;
+        const qrSectionY = isStory ? height - 500 : 740;
+        
+        // 繪製標題
+        ctx.fillStyle = '#2d3748';
+        ctx.font = 'bold 72px Arial, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('🎮 2026 Happy Yuan Day', width / 2, titleY);
+        
+        // 繪製副標題
+        ctx.font = '36px Arial, sans-serif';
+        ctx.fillStyle = '#4a5568';
+        ctx.fillText('媛來接力 - 遊戲成績', width / 2, subtitleY);
+        
+        // 繪製分隔線
+        ctx.strokeStyle = '#cbd5e0';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(padding + 100, dividerY);
+        ctx.lineTo(width - padding - 100, dividerY);
+        ctx.stroke();
+        
+        // 繪製成績資訊
+        const stats = [
+            { label: '本局分數', value: gameStats.score, emoji: '⭐' },
+            { label: '接到物品', value: gameStats.itemsCaught, emoji: '🎯' },
+            { label: '答對題數', value: gameStats.correctAnswers, emoji: '✅' },
+            { label: '答錯題數', value: gameStats.wrongAnswers, emoji: '❌' },
+        ];
+        
+        ctx.textAlign = 'left';
+        let yPosition = statsStartY;
+        
+        stats.forEach(stat => {
+            const leftMargin = padding + 100;
+            const rightMargin = width - padding - 100;
+            
+            // 繪製 emoji
+            ctx.font = '48px Arial';
+            ctx.fillText(stat.emoji, leftMargin, yPosition);
+            
+            // 繪製標籤
+            ctx.font = 'bold 42px Arial, sans-serif';
+            ctx.fillStyle = '#2d3748';
+            ctx.fillText(stat.label, leftMargin + 80, yPosition);
+            
+            // 繪製數值
+            ctx.font = 'bold 48px Arial, sans-serif';
+            ctx.fillStyle = '#667eea';
+            ctx.textAlign = 'right';
+            ctx.fillText(String(stat.value), rightMargin, yPosition);
+            ctx.textAlign = 'left';
+            
+            yPosition += statsSpacing;
+        });
+        
+        // 繪製 QR Code 說明
+        ctx.textAlign = 'center';
+        ctx.font = '32px Arial, sans-serif';
+        ctx.fillStyle = '#4a5568';
+        ctx.fillText('掃描 QR Code 開始挑戰', width / 2, qrSectionY);
+        
+        // 生成並繪製 QR Code
+        const gameURL = window.location.href; // 使用當前遊戲網址
+        const qrDataURL = generateQRCode(gameURL, 6);
+        
+        const qrImage = new Image();
+        qrImage.onload = () => {
+            // QR Code 尺寸和位置
+            const qrSize = isStory ? 250 : 220;
+            const qrX = (width - qrSize) / 2;
+            const qrY = qrSectionY + 30;
+            
+            // 繪製 QR Code 背景
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(qrX - 10, qrY - 10, qrSize + 20, qrSize + 20);
+            
+            // 繪製 QR Code
+            ctx.drawImage(qrImage, qrX, qrY, qrSize, qrSize);
+            
+            // 如果是限動格式，加入底部提示
+            if (isStory) {
+                ctx.font = 'bold 28px Arial, sans-serif';
+                ctx.fillStyle = '#667eea';
+                ctx.fillText('👆 立即挑戰', width / 2, qrY + qrSize + 60);
+            }
+            
+            // 轉換成 Data URL
+            const imageDataURL = canvas.toDataURL('image/png', 0.95);
+            resolve(imageDataURL);
+        };
+        qrImage.src = qrDataURL;
+    });
+}
+
+/**
+ * 切換分享格式並重新生成圖卡
+ */
+async function switchShareFormat(format) {
+    currentShareFormat = format;
+    
+    // 更新按鈕狀態
+    document.querySelectorAll('.format-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    document.querySelector(`[data-format="${format}"]`).classList.add('active');
+    
+    // 更新提示文字
+    const tipText = format === 'story' 
+        ? '✨ 已選擇限時動態格式 (9:16)，最適合 IG 限動分享'
+        : '✨ 已選擇方形格式 (1:1)，適合所有平台';
+    document.getElementById('share-tip').textContent = tipText;
+    
+    // 重新生成圖卡
+    const gameStats = window.currentGameStats; // 從全域變數取得
+    const newImageURL = await generateScoreCard(gameStats, format);
+    
+    // 更新全域變數
+    window.currentScoreCardURL = newImageURL;
+}
+
+/**
+ * 下載圖片
+ * @param {string} dataURL - 圖片 Data URL
+ */
+function downloadImage(dataURL) {
+    const formatSuffix = currentShareFormat === 'story' ? 'story' : 'square';
+    const filename = `yuan-game-score-${formatSuffix}-${Date.now()}.png`;
+    
+    const link = document.createElement('a');
+    link.download = filename;
+    link.href = dataURL;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
+/**
+ * 分享圖片到社群媒體 (優化 Instagram 限時動態體驗)
+ * @param {string} dataURL - 圖片 Data URL
+ * @param {Object} gameStats - 遊戲統計資料
+ */
+async function shareImage(dataURL, gameStats) {
+    try {
+        // 將 Data URL 轉換成 Blob
+        const response = await fetch(dataURL);
+        const blob = await response.blob();
+        
+        // 根據格式設定檔案名稱
+        const formatSuffix = currentShareFormat === 'story' ? 'story' : 'square';
+        const filename = `yuan-game-${formatSuffix}.png`;
+        const file = new File([blob], filename, { type: 'image/png' });
+        
+        // 客製化分享文字
+        const shareTitle = '2026 Happy Yuan Day - 媛來接力';
+        const shareText = currentShareFormat === 'story'
+            ? `我在「媛來接力」得到 ${gameStats.score} 分！🎮\n快來挑戰看看你能得幾分！`
+            : `我的遊戲成績：${gameStats.score} 分 🎯\n一起來「媛來接力」玩遊戲！`;
+        
+        // 檢查瀏覽器是否支援 Web Share API
+        if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+            await navigator.share({
+                title: shareTitle,
+                text: shareText,
+                files: [file]
+            });
+            
+            console.log('✅ 分享成功！');
+            
+        } else {
+            // 降級方案：直接下載並顯示提示
+            console.log('⚠️ 瀏覽器不支援 Web Share API，使用下載方案');
+            downloadImage(dataURL);
+            showShareTip();
+        }
+        
+    } catch (error) {
+        // 處理錯誤
+        if (error.name === 'AbortError') {
+            // 使用者取消分享，不需顯示錯誤
+            console.log('ℹ️ 使用者取消分享');
+        } else {
+            console.error('❌ 分享失敗:', error);
+            // 發生錯誤時降級為下載
+            downloadImage(dataURL);
+            showShareTip();
+        }
     }
+}
 
+/**
+ * 顯示手動分享提示 (當 Web Share API 不可用時)
+ */
+function showShareTip() {
+    const tipMessage = currentShareFormat === 'story'
+        ? '✨ 圖片已下載！\n\n請至相簿選擇圖片，然後:\n1. 開啟 Instagram\n2. 點選左上角「+」建立限時動態\n3. 選擇剛下載的圖片\n4. 直接分享到限動！'
+        : '✨ 圖片已下載！\n\n您可以:\n1. 分享到 Instagram 貼文\n2. 傳送給朋友\n3. 發布到其他社群平台';
+    
+    alert(tipMessage);
+}
+
+async function endGame() {
+    gameStarted = false;
+    clearGameTimers();
+    audio.bgm.pause(); audio.bgm.currentTime = 0;
+    audio.bgmFever.pause(); audio.bgmFever.currentTime = 0;
+    playSound(audio.gameOver);
+    
+    endgameTitle.textContent = i18nStrings[currentLang].modalEndTitle;
+    
+    currentStats = { statsPositive: stats_items_positive, statsNegative: stats_items_negative, statsCorrect: stats_questions_correct, statsWrong: stats_questions_wrong, statsTime: totalGameTime, statsFeverCount: stats_feverCount, statsFeverTime: stats_feverTime, };
+
+    hideAllModalScreens();
+    endgameScreenUI.classList.remove('hidden');
+    modal.classList.remove('hidden');
+
+    if (score > 0) { uploadScore(score); }
+    
+    // --- ✨ 分享功能整合 ---
+    // 1. 收集遊戲統計資料
+    const gameStats = {
+        score: score,
+        itemsCaught: stats_items_positive,
+        correctAnswers: stats_questions_correct,
+        wrongAnswers: stats_questions_wrong,
+    };
+    
+    // 2. 儲存到全域變數供後續使用
+    window.currentGameStats = gameStats;
+    
+    // 3. 生成預設格式的成績圖卡 (方形)
+    currentShareFormat = 'square';
+    // ✨ 確保按鈕回到預設狀態
+    document.querySelector('[data-format="square"]').classList.add('active');
+    document.querySelector('[data-format="story"]').classList.remove('active');
+
+    const scoreCardURL = await generateScoreCard(gameStats, currentShareFormat);
+    window.currentScoreCardURL = scoreCardURL;
+    
+    // 4. 顯示分享區塊
+    document.getElementById('share-section').style.display = 'block';
+    
+    // 5. 綁定格式切換按鈕事件
+    document.getElementById('formatSquareBtn').onclick = () => {
+        switchShareFormat('square');
+    };
+    
+    document.getElementById('formatStoryBtn').onclick = () => {
+        switchShareFormat('story');
+    };
+    
+    // 6. 綁定下載按鈕事件
+    document.getElementById('downloadScoreBtn').onclick = () => {
+        downloadImage(window.currentScoreCardURL);
+    };
+    
+    // 7. 綁定分享按鈕事件
+    document.getElementById('shareScoreBtn').onclick = () => {
+        shareImage(window.currentScoreCardURL, gameStats);
+    };
+    
+    // 原始的繼續按鈕邏輯
+    endgameContinueButton.onclick = showPersonalMilestoneStep;
+}
     function closeSettlementAndCheckBirthday() { modal.classList.add('hidden'); milestoneModal.classList.add('hidden'); globalMilestoneModal.classList.add('hidden'); if (isBirthdayToday()) { birthdayMessage.innerHTML = i18nStrings[currentLang].birthdayMessage.replace(/\n/g, '<br>'); birthdayModal.classList.remove('hidden'); playSound(audio.birthday, false); } else { restartGame(); } }
     function copyShareText() { const shareSuccessText = i18nStrings[currentLang].shareSuccess || '分享文案已複製到剪貼簿！'; const shareFailureText = i18nStrings[currentLang].shareFailure || '複製失敗，請手動複製！'; const currentScore = score; const cumulativeScore = playerProfile.cumulativeScore; const globalProgress = globalMilestoneCurrentPercent.textContent; let shareText = i18nStrings[currentLang].shareTextTemplate; shareText = shareText.replace('{score}', currentScore); shareText = shareText.replace('{cumulativeScore}', cumulativeScore); shareText = shareText.replace('{globalProgress}', globalProgress); navigator.clipboard.writeText(shareText).then(() => { alert(shareSuccessText); }).catch(err => { console.error('複製失敗: ', err); alert(shareFailureText + '\n' + shareText); }); }
     function resetGame() { score = 0; timeLeft = GAME_CONFIG.GAME_TIME; isFeverTime = false; feverMeter = 0; feverDurationTimer = 0; fallingItems = []; player.x = canvas.width / 2 - GAME_CONFIG.PLAYER.WIDTH / 2; spawnInterval = baseSpawnInterval; spawnTimer = spawnInterval; stats_items_positive = 0; stats_items_negative = 0; stats_questions_correct = 0; stats_questions_wrong = 0; scoreDisplay.textContent = `0`; timeDisplay.textContent = `${timeLeft}s`; milestoneProgress.textContent = `0%`; if (player.loaded) player.image = player.defaultImage; player.currentFrame = 0; player.frameCounter = 0; }
