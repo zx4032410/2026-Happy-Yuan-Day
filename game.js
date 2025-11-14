@@ -24,8 +24,11 @@ document.addEventListener('DOMContentLoaded', function() {
     
 // 全域 UI
     const langSelect = document.getElementById('lang-select');
-    const userIdDisplay = document.getElementById('user-id-display');
-    const copyIdButton = document.getElementById('copy-id-button');
+    // ✨ 暫時隱藏：進度 ID 相關元素（未來可能添加匯入進度 ID 功能）
+    // const userIdDisplay = document.getElementById('user-id-display');
+    // const copyIdButton = document.getElementById('copy-id-button');
+    const userIdDisplay = null; // 暫時設為 null，避免後續代碼報錯
+    const copyIdButton = null; // 暫時設為 null，避免後續代碼報錯
     const muteButton = document.getElementById('mute-button');
 
     // 遊戲內 UI
@@ -167,7 +170,10 @@ document.addEventListener('DOMContentLoaded', function() {
             if (user) {
                 currentUserID = user.uid;
                 console.log("Firebase 匿名登入成功，UID:", currentUserID);
-                userIdDisplay.textContent = formatUserID(currentUserID);
+                // ✨ 暫時隱藏：進度 ID 顯示（未來可能添加匯入進度 ID 功能）
+                // if (userIdDisplay) {
+                //     userIdDisplay.textContent = formatUserID(currentUserID);
+                // }
                 await loadPlayerProfile();
                 await loadTotalMilestoneScore();
                 showStartModalText();
@@ -481,8 +487,24 @@ document.addEventListener('DOMContentLoaded', function() {
     langSelect.addEventListener('change', (event) => { applyLanguage(event.target.value); });
     birthdayCloseButton.addEventListener('click', restartGame);
 
-    // --- 綁定 ID 複製按鈕 ---
-    copyIdButton.addEventListener('click', () => { if (!navigator.clipboard) { alert("瀏覽器不支援，請手動選取複製您的完整 ID:\n" + currentUserID); return; } navigator.clipboard.writeText(currentUserID).then(() => { const originalText = copyIdButton.innerHTML; copyIdButton.textContent = i18nStrings[currentLang].copiedButton; setTimeout(() => { copyIdButton.innerHTML = originalText; applyLanguage(currentLang); }, GAME_CONFIG.UI.COPY_SUCCESS_DELAY); }).catch(err => { console.error('複製失敗: ', err); alert("複製失敗:\n" + currentUserID); }); });
+    // ✨ 暫時隱藏：綁定 ID 複製按鈕（未來可能添加匯入進度 ID 功能）
+    // copyIdButton.addEventListener('click', () => { 
+    //     if (!navigator.clipboard) { 
+    //         alert("瀏覽器不支援，請手動選取複製您的完整 ID:\n" + currentUserID); 
+    //         return; 
+    //     } 
+    //     navigator.clipboard.writeText(currentUserID).then(() => { 
+    //         const originalText = copyIdButton.innerHTML; 
+    //         copyIdButton.textContent = i18nStrings[currentLang].copiedButton; 
+    //         setTimeout(() => { 
+    //             copyIdButton.innerHTML = originalText; 
+    //             applyLanguage(currentLang); 
+    //         }, GAME_CONFIG.UI.COPY_SUCCESS_DELAY); 
+    //     }).catch(err => { 
+    //         console.error('複製失敗: ', err); 
+    //         alert("複製失敗:\n" + currentUserID); 
+    //     }); 
+    // });
     
     // --- 綁定里程碑與抽獎按鈕 ---
     openMilestoneButton.addEventListener('click', () => showMilestoneModal(false));

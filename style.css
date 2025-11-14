@@ -467,6 +467,8 @@ button:active {
 
     background-color: var(--color-accent-blue);
 
+    color: var(--color-text-primary);
+
     padding: var(--spacing-md);
 
     font-size: var(--font-size-base);
@@ -1245,9 +1247,9 @@ button:active {
 
     
 
-    #lang-switcher-area,
-
-    #user-id-area {
+    #lang-switcher-area
+    /* ✨ 暫時隱藏：進度 ID 響應式樣式（未來可能添加匯入進度 ID 功能） */
+    /* , #user-id-area */ {
 
         font-size: var(--font-size-xs);
 
@@ -1259,8 +1261,8 @@ button:active {
 
 
 
-/* 進度 ID 顯示區 */
-
+/* ✨ 暫時隱藏：進度 ID 顯示區（未來可能添加匯入進度 ID 功能） */
+/* 
 #user-id-area {
 
     display: flex;
@@ -1303,7 +1305,7 @@ button:active {
 
     cursor: pointer;
 
-    line-height: 0; /* 讓圖片按鈕貼合 */
+    line-height: 0; 
 
 }
 
@@ -1314,6 +1316,7 @@ button:active {
     height: 20px;
 
 }
+*/
 
 
 
@@ -1677,10 +1680,22 @@ button:active {
 
 /* (進度條樣式與個人里程碑共用) */
 
+.milestone-progress-bar-container {
+    position: relative;
+    width: 100%;
+    height: 40px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: var(--border-radius-xl);
+    overflow: hidden;
+    margin-bottom: var(--spacing-lg);
+    box-shadow: var(--shadow-sm);
+}
+
 #global-milestone-progress-bar-fill {
 
     position: absolute;
-
+    top: 0;
+    left: 0;
     height: 100%;
 
     background-color: var(--color-accent-yellow);
