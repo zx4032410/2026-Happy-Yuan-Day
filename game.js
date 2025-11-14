@@ -307,12 +307,15 @@ document.addEventListener('DOMContentLoaded', function() {
     // ✨ 新增：隱藏 IG 輸入畫面
     function hideIgPrompt() {
         igPromptArea.classList.add('hidden');
-        modal.classList.add('hidden'); // 關閉主彈窗
         
         // ✨ 修正：如果之前個人里程碑視窗是開著的，重新顯示它
         if (wasMilestoneModalOpen) {
             wasMilestoneModalOpen = false; // 重置標記
             showMilestoneModal(false); // 重新顯示個人里程碑視窗
+            
+            // ✨ 錯誤修復：確保主選單在背景中保持可見
+            startScreenUI.classList.remove('hidden');
+            modal.classList.remove('hidden');
         } else {
             showStartModalText(); // 否則回到開始畫面
         }
