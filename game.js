@@ -555,11 +555,11 @@ async function generateScoreCard(gameStats, format = 'square') {
             yPosition += statsSpacing;
         });
         
-        // 繪製 QR Code 說明
-        ctx.textAlign = 'center';
-        ctx.font = '32px Arial, sans-serif';
-        ctx.fillStyle = '#4a5568';
-        ctx.fillText('掃描 QR Code 開始挑戰', width / 2, qrSectionY);
+        // 繪製 QR Code 說明 (已移除)
+        // ctx.textAlign = 'center';
+        // ctx.font = '32px Arial, sans-serif';
+        // ctx.fillStyle = '#4a5568';
+        // ctx.fillText('掃描 QR Code 開始挑戰', width / 2, qrSectionY);
         
         // 生成並繪製 QR Code
         const gameURL = window.location.href; // 使用當前遊戲網址
@@ -570,7 +570,7 @@ async function generateScoreCard(gameStats, format = 'square') {
             // QR Code 尺寸和位置
             const qrSize = isStory ? 250 : 220;
             const qrX = (width - qrSize) / 2;
-            const qrY = qrSectionY + 30;
+            const qrY = isStory ? height - 500 : 740; // 直接設定 QR Code 的 Y 軸位置
             
             // 繪製 QR Code 背景
             ctx.fillStyle = '#ffffff';
@@ -607,10 +607,13 @@ async function switchShareFormat(format) {
     document.querySelector(`[data-format="${format}"]`).classList.add('active');
     
     // 更新提示文字
-    const tipText = format === 'story' 
-        ? i18nStrings[currentLang].shareTipStory
-        : i18nStrings[currentLang].shareTipSquare;
-    document.getElementById('share-tip').textContent = tipText;
+    const shareTipElement = document.getElementById('share-tip');
+    if (shareTipElement) {
+        const tipText = format === 'story' 
+            ? i18nStrings[currentLang].shareTipStory
+            : i18nStrings[currentLang].shareTipSquare;
+        shareTipElement.textContent = tipText;
+    }
     
     // 重新生成圖卡
     const gameStats = window.currentGameStats; // 從全域變數取得
