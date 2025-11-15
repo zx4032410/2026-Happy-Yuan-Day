@@ -1889,6 +1889,14 @@ button:active {
 
 }
 
+
+
+#endgame-title {
+
+    margin-bottom: 0;
+
+}
+
 #endgame-screen-ui p {
 
     font-size: 1.1em;
