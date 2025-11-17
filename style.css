@@ -83,7 +83,11 @@ body {
     margin: 0;
     padding: 0;
     font-family: 'Noto Sans TC', sans-serif;
-    background-color: var(--color-bg-primary);
+    background-color: var(--color-bg-primary); /* Fallback color */
+    background-image: url('badassbackground.JPG');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
     color: var(--color-text-primary);
     display: flex;
     justify-content: center;
