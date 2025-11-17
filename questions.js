@@ -148,14 +148,27 @@ const QUESTION_BANK = [
     {
         id: 'q12',
         'zh-TW': {
-            question: "去年在11/08的演唱會 媛媛演唱的Solo曲是什麼？",
+            question: "11/08的演唱會 媛媛演唱的Solo曲是什麼？",
             correctAnswer: "我是真的很愛很愛你",
             incorrectAnswers: ["我是真的真的很愛你", "我是真的很喜歡你"]
         },
         'en': {
-            question: "去年在11/08的演唱會 媛媛演唱的Solo曲是什麼？",
+            question: "11/08的演唱會 媛媛演唱的Solo曲是什麼？",
             correctAnswer: "我是真的很愛很愛你",
             incorrectAnswers: ["我是真的真的很愛你", "我是真的很喜歡你"]
+        }
+    },
+    {
+        id: 'q13',
+        'zh-TW': {
+            question: "媛媛曾經提過喜歡哪個電影系列？",
+            correctAnswer: "哈利波特系列",
+            incorrectAnswers: ["漫威英雄系列", "神鬼奇航系列"]
+        },
+        'en': {
+            question: "媛媛曾經提過喜歡哪個電影系列？",
+            correctAnswer: "哈利波特系列",
+            incorrectAnswers: ["漫威英雄系列", "神鬼奇航系列"]
         }
     }
     // TODO: 在這裡新增更多題目！

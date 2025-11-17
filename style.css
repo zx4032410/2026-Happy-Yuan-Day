@@ -187,7 +187,7 @@ button:active {
 #game-canvas {
     width: 100%;
     height: auto;
-    background-color: #e0e0e0; /* 暫時用淺灰色背景，方便看清角色 */
+    background-color: rgba(0, 0, 0, 0.6); /* 60% 透明度的黑色遮罩 */
     border-radius: 0 0 10px 10px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
 }

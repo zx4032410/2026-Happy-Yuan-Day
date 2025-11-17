@@ -243,6 +243,13 @@ document.addEventListener('DOMContentLoaded', function() {
     player.defaultImage.src = idleFrameSources[0]; player.defaultImage.onload = onAssetLoad; player.defaultImage.onerror = () => onAssetError('defaultImage');
     player.winImage.src = './images/xiao-yuan-bao-win.png'; player.winImage.onload = onAssetLoad; player.winImage.onerror = () => onAssetError('winImage');
     player.loseImage.src = './images/xiao-yuan-bao-lose.png'; player.loseImage.onload = onAssetLoad; player.loseImage.onerror = () => onAssetError('loseImage');
+    
+    // ✨ 新增：載入分享圖卡
+    const shareCardImage = new Image();
+    shareCardImage.src = './images/sharecard.PNG';
+    shareCardImage.onload = onAssetLoad;
+    shareCardImage.onerror = () => onAssetError('shareCardImage');
+
     GAME_CONFIG.ITEM_TYPES.forEach(type => { const img = new Image(); img.src = type.src; img.onload = onAssetLoad; img.onerror = () => onAssetError(type.id); itemImages[type.id] = img; });
     idleFrameSources.forEach((src, index) => { const img = new Image(); img.src = src; img.onload = onAssetLoad; img.onerror = () => onAssetError(`idleFrame-${index}`); player.idleFrames.push(img); });
 
@@ -567,25 +574,47 @@ async function generateScoreCard(gameStats, format = 'square') {
         
         const qrImage = new Image();
         qrImage.onload = () => {
-            // QR Code 尺寸和位置
-            const qrSize = isStory ? 250 : 220;
-            const qrX = (width - qrSize) / 2;
-            const qrY = isStory ? height - 500 : 740; // 直接設定 QR Code 的 Y 軸位置
-            
+            // ✨ 更新：重新規劃 QR Code 和分享圖卡的位置
+            const qrSize = isStory ? 220 : 200;
+            const qrX = width - padding - qrSize - 50;
+            const qrY = height - padding - qrSize - 50;
+
             // 繪製 QR Code 背景
             ctx.fillStyle = '#ffffff';
             ctx.fillRect(qrX - 10, qrY - 10, qrSize + 20, qrSize + 20);
             
             // 繪製 QR Code
             ctx.drawImage(qrImage, qrX, qrY, qrSize, qrSize);
-            
-            // 如果是限動格式，加入底部提示
+
+            // ✨ 新增：繪製分享圖卡
+            if (shareCardImage && shareCardImage.complete) {
+                const cardAspectRatio = shareCardImage.width / shareCardImage.height;
+                let cardWidth, cardHeight, cardX, cardY;
+
+                if (isStory) {
+                    // 限動模式：放在左下角探頭
+                    cardHeight = 700;
+                    cardWidth = cardHeight * cardAspectRatio;
+                    cardX = padding - 80;
+                    cardY = height - cardHeight - padding + 120;
+                } else {
+                    // 方形模式：放在左下角探頭
+                    cardHeight = 490;
+                    cardWidth = cardHeight * cardAspectRatio;
+                    cardX = padding - 80;
+                    cardY = height - cardHeight - padding + 100;
+                }
+                ctx.drawImage(shareCardImage, cardX, cardY, cardWidth, cardHeight);
+            }
+
+            // 如果是限時動態格式，加入底部提示
             if (isStory) {
                 ctx.font = 'bold 28px Arial, sans-serif';
                 ctx.fillStyle = '#667eea';
-                ctx.fillText('👆 立即挑戰', width / 2, qrY + qrSize + 60);
+                ctx.textAlign = 'center';
+                ctx.fillText('👆 立即挑戰', qrX + qrSize / 2, qrY + qrSize + 40);
             }
-            
+
             // 轉換成 Data URL
             const imageDataURL = canvas.toDataURL('image/png', 0.95);
             resolve(imageDataURL);
