@@ -4,6 +4,7 @@ const GAME_CONFIG = {
     // 一般設定
     VERSION: "v1.0",
     USER_ID_KEY: 'yuan_fan_uid',
+    FORCE_BIRTHDAY_POPUP: false, // ✨ 開發用：設為 true 可強制觸發生日彩蛋
 
     // 畫布尺寸
     CANVAS_WIDTH: 800,
@@ -20,7 +21,7 @@ const GAME_CONFIG = {
     },
 
     // 遊戲規則
-    GAME_TIME: 15, // 遊戲時間（秒）
+    GAME_TIME: 30, // 遊戲時間（秒）
     BASE_SPAWN_INTERVAL: 80, // 基礎生成間隔（幀），數字越小越快
     
     // Fever Time 設定

@@ -27,6 +27,10 @@ function formatUserID(uuid) {
 
 // ✨ 新增：檢查今天是否為生日的共用函式
 function isBirthdayToday() {
+    // ✨ 新增：開發用，強制觸發生日彩蛋
+    if (GAME_CONFIG.FORCE_BIRTHDAY_POPUP) {
+        return true;
+    }
     const today = new Date();
     // 檢查 1 月 5 日 (月份是 0-indexed, 0 = 1月)
     return (today.getMonth() === 0 && today.getDate() === 5);
