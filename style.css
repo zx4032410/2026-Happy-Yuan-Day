@@ -84,7 +84,7 @@ body {
     padding: 0;
     font-family: 'Noto Sans TC', sans-serif;
     background-color: var(--color-bg-primary); /* Fallback color */
-    background-image: url('badassbackground.JPG');
+    background-image: url('images/badassbackground.webp');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -1057,7 +1057,7 @@ button:active {
 
 #birthday-modal-content button {
 
-    background-color: #f72585; 
+    background-color: #667eea; 
 
     
 
