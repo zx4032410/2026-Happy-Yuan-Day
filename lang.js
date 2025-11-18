@@ -83,6 +83,12 @@ const i18nStrings = {
         tier3ClaimSuccess: "抽獎順利！您已獲得限定月曆卡抽獎資格，請等待活動結束後的官方公告。",
         shareTipStory: "✨ 已選擇限時動態格式 (9:16)，最適合 IG 限動分享",
         shareTipSquare: "✨ 已選擇方形格式 (1:1)，適合所有平台",
+        // Offline Syncing
+        offlineScoreSaved: "目前為離線狀態，您的分數已暫存，將在恢復連線後自動上傳。",
+        offlineScoreError: "抱歉，無法暫存您的離線分數，請檢查瀏覽器儲存空間設定。",
+        syncError: "同步離線分數時發生錯誤，尚有 {count} 筆紀錄未完成。請保持網路連線，系統將會重試。",
+        syncSuccess: "所有離線遊戲紀錄皆已同步成功！",
+        stillOffline: "網路尚未恢復連線，請稍後再試。",
     },
     'en': {
         score: "Score",
@@ -168,5 +174,11 @@ const i18nStrings = {
         tier3ClaimSuccess: "Raffle entry successful! You have qualified for the Limited Calendar Card Raffle. Please wait for the official announcement after the event ends.",
         shareTipStory: "✨ Story format (9:16) selected, best for IG Stories.",
         shareTipSquare: "✨ Square format (1:1) selected, suitable for all platforms.",
+        // Offline Syncing
+        offlineScoreSaved: "You are currently offline. Your score has been saved locally and will be uploaded automatically when you reconnect.",
+        offlineScoreError: "Sorry, your offline score could not be saved. Please check your browser storage settings.",
+        syncError: "An error occurred while syncing offline scores. {count} records remain unsynced. Please maintain your connection, and the system will retry.",
+        syncSuccess: "All offline game records have been successfully synced!",
+        stillOffline: "Still offline. Please try again later.",
     }
 };

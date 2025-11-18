@@ -751,7 +751,29 @@ async function endGame() {
     endgameScreenUI.classList.remove('hidden');
     modal.classList.remove('hidden');
 
-    if (score > 0) { uploadScore(score); }
+    if (score > 0) {
+        if (navigator.onLine) {
+            uploadScore(score);
+        } else {
+            // Construct the data object for offline storage
+            const scoreData = {
+                userId: currentUserID,
+                score: score,
+                timestamp: new Date().toISOString(), // Use ISO string for client-side timestamp
+                version: GAME_CONFIG.VERSION,
+                isBirthday: isBirthdayToday(),
+                stats: currentStats,
+            };
+            // Call the offline handler
+            if (window.offlineManager && typeof window.offlineManager.saveScoreOffline === 'function') {
+                window.offlineManager.saveScoreOffline(scoreData);
+            } else {
+                console.error("Offline manager is not available.");
+                // Fallback alert if offline handler isn't loaded
+                alert("目前為離線狀態，但無法暫存您的分數。");
+            }
+        }
+    }
     
     // --- ✨ 分享功能整合 ---
     // 1. 收集遊戲統計資料
