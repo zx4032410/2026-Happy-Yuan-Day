@@ -32,6 +32,20 @@
     <link rel="icon" href="/favicon.ico" type="image/x-icon" />
 </head>
 <body>
+    <!-- ✨ 新增：骨架屏 (Skeleton Screen) -->
+    <div id="skeleton-layer" class="skeleton-layer">
+        <div class="skeleton-header">
+            <div class="skeleton-block skeleton-score"></div>
+            <div class="skeleton-block skeleton-time"></div>
+            <div class="skeleton-block skeleton-fever"></div>
+        </div>
+        <div class="skeleton-block skeleton-canvas"></div>
+        <div class="skeleton-controls">
+            <div class="skeleton-block skeleton-btn"></div>
+            <div class="skeleton-block skeleton-btn"></div>
+        </div>
+    </div>
+
     <!-- ✨ 新增：資源載入進度條 -->
     <div id="loading-overlay" class="loading-overlay">
         <div class="loading-content">
@@ -40,6 +54,9 @@
                 <div id="loading-progress-bar" class="loading-progress-bar"></div>
             </div>
             <p id="loading-text" class="loading-text">0%</p>
+            <!-- ✨ 新增：載入提示與預估時間 -->
+            <p id="loading-hint" class="loading-hint">正在準備應援道具...</p>
+            <p id="loading-time" class="loading-time">預估剩餘時間: 計算中...</p>
         </div>
     </div>
 
