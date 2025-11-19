@@ -21,7 +21,7 @@
     --color-accent-water-blue: #287fa8;
     --color-button-gray: #888;
     --color-button-gray-text: #ccc;
-    
+
     /* 間距系統 */
     --spacing-xs: 5px;
     --spacing-sm: 10px;
@@ -29,7 +29,7 @@
     --spacing-lg: 20px;
     --spacing-xl: 30px;
     --spacing-xxl: 50px;
-    
+
     /* 字體大小系統 */
     --font-size-xs: 0.8em;
     --font-size-sm: 0.9em;
@@ -38,25 +38,25 @@
     --font-size-lg: 1.2em;
     --font-size-xl: 1.5em;
     --font-size-xxl: 1.8em;
-    
+
     /* 圓角系統 */
     --border-radius-sm: 5px;
     --border-radius-md: 8px;
     --border-radius-lg: 10px;
     --border-radius-xl: 15px;
     --border-radius-full: 50%;
-    
+
     /* 陰影系統 */
     --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
     --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
     --shadow-lg: 0 5px 20px rgba(255, 255, 255, 0.3);
     --shadow-glow: 0 0 10px rgba(247, 37, 133, 0.5);
-    
+
     /* 過渡動畫 */
     --transition-fast: 0.2s;
     --transition-normal: 0.3s;
     --transition-slow: 0.5s;
-    
+
     /* Z-index 層級 */
     --z-index-base: 100;
     --z-index-modal: 1000;
@@ -83,7 +83,8 @@ body {
     margin: 0;
     padding: 0;
     font-family: 'Noto Sans TC', sans-serif;
-    background-color: var(--color-bg-primary); /* Fallback color */
+    background-color: var(--color-bg-primary);
+    /* Fallback color */
     background-image: url('images/badassbackground.webp');
     background-size: cover;
     background-position: center;
@@ -98,8 +99,9 @@ body {
 
 /* 2. ✨ 核心描邊效果 (模擬深咖啡色描邊) */
 /* 這個選擇器可以涵蓋大部分彈窗、標題和資訊列的文字 */
-#game-container, .modal-overlay * {
-    text-shadow: 
+#game-container,
+.modal-overlay * {
+    text-shadow:
         -1px -1px 0 var(--color-text-shadow),
         1px -1px 0 var(--color-text-shadow),
         -1px 1px 0 var(--color-text-shadow),
@@ -108,19 +110,25 @@ body {
 }
 
 /* 3. ✨ 標題和重點文字加粗 */
-.modal-title, .modal-content h2, #endgame-stats h3 {
+.modal-title,
+.modal-content h2,
+#endgame-stats h3 {
     font-weight: 700;
     font-size: var(--font-size-xl);
 }
 
 /* 讓 info-bar 的文字加粗，但不放大 */
 #info-bar span {
-    font-weight: 700; /* ✨ 只保留加粗 (Bold) */
+    font-weight: 700;
+    /* ✨ 只保留加粗 (Bold) */
     /* ✨ 移除 font-size: 1.5em; 避免過大 */
 }
+
 #score-info {
-    position: relative; /* Make it a positioning context for #score-change */
-    display: inline-block; /* Ensure it behaves like a block for positioning */
+    position: relative;
+    /* Make it a positioning context for #score-change */
+    display: inline-block;
+    /* Ensure it behaves like a block for positioning */
 }
 
 /* 4. ✨ 按鈕基礎樣式 */
@@ -138,7 +146,8 @@ button:active {
 }
 
 /* 5. ✨ 微調彈窗內的行距與字距 */
-.modal-content p, #endgame-stats li {
+.modal-content p,
+#endgame-stats li {
     line-height: 1.5;
     letter-spacing: 0.02em;
 }
@@ -146,11 +155,13 @@ button:active {
 /* --- 遊戲主容器 --- */
 #game-container {
     width: 100%;
-    max-width: 800px; /* 在大螢幕上的最大寬度 */
+    max-width: 800px;
+    /* 在大螢幕上的最大寬度 */
     display: flex;
     flex-direction: column;
     align-items: center;
-    position: relative; /* 為了定位虛擬按鈕 */
+    position: relative;
+    /* 為了定位虛擬按鈕 */
 }
 
 /* --- 頂部資訊列 --- */
@@ -177,7 +188,7 @@ button:active {
         padding-right: 50px;
         flex-wrap: wrap;
     }
-    
+
     #info-bar .info-group {
         font-size: var(--font-size-sm);
     }
@@ -187,7 +198,8 @@ button:active {
 #game-canvas {
     width: 100%;
     height: auto;
-    background-color: rgba(0, 0, 0, 0.6); /* 60% 透明度的黑色遮罩 */
+    background-color: rgba(0, 0, 0, 0.6);
+    /* 60% 透明度的黑色遮罩 */
     border-radius: 0 0 10px 10px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
 }
@@ -275,13 +287,15 @@ button:active {
 
         padding: var(--spacing-sm);
 
-        align-items: center; /* ✨ 修正：改為 center 讓彈窗垂直置中 */
+        align-items: center;
+        /* ✨ 修正：改為 center 讓彈窗垂直置中 */
 
-        padding-top: 0; /* ✨ 修正：移除頂部間距 */
+        padding-top: 0;
+        /* ✨ 修正：移除頂部間距 */
 
     }
 
-    
+
 
     .modal-content {
 
@@ -293,7 +307,7 @@ button:active {
 
     }
 
-    
+
 
     .modal-content h2 {
 
@@ -485,13 +499,15 @@ button:active {
 
 @media (max-width: 767px) {
 
-    .btn, .start-button-style {
+    .btn,
+    .start-button-style {
 
         padding: var(--spacing-md) var(--spacing-lg);
 
         font-size: var(--font-size-md);
 
-        min-height: 44px; /* 符合觸控標準 */
+        min-height: 44px;
+        /* 符合觸控標準 */
 
         width: 100%;
 
@@ -499,7 +515,7 @@ button:active {
 
     }
 
-    
+
 
     #question-area button {
 
@@ -539,7 +555,7 @@ button:active {
 
     color: var(--color-text-primary) !important;
 
-    position: relative; 
+    position: relative;
 
 }
 
@@ -555,9 +571,9 @@ button:active {
 
     color: var(--color-text-primary) !important;
 
-    opacity: 0.8 !important; 
+    opacity: 0.8 !important;
 
-    position: relative; 
+    position: relative;
 
 }
 
@@ -575,7 +591,7 @@ button:active {
 
     position: absolute;
 
-    right: 20px; 
+    right: 20px;
 
     top: 50%;
 
@@ -597,7 +613,7 @@ button:active {
 
     position: absolute;
 
-    right: 20px; 
+    right: 20px;
 
     top: 50%;
 
@@ -611,7 +627,8 @@ button:active {
 
 #question-area {
 
-    display: block; /* 確保它在 .hidden 被移除時，是以區塊顯示 */
+    display: block;
+    /* 確保它在 .hidden 被移除時，是以區塊顯示 */
 
     width: 100%;
 
@@ -755,7 +772,7 @@ button:active {
 
     }
 
-    
+
 
     #mobile-controls {
 
@@ -777,7 +794,8 @@ button:active {
 
     border: none;
 
-    font-size: 1.5em; /* 放大圖示 */
+    font-size: 1.5em;
+    /* 放大圖示 */
 
     cursor: pointer;
 
@@ -801,7 +819,8 @@ button:active {
 
 #mute-button.muted {
 
-    opacity: 0.5; /* 靜音時變暗 */
+    opacity: 0.5;
+    /* 靜音時變暗 */
 
 }
 
@@ -813,7 +832,8 @@ button:active {
 
 #lang-switcher-area span {
 
-    font-size: 1.5em; /* 地球圖示 */
+    font-size: 1.5em;
+    /* 地球圖示 */
 
     margin-right: 5px;
 
@@ -841,7 +861,8 @@ button:active {
 
 /* 讓 select 也有描邊 */
 
-#lang-switcher-area select, #lang-switcher-area span {
+#lang-switcher-area select,
+#lang-switcher-area span {
 
     text-shadow: -1px -1px 0 #1c2541, 1px -1px 0 #1c2541, -1px 1px 0 #1c2541, 1px 1px 0 #1c2541;
 
@@ -891,7 +912,7 @@ button:active {
 
     }
 
-    
+
 
     #endgame-stats li {
 
@@ -931,7 +952,8 @@ button:active {
 
     display: flex;
 
-    justify-content: space-between; /* 讓標題和數字分開 */
+    justify-content: space-between;
+    /* 讓標題和數字分開 */
 
     padding: 5px 0;
 
@@ -967,7 +989,8 @@ button:active {
 
     height: 100%;
 
-    background-color: rgba(0, 0, 0, 0.85); /* 背景更暗以示區別 */
+    background-color: rgba(0, 0, 0, 0.85);
+    /* 背景更暗以示區別 */
 
     display: flex;
 
@@ -975,7 +998,8 @@ button:active {
 
     align-items: center;
 
-    z-index: 2000; /* 確保在最上層 */
+    z-index: 2000;
+    /* 確保在最上層 */
 
 }
 
@@ -983,9 +1007,10 @@ button:active {
 
 #birthday-modal-content {
 
-    background-color: #fff; 
+    background-color: #fff;
 
-    color: #333; /* ✨ 修正 (請求 2)：設定基礎文字顏色為深灰色 */
+    color: #333;
+    /* ✨ 修正 (請求 2)：設定基礎文字顏色為深灰色 */
 
     padding: 20px;
 
@@ -999,11 +1024,11 @@ button:active {
 
     overflow-y: auto;
 
-    
+
 
     /* ✨ 關鍵修正：移除全域的描邊效果 */
 
-    text-shadow: none !important; 
+    text-shadow: none !important;
 
 }
 
@@ -1011,13 +1036,14 @@ button:active {
 
 #birthday-modal-content h2 {
 
-    color: #287fa8; /* ✨ 修正 (請求 1)：標題改為水藍色 */
+    color: #287fa8;
+    /* ✨ 修正 (請求 1)：標題改為水藍色 */
 
     margin-top: 0;
 
     /* ✨ 關鍵修正：同樣移除描邊 */
 
-    text-shadow: none !important; 
+    text-shadow: none !important;
 
 }
 
@@ -1027,7 +1053,8 @@ button:active {
 
     width: 100%;
 
-    max-width: 400px; /* 限制圖片最大寬度 */
+    max-width: 400px;
+    /* 限制圖片最大寬度 */
 
     border-radius: 10px;
 
@@ -1043,13 +1070,14 @@ button:active {
 
     line-height: 1.6;
 
-    white-space: pre-wrap; 
+    white-space: pre-wrap;
 
-    color: #333; /* ✨ 修正 (請求 2)：明確設定文字顏色 */
+    color: #333;
+    /* ✨ 修正 (請求 2)：明確設定文字顏色 */
 
     /* ✨ 關鍵修正：同樣移除描邊 */
 
-    text-shadow: none !important; 
+    text-shadow: none !important;
 
 }
 
@@ -1057,19 +1085,19 @@ button:active {
 
 #birthday-modal-content button {
 
-    background-color: #667eea; 
+    background-color: #667eea;
 
-    
+
 
     /* ✨ 修正 (請求 3)：強制文字為純白色以增加對比 */
 
-    color: #FFFFFF !important; 
+    color: #FFFFFF !important;
 
-    
+
 
     /* ✨ 關鍵修正：同樣移除描邊 */
 
-    text-shadow: none !important; 
+    text-shadow: none !important;
 
 }
 
@@ -1101,7 +1129,8 @@ button:active {
 
     width: 100%;
 
-    margin-bottom: 15px; /* 與下方標題拉開距離 */
+    margin-bottom: 15px;
+    /* 與下方標題拉開距離 */
 
 }
 
@@ -1133,7 +1162,7 @@ button:active {
 
     margin: 0 var(--spacing-xs);
 
-    text-shadow: none !important; 
+    text-shadow: none !important;
 
 }
 
@@ -1247,11 +1276,13 @@ button:active {
 
     }
 
-    
+
 
     #lang-switcher-area
+
     /* ✨ 暫時隱藏：進度 ID 響應式樣式（未來可能添加匯入進度 ID 功能） */
-    /* , #user-id-area */ {
+    /* , #user-id-area */
+        {
 
         font-size: var(--font-size-xs);
 
@@ -1340,7 +1371,8 @@ button:active {
 
     border: none;
 
-    font-size: 1.8em; /* 放大 icon */
+    font-size: 1.8em;
+    /* 放大 icon */
 
     color: white;
 
@@ -1453,7 +1485,8 @@ button:active {
 
 .import-buttons button {
 
-    flex-grow: 1; /* 兩個按鈕平分寬度 */
+    flex-grow: 1;
+    /* 兩個按鈕平分寬度 */
 
     margin: 0;
 
@@ -1495,7 +1528,8 @@ button:active {
 
 #milestone-modal-content {
 
-    max-width: 550px; /* 稍微加寬以容納內容 */
+    max-width: 550px;
+    /* 稍微加寬以容納內容 */
 
 }
 
@@ -1697,7 +1731,8 @@ button:active {
 
     color: var(--color-button-gray-text);
 
-    cursor: pointer; /* 允許再次點擊修改 */
+    cursor: pointer;
+    /* 允許再次點擊修改 */
 
 }
 
@@ -1855,7 +1890,7 @@ button:active {
 
     }
 
-    
+
 
     .global-milestone-buttons button {
 
@@ -1919,9 +1954,11 @@ button:active {
 
     position: absolute;
 
-    left: calc(100% + 5px); /* Position it 5px to the right of the parent's (score-info) right edge */
+    left: calc(100% + 5px);
+    /* Position it 5px to the right of the parent's (score-info) right edge */
 
-    top: 0; /* Align with the top of score-info */
+    top: 0;
+    /* Align with the top of score-info */
 
     font-size: 1.2em;
 
@@ -1931,9 +1968,10 @@ button:active {
 
     transition: opacity 0.5s ease-out;
 
-	text-shadow: none !important;
+    text-shadow: none !important;
 
-    white-space: nowrap; /* Prevent text from wrapping */
+    white-space: nowrap;
+    /* Prevent text from wrapping */
 
 }
 
@@ -1971,7 +2009,8 @@ button:active {
     width: 100%;
     height: 100%;
     background-color: var(--color-bg-primary);
-    z-index: 500; /* 介於底層和 Loading Overlay 之間 */
+    z-index: 500;
+    /* 介於底層和 Loading Overlay 之間 */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -1991,9 +2030,17 @@ button:active {
 }
 
 @keyframes skeleton-pulse {
-    0% { opacity: 0.3; }
-    50% { opacity: 0.6; }
-    100% { opacity: 0.3; }
+    0% {
+        opacity: 0.3;
+    }
+
+    50% {
+        opacity: 0.6;
+    }
+
+    100% {
+        opacity: 0.3;
+    }
 }
 
 .skeleton-header {
@@ -2006,7 +2053,9 @@ button:active {
     gap: 10px;
 }
 
-.skeleton-score, .skeleton-time, .skeleton-fever {
+.skeleton-score,
+.skeleton-time,
+.skeleton-fever {
     flex: 1;
     height: 100%;
     border-radius: var(--border-radius-lg);
@@ -2015,7 +2064,8 @@ button:active {
 .skeleton-canvas {
     width: 100%;
     max-width: 800px;
-    flex-grow: 1; /* 佔滿剩餘空間 */
+    flex-grow: 1;
+    /* 佔滿剩餘空間 */
     background-color: rgba(255, 255, 255, 0.05);
     border-radius: 10px;
     margin-bottom: 20px;
@@ -2045,8 +2095,10 @@ button:active {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(37, 37, 64, 0.85); /* 半透明背景 */
-    backdrop-filter: blur(8px); /* 背景模糊 */
+    background-color: rgba(37, 37, 64, 0.85);
+    /* 半透明背景 */
+    backdrop-filter: blur(8px);
+    /* 背景模糊 */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -2064,7 +2116,8 @@ button:active {
     margin-top: 15px;
     font-size: 1em;
     font-weight: bold;
-    min-height: 1.5em; /* 預留空間避免跳動 */
+    min-height: 1.5em;
+    /* 預留空間避免跳動 */
 }
 
 .loading-time {
@@ -2097,4 +2150,139 @@ button:active {
 
 #birthday-message {
     white-space: pre-line;
+}
+
+/* ✨ 新增：Fever Time 畫面震動特效參數 */
+:root {
+    --shake-intensity-x: 0.5px;
+    /* 水平震動幅度 */
+    --shake-intensity-y: 0.5px;
+    /* 垂直震動幅度 */
+    --shake-rotation: 0.25deg;
+    /* 旋轉幅度 */
+}
+
+/* ✨ 新增：Fever Time 畫面震動特效 */
+@keyframes shake {
+    0% {
+        transform: translate(var(--shake-intensity-x), var(--shake-intensity-y)) rotate(0deg);
+    }
+
+    10% {
+        transform: translate(calc(var(--shake-intensity-x) * -1), calc(var(--shake-intensity-y) * -2)) rotate(calc(var(--shake-rotation) * -1));
+    }
+
+    20% {
+        transform: translate(calc(var(--shake-intensity-x) * -3), 0px) rotate(var(--shake-rotation));
+    }
+
+    30% {
+        transform: translate(calc(var(--shake-intensity-x) * 3), calc(var(--shake-intensity-y) * 2)) rotate(0deg);
+    }
+
+    40% {
+        transform: translate(var(--shake-intensity-x), calc(var(--shake-intensity-y) * -1)) rotate(var(--shake-rotation));
+    }
+
+    50% {
+        transform: translate(calc(var(--shake-intensity-x) * -1), calc(var(--shake-intensity-y) * 2)) rotate(calc(var(--shake-rotation) * -1));
+    }
+
+    60% {
+        transform: translate(calc(var(--shake-intensity-x) * -3), var(--shake-intensity-y)) rotate(0deg);
+    }
+
+    70% {
+        transform: translate(calc(var(--shake-intensity-x) * 3), var(--shake-intensity-y)) rotate(calc(var(--shake-rotation) * -1));
+    }
+
+    80% {
+        transform: translate(calc(var(--shake-intensity-x) * -1), calc(var(--shake-intensity-y) * -1)) rotate(var(--shake-rotation));
+    }
+
+    90% {
+        transform: translate(var(--shake-intensity-x), calc(var(--shake-intensity-y) * 2)) rotate(0deg);
+    }
+
+    100% {
+        transform: translate(var(--shake-intensity-x), calc(var(--shake-intensity-y) * -2)) rotate(calc(var(--shake-rotation) * -1));
+    }
+}
+
+.fever-shake {
+    animation: shake 0.5s;
+    animation-iteration-count: infinite;
+}
+
+/* ✨ 新增：Fever Time 背景閃爍特效 */
+@keyframes backgroundPulse {
+    0% {
+        filter: hue-rotate(0deg) brightness(1);
+    }
+
+    50% {
+        filter: hue-rotate(45deg) brightness(1.2);
+    }
+
+    100% {
+        filter: hue-rotate(0deg) brightness(1);
+    }
+}
+
+.fever-background {
+    animation: backgroundPulse 1s infinite alternate;
+}
+
+/* ✨ 新增：分享格式選擇按鈕樣式 */
+.format-btn {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--color-text-primary);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: var(--border-radius-md);
+    padding: var(--spacing-sm) var(--spacing-md);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    font-size: var(--font-size-sm);
+}
+
+.format-btn:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.format-btn.active {
+    background-color: var(--color-accent-blue);
+    border-color: var(--color-accent-blue);
+    color: var(--color-text-primary);
+}
+
+/* ✨ 新增：分享操作按鈕樣式 */
+.share-btn {
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--border-radius-md);
+    border: none;
+    color: var(--color-text-primary);
+    font-weight: bold;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: var(--font-size-sm);
+}
+
+.share-btn:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+.share-btn:active {
+    transform: translateY(0);
+}
+
+.download-btn {
+    background-color: var(--color-button-gray);
+}
+
+.share-btn-primary {
+    background-color: var(--color-accent-pink);
 }

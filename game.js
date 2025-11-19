@@ -330,10 +330,23 @@ document.addEventListener('DOMContentLoaded', function () {
     GAME_CONFIG.ITEM_TYPES.forEach(type => { const img = new Image(); img.src = type.src; img.onload = onAssetLoad; img.onerror = () => onAssetError(type.id); itemImages[type.id] = img; });
     idleFrameSources.forEach((src, index) => { const img = new Image(); img.src = src; img.onload = onAssetLoad; img.onerror = () => onAssetError(`idleFrame-${index}`); player.idleFrames.push(img); });
 
+    // ✨ 新增：震動反饋函式
+    function triggerVibration(duration = 10) {
+        if (navigator.vibrate) {
+            navigator.vibrate(duration);
+        }
+    }
+
     // --- 事件監聽 (省略) ---
     document.addEventListener('keydown', (e) => { if (!gameStarted) return; if (e.key === 'ArrowLeft') keys.left = true; if (e.key === 'ArrowRight') keys.right = true; });
     document.addEventListener('keyup', (e) => { if (e.key === 'ArrowLeft') keys.left = false; if (e.key === 'ArrowRight') keys.right = false; });
-    const handleTouchStart = (e) => { e.preventDefault(); if (!gameStarted) return; };
+
+    const handleTouchStart = (e) => {
+        e.preventDefault();
+        if (!gameStarted) return;
+        triggerVibration(10); // ✨ 觸發震動
+    };
+
     moveLeftButton.addEventListener('touchstart', (e) => { handleTouchStart(e); keys.left = true; });
     moveRightButton.addEventListener('touchstart', (e) => { handleTouchStart(e); keys.right = true; });
     moveLeftButton.addEventListener('touchend', () => { keys.left = false; });
@@ -514,8 +527,44 @@ document.addEventListener('DOMContentLoaded', function () {
     function handleAnswer(event) { const clickedButton = event.target; const isCorrect = clickedButton.dataset.correct === "true"; answerButtons.forEach(btn => btn.disabled = true); if (isCorrect) { let bonusPoints = GAME_CONFIG.SCORING.CORRECT_ANSWER; if (isFeverTime) bonusPoints *= GAME_CONFIG.SCORING.FEVER_MULTIPLIER; score += bonusPoints; player.image = player.winImage; playSound(audio.answerCorrect); stats_questions_correct++; } else { score += GAME_CONFIG.SCORING.INCORRECT_ANSWER; player.image = player.loseImage; playSound(audio.answerIncorrect); stats_questions_wrong++; } scoreDisplay.textContent = score; player.animationTimer = GAME_CONFIG.PLAYER.WIN_LOSE_ANIMATION_DURATION; let correctButton = null; answerButtons.forEach(btn => { if (btn.dataset.correct === "true") { correctButton = btn; } }); if (isCorrect) { clickedButton.classList.add('correct-answer'); } else { clickedButton.classList.add('incorrect-answer'); if (correctButton) { correctButton.classList.add('correct-answer'); } } setTimeout(resumeGame, GAME_CONFIG.UI.POST_ANSWER_DELAY); }
     function resumeGame() { answerButtons.forEach(btn => { btn.disabled = false; btn.classList.remove('correct-answer', 'incorrect-answer'); }); modal.classList.add('hidden'); gameStarted = true; clearGameTimers(); gameTimerId = setInterval(updateTimer, 1000); if (isMuted) return; if (isFeverTime) { playSound(audio.bgmFever, false); } else { playSound(audio.bgm, false); } }
     function updateTimer() { timeLeft--; timeDisplay.textContent = `${timeLeft}s`; if (timeLeft <= 0) { endGame(); } }
-    function activateFeverTime() { if (isFeverTime) return; isFeverTime = true; feverDurationTimer = GAME_CONFIG.FEVER.DURATION; spawnInterval = Math.floor(baseSpawnInterval * GAME_CONFIG.FEVER.SPAWN_INTERVAL_MULTIPLIER); audio.bgm.pause(); audio.bgm.currentTime = 0; audio.bgmFever.loop = true; playSound(audio.bgmFever, false); console.log("FEVER TIME ACTIVATED!"); }
-    function endFeverTime() { if (!isFeverTime) return; isFeverTime = false; feverMeter = 0; feverDurationTimer = 0; spawnInterval = baseSpawnInterval; audio.bgmFever.pause(); audio.bgmFever.currentTime = 0; playSound(audio.bgm, false); console.log("FEVER TIME ENDED."); }
+    function activateFeverTime() {
+        if (isFeverTime) return;
+        isFeverTime = true;
+        feverDurationTimer = GAME_CONFIG.FEVER.DURATION;
+        spawnInterval = Math.floor(baseSpawnInterval * GAME_CONFIG.FEVER.SPAWN_INTERVAL_MULTIPLIER);
+        audio.bgm.pause();
+        audio.bgm.currentTime = 0;
+        audio.bgmFever.loop = true;
+        playSound(audio.bgmFever, false);
+
+        // ✨ 新增：Fever Time 畫面震動特效
+        const gameContainer = document.getElementById('game-container');
+        if (gameContainer) gameContainer.classList.add('fever-shake');
+
+        // ✨ 新增：Fever Time 背景閃爍特效
+        document.body.classList.add('fever-background');
+
+        console.log("FEVER TIME ACTIVATED!");
+    }
+    function endFeverTime() {
+        if (!isFeverTime) return;
+        isFeverTime = false;
+        feverMeter = 0;
+        feverDurationTimer = 0;
+        spawnInterval = baseSpawnInterval;
+        audio.bgmFever.pause();
+        audio.bgmFever.currentTime = 0;
+        playSound(audio.bgm, false);
+
+        // ✨ 新增：移除 Fever Time 畫面震動特效
+        const gameContainer = document.getElementById('game-container');
+        if (gameContainer) gameContainer.classList.remove('fever-shake');
+
+        // ✨ 新增：移除 Fever Time 背景閃爍特效
+        document.body.classList.remove('fever-background');
+
+        console.log("FEVER TIME ENDED.");
+    }
 
     // --- ✨ 新增：分享功能相關函式 ---
 
