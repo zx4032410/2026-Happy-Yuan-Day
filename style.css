@@ -89,12 +89,15 @@ body {
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
+    background-attachment: fixed;
+    /* ✨ 讓背景固定,滾動時不會移動 */
     color: var(--color-text-primary);
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
-    overflow: hidden;
+    min-height: 100vh;
+    padding: var(--spacing-lg) 0;
+    /* ✨ 上下留白,避免內容貼邊 */
 }
 
 /* 2. ✨ 核心描邊效果 (模擬深咖啡色描邊) */
@@ -2150,68 +2153,6 @@ button:active {
 
 #birthday-message {
     white-space: pre-line;
-}
-
-/* ✨ 新增：Fever Time 畫面震動特效參數 */
-:root {
-    --shake-intensity-x: 0.5px;
-    /* 水平震動幅度 */
-    --shake-intensity-y: 0.5px;
-    /* 垂直震動幅度 */
-    --shake-rotation: 0.25deg;
-    /* 旋轉幅度 */
-}
-
-/* ✨ 新增：Fever Time 畫面震動特效 */
-@keyframes shake {
-    0% {
-        transform: translate(var(--shake-intensity-x), var(--shake-intensity-y)) rotate(0deg);
-    }
-
-    10% {
-        transform: translate(calc(var(--shake-intensity-x) * -1), calc(var(--shake-intensity-y) * -2)) rotate(calc(var(--shake-rotation) * -1));
-    }
-
-    20% {
-        transform: translate(calc(var(--shake-intensity-x) * -3), 0px) rotate(var(--shake-rotation));
-    }
-
-    30% {
-        transform: translate(calc(var(--shake-intensity-x) * 3), calc(var(--shake-intensity-y) * 2)) rotate(0deg);
-    }
-
-    40% {
-        transform: translate(var(--shake-intensity-x), calc(var(--shake-intensity-y) * -1)) rotate(var(--shake-rotation));
-    }
-
-    50% {
-        transform: translate(calc(var(--shake-intensity-x) * -1), calc(var(--shake-intensity-y) * 2)) rotate(calc(var(--shake-rotation) * -1));
-    }
-
-    60% {
-        transform: translate(calc(var(--shake-intensity-x) * -3), var(--shake-intensity-y)) rotate(0deg);
-    }
-
-    70% {
-        transform: translate(calc(var(--shake-intensity-x) * 3), var(--shake-intensity-y)) rotate(calc(var(--shake-rotation) * -1));
-    }
-
-    80% {
-        transform: translate(calc(var(--shake-intensity-x) * -1), calc(var(--shake-intensity-y) * -1)) rotate(var(--shake-rotation));
-    }
-
-    90% {
-        transform: translate(var(--shake-intensity-x), calc(var(--shake-intensity-y) * 2)) rotate(0deg);
-    }
-
-    100% {
-        transform: translate(var(--shake-intensity-x), calc(var(--shake-intensity-y) * -2)) rotate(calc(var(--shake-rotation) * -1));
-    }
-}
-
-.fever-shake {
-    animation: shake 0.5s;
-    animation-iteration-count: infinite;
 }
 
 /* ✨ 新增：Fever Time 背景閃爍特效 */

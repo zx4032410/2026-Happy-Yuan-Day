@@ -141,8 +141,19 @@ document.addEventListener('DOMContentLoaded', function () {
     const moveLeftButton = document.getElementById('move-left');
     const moveRightButton = document.getElementById('move-right');
 
-    canvas.width = GAME_CONFIG.CANVAS_WIDTH;
-    canvas.height = GAME_CONFIG.CANVAS_HEIGHT;
+    // ✨ 手機版畫布高度優化：根據螢幕寬度動態調整 canvas 實際尺寸
+    const isMobile = window.innerWidth <= 767;
+    let gameScale = 1; // ✨ 新增：縮放係數
+
+    if (isMobile) {
+        canvas.width = GAME_CONFIG.CANVAS_WIDTH;
+        canvas.height = 1200; // 手機版使用更高的畫布 (原本 600)
+        gameScale = GAME_CONFIG.MOBILE_SCALE_FACTOR; // ✨ 手機版元素放大
+    } else {
+        canvas.width = GAME_CONFIG.CANVAS_WIDTH;
+        canvas.height = GAME_CONFIG.CANVAS_HEIGHT;
+        gameScale = 1; // 桌機版保持原始大小
+    }
 
     // --- 音效初始化區 (不變) ---
     const audio = {};
@@ -163,10 +174,10 @@ document.addEventListener('DOMContentLoaded', function () {
     let gameStarted = false;
     let score = 0;
     const player = {
-        x: canvas.width / 2 - GAME_CONFIG.PLAYER.WIDTH / 2,
-        y: canvas.height - GAME_CONFIG.PLAYER.Y_OFFSET,
-        width: GAME_CONFIG.PLAYER.WIDTH,
-        height: GAME_CONFIG.PLAYER.HEIGHT,
+        x: canvas.width / 2 - (GAME_CONFIG.PLAYER.WIDTH * gameScale) / 2,
+        y: canvas.height - GAME_CONFIG.PLAYER.Y_OFFSET * gameScale,
+        width: GAME_CONFIG.PLAYER.WIDTH * gameScale, // ✨ 應用縮放
+        height: GAME_CONFIG.PLAYER.HEIGHT * gameScale, // ✨ 應用縮放
         speed: GAME_CONFIG.PLAYER.SPEED,
         image: new Image(),
         defaultImage: new Image(),
@@ -330,12 +341,37 @@ document.addEventListener('DOMContentLoaded', function () {
     GAME_CONFIG.ITEM_TYPES.forEach(type => { const img = new Image(); img.src = type.src; img.onload = onAssetLoad; img.onerror = () => onAssetError(type.id); itemImages[type.id] = img; });
     idleFrameSources.forEach((src, index) => { const img = new Image(); img.src = src; img.onload = onAssetLoad; img.onerror = () => onAssetError(`idleFrame-${index}`); player.idleFrames.push(img); });
 
-    // ✨ 新增：震動反饋函式
+    // ✨ 新增:震動反饋函式
     function triggerVibration(duration = 10) {
         if (navigator.vibrate) {
             navigator.vibrate(duration);
         }
     }
+
+    // ✨ 新增:視窗大小變化時重新調整 canvas 尺寸
+    function resizeCanvas() {
+        const wasMobile = canvas.height > GAME_CONFIG.CANVAS_HEIGHT;
+        const isMobileNow = window.innerWidth <= 767;
+
+        if (isMobileNow) {
+            canvas.height = 1200;
+            gameScale = GAME_CONFIG.MOBILE_SCALE_FACTOR; // ✨ 更新縮放係數
+        } else {
+            canvas.height = GAME_CONFIG.CANVAS_HEIGHT;
+            gameScale = 1; // ✨ 更新縮放係數
+        }
+
+        // 如果尺寸改變了,重新定位玩家並調整大小
+        if (wasMobile !== isMobileNow && player) {
+            player.y = canvas.height - GAME_CONFIG.PLAYER.Y_OFFSET * gameScale;
+            player.width = GAME_CONFIG.PLAYER.WIDTH * gameScale;
+            player.height = GAME_CONFIG.PLAYER.HEIGHT * gameScale;
+            player.x = canvas.width / 2 - player.width / 2;
+        }
+    }
+
+    // 監聽視窗大小變化
+    window.addEventListener('resize', resizeCanvas);
 
     // --- 事件監聽 (省略) ---
     document.addEventListener('keydown', (e) => { if (!gameStarted) return; if (e.key === 'ArrowLeft') keys.left = true; if (e.key === 'ArrowRight') keys.right = true; });
@@ -356,7 +392,7 @@ document.addEventListener('DOMContentLoaded', function () {
     document.addEventListener('mouseup', () => { keys.left = false; keys.right = false; });
 
     // --- 遊戲核心函式 (省略部分) ---
-    function spawnItem() { const totalProbability = GAME_CONFIG.ITEM_TYPES.reduce((sum, item) => sum + item.probability, 0); let random = Math.random() * totalProbability; let chosenItemType; for (const itemType of GAME_CONFIG.ITEM_TYPES) { if (random < itemType.probability) { chosenItemType = itemType; break; } random -= itemType.probability; } if (!chosenItemType || !itemImages[chosenItemType.id] || !itemImages[chosenItemType.id].complete) { return; } fallingItems.push({ x: Math.random() * (canvas.width - GAME_CONFIG.ITEM_DEFAULT_SIZE), y: GAME_CONFIG.ITEM_SPAWN_Y_OFFSET, width: GAME_CONFIG.ITEM_DEFAULT_SIZE, height: GAME_CONFIG.ITEM_DEFAULT_SIZE, speed: chosenItemType.speed, score: chosenItemType.score, type: chosenItemType.type, image: itemImages[chosenItemType.id] }); }
+    function spawnItem() { const totalProbability = GAME_CONFIG.ITEM_TYPES.reduce((sum, item) => sum + item.probability, 0); let random = Math.random() * totalProbability; let chosenItemType; for (const itemType of GAME_CONFIG.ITEM_TYPES) { if (random < itemType.probability) { chosenItemType = itemType; break; } random -= itemType.probability; } if (!chosenItemType || !itemImages[chosenItemType.id] || !itemImages[chosenItemType.id].complete) { return; } const scaledItemSize = GAME_CONFIG.ITEM_DEFAULT_SIZE * gameScale; fallingItems.push({ x: Math.random() * (canvas.width - scaledItemSize), y: GAME_CONFIG.ITEM_SPAWN_Y_OFFSET * gameScale, width: scaledItemSize, height: scaledItemSize, speed: chosenItemType.speed, score: chosenItemType.score, type: chosenItemType.type, image: itemImages[chosenItemType.id] }); }
     function checkCollision(obj1, obj2) { return obj1.x < obj2.x + obj2.width && obj1.x + obj1.width > obj2.x && obj1.y < obj2.y + obj2.height && obj1.y + obj1.height > obj2.y; }
     function playSound(audioObject, isSFX = true) { if (isMuted) return; if (!audioObject) return; if (isSFX) { audioObject.currentTime = 0; } audioObject.play().catch(error => { console.warn(`音效播放失敗: ${error.message}`); }); }
     function showScoreChange(score) { const scoreChangeElement = document.getElementById('score-change'); if (!scoreChangeElement) return; const scoreValue = parseInt(score, 10); if (isNaN(scoreValue) || scoreValue === 0) return; scoreChangeElement.textContent = (scoreValue > 0 ? '+' : '') + scoreValue; scoreChangeElement.classList.remove('positive', 'negative', 'show'); if (scoreValue > 0) { scoreChangeElement.classList.add('positive'); } else { scoreChangeElement.classList.add('negative'); } void scoreChangeElement.offsetWidth; scoreChangeElement.classList.add('show'); setTimeout(() => { scoreChangeElement.classList.remove('show'); }, GAME_CONFIG.UI.SCORE_CHANGE_DURATION); }
@@ -945,7 +981,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     function closeSettlementAndCheckBirthday() { modal.classList.add('hidden'); milestoneModal.classList.add('hidden'); globalMilestoneModal.classList.add('hidden'); if (isBirthdayToday()) { birthdayMessage.textContent = i18nStrings[currentLang].birthdayMessage; birthdayModal.classList.remove('hidden'); playSound(audio.birthday, false); } else { restartGame(); } }
     function copyShareText() { const shareSuccessText = i18nStrings[currentLang].shareSuccess || '分享文案已複製到剪貼簿！'; const shareFailureText = i18nStrings[currentLang].shareFailure || '複製失敗，請手動複製！'; const currentScore = score; const cumulativeScore = playerProfile.cumulativeScore; const globalProgress = globalMilestoneCurrentPercent.textContent; let shareText = i18nStrings[currentLang].shareTextTemplate; shareText = shareText.replace('{score}', currentScore); shareText = shareText.replace('{cumulativeScore}', cumulativeScore); shareText = shareText.replace('{globalProgress}', globalProgress); navigator.clipboard.writeText(shareText).then(() => { alert(shareSuccessText); }).catch(err => { console.error('複製失敗: ', err); alert(shareFailureText + '\n' + shareText); }); }
-    function resetGame() { score = 0; timeLeft = GAME_CONFIG.GAME_TIME; isFeverTime = false; feverMeter = 0; feverDurationTimer = 0; fallingItems = []; player.x = canvas.width / 2 - GAME_CONFIG.PLAYER.WIDTH / 2; spawnInterval = baseSpawnInterval; spawnTimer = spawnInterval; stats_items_positive = 0; stats_items_negative = 0; stats_questions_correct = 0; stats_questions_wrong = 0; scoreDisplay.textContent = `0`; timeDisplay.textContent = `${timeLeft}s`; milestoneProgress.textContent = `0%`; if (player.loaded) player.image = player.defaultImage; player.currentFrame = 0; player.frameCounter = 0; }
+    function resetGame() { score = 0; timeLeft = GAME_CONFIG.GAME_TIME; isFeverTime = false; feverMeter = 0; feverDurationTimer = 0; fallingItems = []; player.x = canvas.width / 2 - player.width / 2; spawnInterval = baseSpawnInterval; spawnTimer = spawnInterval; stats_items_positive = 0; stats_items_negative = 0; stats_questions_correct = 0; stats_questions_wrong = 0; scoreDisplay.textContent = `0`; timeDisplay.textContent = `${timeLeft}s`; milestoneProgress.textContent = `0%`; if (player.loaded) player.image = player.defaultImage; player.currentFrame = 0; player.frameCounter = 0; }
     function startGame() { gameStarted = true; clearGameTimers(); resetGame(); modal.classList.add('hidden'); gameTimerId = setInterval(updateTimer, 1000); playSound(audio.gameStart); playSound(audio.bgm, false); stats_positive = 0; stats_negative = 0; stats_correct = 0; stats_wrong = 0; stats_feverCount = 0; stats_feverTime = 0; }
     function restartGame() { birthdayModal.classList.add('hidden'); audio.birthday.pause(); audio.birthday.currentTime = 0; showStartModalText(); }
 

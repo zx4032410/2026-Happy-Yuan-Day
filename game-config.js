@@ -9,6 +9,7 @@ const GAME_CONFIG = {
     // 畫布尺寸
     CANVAS_WIDTH: 800,
     CANVAS_HEIGHT: 600,
+    MOBILE_SCALE_FACTOR: 1.8, // ✨ 手機版元素縮放係數(建議 1.5-2.0)
 
     // 玩家設定
     PLAYER: {
@@ -23,7 +24,7 @@ const GAME_CONFIG = {
     // 遊戲規則
     GAME_TIME: 30, // 遊戲時間（秒）
     BASE_SPAWN_INTERVAL: 80, // 基礎生成間隔（幀），數字越小越快
-    
+
     // Fever Time 設定
     FEVER: {
         MAX_METER: 100,
@@ -44,12 +45,12 @@ const GAME_CONFIG = {
     ITEM_DEFAULT_SIZE: 60,
     ITEM_SPAWN_Y_OFFSET: -60,
     ITEM_TYPES: [
-        { id: 'heart', src: './images/item-white-heart.png', score: 10, speed: 2.5, probability: 35, type: 'positive' }, 
-        { id: 'cookie', src: './images/item-bear-cookie.png', score: 25, speed: 3, probability: 25, type: 'positive' }, 
-        { id: 'guitar', src: './images/item-guitar.png', score: 40, speed: 4, probability: 10, type: 'positive' }, 
-        { id: 'lightstick', src: './images/item-lightstick.png', score: 80, speed: 5.5, probability: 5, type: 'special' }, 
-        { id: 'burnt-cookie', src: './images/item-burnt-cookie.png', score: 20, speed: 3.5, probability: 10, type: 'negative' }, 
-        { id: 'alarm', src: './images/item-alarm-clock.png', score: 35, speed: 4.5, probability: 8, type: 'negative' }, 
+        { id: 'heart', src: './images/item-white-heart.png', score: 10, speed: 2.5, probability: 35, type: 'positive' },
+        { id: 'cookie', src: './images/item-bear-cookie.png', score: 25, speed: 3, probability: 25, type: 'positive' },
+        { id: 'guitar', src: './images/item-guitar.png', score: 40, speed: 4, probability: 10, type: 'positive' },
+        { id: 'lightstick', src: './images/item-lightstick.png', score: 80, speed: 5.5, probability: 5, type: 'special' },
+        { id: 'burnt-cookie', src: './images/item-burnt-cookie.png', score: 20, speed: 3.5, probability: 10, type: 'negative' },
+        { id: 'alarm', src: './images/item-alarm-clock.png', score: 35, speed: 4.5, probability: 8, type: 'negative' },
         { id: 'question', src: './images/question_icon.png', score: 0, speed: 4, probability: 7, type: 'question' }
     ],
 
