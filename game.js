@@ -607,6 +607,13 @@ document.addEventListener('DOMContentLoaded', function () {
     // 全域變數儲存當前選擇的格式
     let currentShareFormat = 'square'; // 'square' 或 'story'
 
+    // ✨ 新增：圖卡快取物件 (效能優化)
+    const scoreCardCache = {
+        square: null,   // 儲存方形格式的 Data URL
+        story: null,    // 儲存限動格式的 Data URL
+        stats: null     // 儲存生成時的遊戲統計資料
+    };
+
     /**
      * 生成 QR Code 的 Data URL
      * @param {string} url - 要編碼的網址
@@ -627,6 +634,15 @@ document.addEventListener('DOMContentLoaded', function () {
      * @returns {Promise<string>} 圖片 Data URL
      */
     async function generateScoreCard(gameStats, format = 'square') {
+        // ✨ 快取檢查：如果快取有效且統計資料相同,直接返回快取
+        if (scoreCardCache[format] &&
+            scoreCardCache.stats &&
+            JSON.stringify(scoreCardCache.stats) === JSON.stringify(gameStats)) {
+            console.log(`✅ 使用快取的 ${format} 圖卡`);
+            return scoreCardCache[format];
+        }
+
+        console.log(`🎨 生成新的 ${format} 圖卡...`);
         return new Promise((resolve) => {
             const canvas = document.getElementById('scoreCardCanvas');
             const ctx = canvas.getContext('2d');
@@ -779,6 +795,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 // 轉換成 Data URL
                 const imageDataURL = canvas.toDataURL('image/png', 0.95);
+
+                // ✨ 儲存到快取
+                scoreCardCache[format] = imageDataURL;
+                scoreCardCache.stats = { ...gameStats };
+                console.log(`💾 ${format} 圖卡已快取`);
+
                 resolve(imageDataURL);
             };
             qrImage.src = qrDataURL;
@@ -901,6 +923,10 @@ document.addEventListener('DOMContentLoaded', function () {
         audio.bgmFever.pause(); audio.bgmFever.currentTime = 0;
         playSound(audio.gameOver);
 
+        // ✨ 新增:移除 Fever Time 背景閃爍特效
+        document.body.classList.remove('fever-background');
+
+
         endgameTitle.textContent = i18nStrings[currentLang].modalEndTitle;
 
         currentStats = { statsPositive: stats_items_positive, statsNegative: stats_items_negative, statsCorrect: stats_questions_correct, statsWrong: stats_questions_wrong, statsTime: totalGameTime, statsFeverCount: stats_feverCount, statsFeverTime: stats_feverTime, };
@@ -981,7 +1007,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     function closeSettlementAndCheckBirthday() { modal.classList.add('hidden'); milestoneModal.classList.add('hidden'); globalMilestoneModal.classList.add('hidden'); if (isBirthdayToday()) { birthdayMessage.textContent = i18nStrings[currentLang].birthdayMessage; birthdayModal.classList.remove('hidden'); playSound(audio.birthday, false); } else { restartGame(); } }
     function copyShareText() { const shareSuccessText = i18nStrings[currentLang].shareSuccess || '分享文案已複製到剪貼簿！'; const shareFailureText = i18nStrings[currentLang].shareFailure || '複製失敗，請手動複製！'; const currentScore = score; const cumulativeScore = playerProfile.cumulativeScore; const globalProgress = globalMilestoneCurrentPercent.textContent; let shareText = i18nStrings[currentLang].shareTextTemplate; shareText = shareText.replace('{score}', currentScore); shareText = shareText.replace('{cumulativeScore}', cumulativeScore); shareText = shareText.replace('{globalProgress}', globalProgress); navigator.clipboard.writeText(shareText).then(() => { alert(shareSuccessText); }).catch(err => { console.error('複製失敗: ', err); alert(shareFailureText + '\n' + shareText); }); }
-    function resetGame() { score = 0; timeLeft = GAME_CONFIG.GAME_TIME; isFeverTime = false; feverMeter = 0; feverDurationTimer = 0; fallingItems = []; player.x = canvas.width / 2 - player.width / 2; spawnInterval = baseSpawnInterval; spawnTimer = spawnInterval; stats_items_positive = 0; stats_items_negative = 0; stats_questions_correct = 0; stats_questions_wrong = 0; scoreDisplay.textContent = `0`; timeDisplay.textContent = `${timeLeft}s`; milestoneProgress.textContent = `0%`; if (player.loaded) player.image = player.defaultImage; player.currentFrame = 0; player.frameCounter = 0; }
+    function resetGame() { score = 0; timeLeft = GAME_CONFIG.GAME_TIME; isFeverTime = false; feverMeter = 0; feverDurationTimer = 0; fallingItems = []; player.x = canvas.width / 2 - player.width / 2; spawnInterval = baseSpawnInterval; spawnTimer = spawnInterval; stats_items_positive = 0; stats_items_negative = 0; stats_questions_correct = 0; stats_questions_wrong = 0; scoreDisplay.textContent = `0`; timeDisplay.textContent = `${timeLeft}s`; milestoneProgress.textContent = `0%`; if (player.loaded) player.image = player.defaultImage; player.currentFrame = 0; player.frameCounter = 0; scoreCardCache.square = null; scoreCardCache.story = null; scoreCardCache.stats = null; }
     function startGame() { gameStarted = true; clearGameTimers(); resetGame(); modal.classList.add('hidden'); gameTimerId = setInterval(updateTimer, 1000); playSound(audio.gameStart); playSound(audio.bgm, false); stats_positive = 0; stats_negative = 0; stats_correct = 0; stats_wrong = 0; stats_feverCount = 0; stats_feverTime = 0; }
     function restartGame() { birthdayModal.classList.add('hidden'); audio.birthday.pause(); audio.birthday.currentTime = 0; showStartModalText(); }
 
