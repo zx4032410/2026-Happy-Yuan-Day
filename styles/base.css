@@ -1,0 +1,85 @@
+/* ========================================================================
+   ✨ 基礎樣式 (Body、全域文字描邊、標題樣式等)
+   ======================================================================== */
+
+/* 1. ✨ 全域套用字體和基本的描邊 */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Noto Sans TC', sans-serif;
+    background-color: var(--color-bg-primary);
+    /* Fallback color */
+    background-image: url('../images/badassbackground.webp');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    /* ✨ 讓背景固定,滾動時不會移動 */
+    color: var(--color-text-primary);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: var(--spacing-lg) 0;
+    /* ✨ 上下留白,避免內容貼邊 */
+}
+
+/* 2. ✨ 核心描邊效果 (模擬深咖啡色描邊) */
+/* 這個選擇器可以涵蓋大部分彈窗、標題和資訊列的文字 */
+#game-container,
+.modal-overlay * {
+    text-shadow:
+        -1px -1px 0 var(--color-text-shadow),
+        1px -1px 0 var(--color-text-shadow),
+        -1px 1px 0 var(--color-text-shadow),
+        1px 1px 0 var(--color-text-shadow);
+    -webkit-font-smoothing: antialiased;
+}
+
+/* 3. ✨ 標題和重點文字加粗 */
+.modal-title,
+.modal-content h2,
+#endgame-stats h3 {
+    font-weight: 700;
+    font-size: var(--font-size-xl);
+}
+
+/* 讓 info-bar 的文字加粗，但不放大 */
+#info-bar span {
+    font-weight: 700;
+    /* ✨ 只保留加粗 (Bold) */
+    /* ✨ 移除 font-size: 1.5em; 避免過大 */
+}
+
+#score-info {
+    position: relative;
+    /* Make it a positioning context for #score-change */
+    display: inline-block;
+    /* Ensure it behaves like a block for positioning */
+}
+
+/* 4. ✨ 按鈕基礎樣式 */
+button {
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    border: none;
+    cursor: pointer;
+    transition: all var(--transition-fast) ease;
+    -webkit-tap-highlight-color: transparent;
+}
+
+button:active {
+    transform: scale(0.98);
+}
+
+/* 5. ✨ 微調彈窗內的行距與字距 */
+.modal-content p,
+#endgame-stats li {
+    line-height: 1.5;
+    letter-spacing: 0.02em;
+}
+
+/* 共用樣式 */
+.hidden {
+    display: none !important;
+}

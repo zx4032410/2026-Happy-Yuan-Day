@@ -1,0 +1,271 @@
+/* ========================================================================
+   ✨ 遊戲介面組件 (遊戲容器、資訊列、畫布、控制按鈕等)
+   ======================================================================== */
+
+/* --- 遊戲主容器 --- */
+#game-container {
+    width: 100%;
+    max-width: 800px;
+    /* 在大螢幕上的最大寬度 */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    /* 為了定位虛擬按鈕 */
+}
+
+/* --- 頂部資訊列 --- */
+#info-bar {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-sm) var(--spacing-lg);
+    box-sizing: border-box;
+    font-size: var(--font-size-lg);
+    font-weight: bold;
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
+    position: relative;
+    padding-right: 60px;
+    gap: var(--spacing-sm);
+    overflow: hidden;
+    /* 確保進度條不溢出圓角 */
+}
+
+/* ✨ 新增：Fever Time 倒數計時條 */
+#fever-timer-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 0%;
+    /* 初始寬度為 0 */
+    background-color: rgba(255, 215, 0, 0.6);
+    /* 金黃色半透明 */
+    z-index: 0;
+    /* 在文字下方 */
+    transition: width 0.1s linear;
+    /* 平滑過渡 */
+}
+
+/* 確保資訊列中的文字在進度條上方 */
+#info-bar>span {
+    position: relative;
+    z-index: 1;
+}
+
+/* 確保靜音按鈕在最上層且維持絕對定位 */
+#mute-button {
+    z-index: 2;
+}
+
+@media (max-width: 767px) {
+    #info-bar {
+        padding: var(--spacing-xs) var(--spacing-md);
+        font-size: var(--font-size-base);
+        padding-right: 50px;
+        flex-wrap: wrap;
+    }
+
+    #info-bar .info-group {
+        font-size: var(--font-size-sm);
+    }
+}
+
+/* --- 遊戲畫布 --- */
+#game-canvas {
+    width: 100%;
+    height: auto;
+    background-color: rgba(0, 0, 0, 0.6);
+    /* 60% 透明度的黑色遮罩 */
+    border-radius: 0 0 10px 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+}
+
+/* --- ✨ 靜音按鈕樣式 --- */
+#mute-button {
+    background: none;
+    border: none;
+    font-size: 1.5em;
+    /* 放大圖示 */
+    cursor: pointer;
+    padding: 0 5px;
+    color: white;
+    /* 放在最右邊 */
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+#mute-button.muted {
+    opacity: 0.5;
+    /* 靜音時變暗 */
+}
+
+/* --- ✨ 語言切換器樣式 --- */
+#lang-switcher-area span {
+    font-size: 1.5em;
+    /* 地球圖示 */
+    margin-right: 5px;
+}
+
+#lang-switcher-area select {
+    background-color: transparent;
+    color: white;
+    border: none;
+    font-size: 0.9em;
+    font-family: 'Noto Sans TC', sans-serif;
+    font-weight: 700;
+}
+
+/* 讓 select 也有描邊 */
+#lang-switcher-area select,
+#lang-switcher-area span {
+    text-shadow: -1px -1px 0 #1c2541, 1px -1px 0 #1c2541, -1px 1px 0 #1c2541, 1px 1px 0 #1c2541;
+}
+
+#lang-switcher-area option {
+    color: black;
+    text-shadow: none;
+}
+
+/* --- ✨ 分數變化顯示 --- */
+#score-change {
+    position: absolute;
+    left: calc(100% + 5px);
+    /* Position it 5px to the right of the parent's (score-info) right edge */
+    top: 0;
+    /* Align with the top of score-info */
+    font-size: 1.2em;
+    font-weight: bold;
+    opacity: 0;
+    transition: opacity 0.5s ease-out;
+    text-shadow: none !important;
+    white-space: nowrap;
+    /* Prevent text from wrapping */
+}
+
+#score-change.show {
+    opacity: 1;
+}
+
+#score-change.positive {
+    color: var(--color-accent-green);
+}
+
+#score-change.negative {
+    color: var(--color-accent-red);
+}
+
+/* --- ✨ 全域 UI (右上角) --- */
+#global-ui-container {
+    position: absolute;
+    top: var(--spacing-sm);
+    right: var(--spacing-lg);
+    z-index: 1001;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+#lang-switcher-area {
+    display: flex;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.3);
+    padding: 5px 8px;
+    border-radius: 5px;
+}
+
+#user-id-display {
+    font-family: monospace;
+    font-size: var(--font-size-md);
+    color: var(--color-accent-yellow);
+    margin: 0 var(--spacing-xs);
+    text-shadow: none !important;
+}
+
+#copy-id-button {
+    font-size: var(--font-size-xs);
+    padding: 4px 8px;
+    margin: 0;
+    margin-left: var(--spacing-xs);
+    background-color: var(--color-accent-cyan);
+}
+
+@media (max-width: 767px) {
+    #global-ui-container {
+        top: var(--spacing-xs);
+        right: var(--spacing-sm);
+        gap: var(--spacing-xs);
+        font-size: var(--font-size-sm);
+    }
+
+    #lang-switcher-area {
+        font-size: var(--font-size-xs);
+        padding: var(--spacing-xs) var(--spacing-sm);
+    }
+}
+
+/* ========================================================================
+   ✨ 行動裝置控制按鈕
+   ======================================================================== */
+#mobile-controls {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    position: absolute;
+    bottom: var(--spacing-lg);
+    padding: 0 var(--spacing-lg);
+    box-sizing: border-box;
+    z-index: var(--z-index-base);
+    pointer-events: none;
+    gap: var(--spacing-md);
+}
+
+.control-button {
+    width: 70px;
+    height: 70px;
+    border-radius: var(--border-radius-full);
+    border: 3px solid rgba(255, 255, 255, 0.8);
+    background-color: rgba(255, 255, 255, 0.3);
+    color: var(--color-text-primary);
+    font-size: 2em;
+    font-weight: bold;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    pointer-events: auto;
+    transition: all var(--transition-fast) ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.control-button:active {
+    transform: scale(0.9);
+    background-color: rgba(255, 255, 255, 0.5);
+}
+
+/* 響應式設計：當螢幕寬度大於 768px (平板/電腦) */
+@media (min-width: 768px) {
+    #mobile-controls {
+        display: none;
+    }
+}
+
+/* 小螢幕優化 */
+@media (max-width: 480px) {
+    .control-button {
+        width: 60px;
+        height: 60px;
+        font-size: 1.8em;
+    }
+
+    #mobile-controls {
+        bottom: var(--spacing-md);
+        padding: 0 var(--spacing-md);
+    }
+}

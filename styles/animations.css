@@ -1,0 +1,100 @@
+/* ========================================================================
+   ✨ 動畫效果 (Fever Time、背景閃爍、視覺特效)
+   ======================================================================== */
+
+/* ✨ Fever Time 背景閃爍特效 */
+@keyframes backgroundPulse {
+    0% {
+        filter: hue-rotate(0deg) brightness(1);
+    }
+
+    50% {
+        filter: hue-rotate(45deg) brightness(1.2);
+    }
+
+    100% {
+        filter: hue-rotate(0deg) brightness(1);
+    }
+}
+
+.fever-background {
+    animation: backgroundPulse 1s infinite alternate;
+}
+
+/* ✨ Fever Time 視覺特效層 */
+#fever-effect-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    /* 確保不擋住遊戲操作 */
+    z-index: 10;
+    /* 在遊戲畫布之上，但在 UI 之下 */
+    overflow: hidden;
+    opacity: 0;
+    transition: opacity 0.3s ease-out;
+}
+
+#fever-effect-overlay:not(.hidden) {
+    opacity: 1;
+}
+
+/* 漫畫速度線效果 */
+.speed-lines {
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: repeating-conic-gradient(from 0deg,
+            transparent 0deg,
+            transparent 2deg,
+            rgba(255, 255, 255, 0.1) 2.5deg,
+            transparent 3deg);
+    animation: rotateLines 0.2s linear infinite;
+    mix-blend-mode: overlay;
+}
+
+@keyframes rotateLines {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(10deg);
+    }
+}
+
+/* 暗角聚焦效果 */
+.vignette {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* 使用 radial-gradient 製作中間透明、四周黑色的效果 */
+    /* --player-x 會由 JS 動態更新，預設為 50% */
+    background: radial-gradient(circle at var(--player-x, 50%) 80%,
+            transparent 150px,
+            rgba(0, 0, 0, 0.3) 450px,
+            rgba(0, 0, 0, 0.6) 900px);
+    animation: vignettePulse 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes vignettePulse {
+    0% {
+        background: radial-gradient(circle at var(--player-x, 50%) 80%,
+                transparent 150px,
+                rgba(0, 0, 0, 0.3) 400px,
+                rgba(0, 0, 0, 0.6) 900px);
+    }
+
+    100% {
+        background: radial-gradient(circle at var(--player-x, 50%) 80%,
+                transparent 170px,
+                rgba(0, 0, 0, 0.3) 450px,
+                rgba(0, 0, 0, 0.6) 900px);
+    }
+}

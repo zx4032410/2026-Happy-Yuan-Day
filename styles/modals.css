@@ -1,0 +1,336 @@
+/* ========================================================================
+   ✨ 彈窗樣式系統 (共用彈窗、生日彈窗、結算統計、問題區域等)
+   ======================================================================== */
+
+/* 共用彈窗 Overlay */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--color-bg-overlay);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: var(--z-index-modal);
+    padding: var(--spacing-md);
+    box-sizing: border-box;
+}
+
+/* 共用彈窗 Content */
+.modal-content {
+    position: relative;
+    background-color: var(--color-bg-secondary);
+    color: var(--color-text-primary);
+    padding: var(--spacing-xl);
+    border-radius: var(--border-radius-lg);
+    text-align: center;
+    box-shadow: var(--shadow-md);
+    max-width: 500px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-sizing: border-box;
+}
+
+.modal-content h2 {
+    margin-top: 0;
+    font-weight: 700;
+    font-size: var(--font-size-xl);
+}
+
+/* 特定彈窗覆蓋樣式 */
+#birthday-modal-overlay {
+    background-color: var(--color-bg-overlay-dark);
+    z-index: var(--z-index-modal-high);
+}
+
+#birthday-modal-content {
+    background-color: var(--color-text-primary);
+    color: var(--color-text-secondary);
+    text-shadow: none !important;
+}
+
+#birthday-modal-content h2 {
+    color: var(--color-accent-water-blue);
+    text-shadow: none !important;
+}
+
+#birthday-modal-content p {
+    color: var(--color-text-secondary);
+    text-shadow: none !important;
+}
+
+#birthday-modal-content button {
+    background-color: var(--color-accent-pink);
+    color: var(--color-text-primary) !important;
+    text-shadow: none !important;
+}
+
+#birthday-modal-content img {
+    width: 100%;
+    max-width: 400px;
+    border-radius: 10px;
+    margin: 10px 0;
+}
+
+#birthday-modal-content p {
+    font-size: 1.1em;
+    line-height: 1.6;
+    white-space: pre-wrap;
+}
+
+#birthday-message {
+    white-space: pre-line;
+}
+
+/* --- ✨ 結算統計區樣式 --- */
+#endgame-stats {
+    width: 90%;
+    margin: var(--spacing-lg) auto;
+    text-align: left;
+    background-color: rgba(0, 0, 0, 0.2);
+    padding: var(--spacing-md);
+    border-radius: var(--border-radius-lg);
+}
+
+#endgame-stats h3 {
+    text-align: center;
+    margin-top: 0;
+}
+
+#endgame-stats ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+#endgame-stats li {
+    display: flex;
+    justify-content: space-between;
+    padding: 5px 0;
+    font-size: 1.1em;
+}
+
+#share-button {
+    background-color: var(--color-accent-cyan);
+    margin-top: var(--spacing-sm);
+}
+
+#milestone-result {
+    margin-top: var(--spacing-lg);
+    font-size: 1.3em;
+    font-weight: bold;
+    color: var(--color-accent-yellow);
+}
+
+/* --- ✨ 結算畫面 --- */
+#endgame-screen-ui {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+#endgame-screen-ui h2 {
+    font-weight: 700;
+    font-size: 1.5em;
+}
+
+#endgame-title {
+    margin-bottom: 0;
+}
+
+#endgame-screen-ui p {
+    font-size: 1.1em;
+    line-height: 1.5;
+}
+
+#endgame-continue-button {
+    margin-top: 10px;
+}
+
+/* --- ✨ 問題區域的樣式 --- */
+#question-area {
+    display: block;
+    width: 100%;
+}
+
+#question-text {
+    font-size: var(--font-size-lg);
+    color: var(--color-text-primary);
+    margin-bottom: var(--spacing-lg);
+    line-height: 1.6;
+}
+
+/* --- ✨ 彈窗頂部 UI 樣式 --- */
+.modal-top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+/* --- ✨ 匯入進度區樣式 --- */
+#import-area {
+    margin-top: 15px;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+
+#import-input {
+    flex-grow: 1;
+    padding: var(--spacing-sm);
+    border: 2px solid var(--color-accent-blue);
+    background-color: var(--color-text-primary);
+    border-radius: var(--border-radius-sm);
+    margin-right: var(--spacing-sm);
+    font-size: var(--font-size-sm);
+}
+
+#import-button {
+    margin: 0;
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: var(--font-size-sm);
+    background-color: var(--color-accent-blue);
+    white-space: nowrap;
+}
+
+/* --- ✨ 彈窗內部 UI 調整 --- */
+#open-import-button {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 1.8em;
+    color: white;
+    padding: 5px;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+
+#open-import-button:hover {
+    opacity: 1;
+}
+
+/* 匯入 UI 區塊 */
+#import-ui-area {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+#import-input {
+    width: 100%;
+    padding: var(--spacing-sm);
+    border: 2px solid var(--color-accent-blue);
+    background-color: var(--color-text-primary);
+    border-radius: var(--border-radius-sm);
+    margin: var(--spacing-md) 0;
+    font-size: var(--font-size-base);
+    box-sizing: border-box;
+    min-height: 44px;
+}
+
+/* ✨ IG 帳號輸入框樣式 */
+#ig-input {
+    width: 100%;
+    padding: var(--spacing-md);
+    border: 2px solid var(--color-accent-blue);
+    background-color: #ffffff;
+    color: #000000;
+    border-radius: var(--border-radius-md);
+    margin: var(--spacing-lg) 0;
+    font-size: var(--font-size-md);
+    box-sizing: border-box;
+    min-height: 50px;
+    font-weight: 500;
+    text-shadow: none;
+}
+
+#ig-input::placeholder {
+    color: #666666;
+    opacity: 1;
+}
+
+#ig-input:focus {
+    outline: none;
+    border-color: var(--color-accent-cyan);
+    box-shadow: 0 0 8px rgba(0, 180, 216, 0.3);
+}
+
+.import-buttons {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.import-buttons button {
+    flex-grow: 1;
+    margin: 0;
+}
+
+#import-cancel-button {
+    background-color: var(--color-button-gray);
+}
+
+#import-button {
+    background-color: var(--color-accent-blue);
+}
+
+/* ✨ 關鍵修改：加上父層選擇器以提高權重 */
+#modal-content #open-milestone-button {
+    background-color: var(--color-accent-blue);
+    margin-top: var(--spacing-sm);
+    color: var(--color-text-primary);
+}
+
+/* 行動裝置彈窗優化 */
+@media (max-width: 767px) {
+    .modal-overlay {
+        padding: var(--spacing-sm);
+        align-items: center;
+        padding-top: 0;
+    }
+
+    .modal-content {
+        padding: var(--spacing-lg);
+        max-height: 85vh;
+        border-radius: var(--border-radius-md);
+    }
+
+    .modal-content h2 {
+        font-size: var(--font-size-lg);
+    }
+
+    #endgame-stats {
+        width: 100%;
+        padding: var(--spacing-sm);
+        font-size: var(--font-size-sm);
+    }
+
+    #endgame-stats li {
+        font-size: var(--font-size-base);
+        padding: var(--spacing-xs) 0;
+    }
+
+    #question-text {
+        font-size: var(--font-size-md);
+        margin-bottom: var(--spacing-md);
+    }
+
+    #import-input {
+        font-size: var(--font-size-md);
+        padding: var(--spacing-md);
+    }
+
+    #ig-input {
+        font-size: var(--font-size-lg);
+        padding: var(--spacing-lg);
+        min-height: 56px;
+    }
+}

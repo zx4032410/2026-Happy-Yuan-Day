@@ -1,0 +1,214 @@
+/* ========================================================================
+   ✨ 里程碑相關樣式 (個人里程碑、全體里程碑)
+   ======================================================================== */
+
+/* --- ✨ 個人里程碑彈窗樣式 (垂直列表新版) --- */
+#milestone-modal-content {
+    max-width: 550px;
+}
+
+#milestone-modal-content p {
+    line-height: 1.5;
+    letter-spacing: 0.02em;
+    font-size: var(--font-size-md);
+    margin-bottom: var(--spacing-lg);
+}
+
+.milestone-score-header {
+    background-color: rgba(0, 0, 0, 0.2);
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--border-radius-md);
+    margin-bottom: var(--spacing-lg);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: var(--font-size-lg);
+}
+
+#milestone-current-score {
+    font-weight: 700;
+    color: var(--color-accent-yellow);
+    font-size: var(--font-size-xl);
+}
+
+/* ✨ IG 帳號顯示區域樣式 */
+.milestone-ig-display {
+    background-color: rgba(0, 0, 0, 0.2);
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--border-radius-md);
+    margin-bottom: var(--spacing-lg);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: var(--font-size-md);
+    gap: var(--spacing-sm);
+}
+
+#milestone-ig-handle {
+    font-weight: 700;
+    color: var(--color-accent-cyan);
+    flex-grow: 1;
+    text-align: left;
+}
+
+.milestone-ig-edit-button {
+    background-color: var(--color-accent-blue);
+    color: var(--color-text-primary);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    font-size: var(--font-size-sm);
+    border-radius: var(--border-radius-sm);
+    white-space: nowrap;
+    margin: 0;
+}
+
+.milestone-ig-edit-button:hover {
+    background-color: var(--color-accent-cyan);
+}
+
+.milestone-tiers-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.milestone-tier-row {
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: var(--border-radius-md);
+    padding: var(--spacing-md);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--spacing-md);
+    transition: all var(--transition-normal);
+}
+
+.milestone-tier-row.disabled {
+    opacity: 0.5;
+    background-color: transparent;
+}
+
+.milestone-tier-info {
+    text-align: left;
+    flex-grow: 1;
+}
+
+.milestone-tier-info h3 {
+    margin: 0 0 var(--spacing-xs) 0;
+    font-size: var(--font-size-md);
+    color: var(--color-text-primary);
+}
+
+.milestone-tier-info p {
+    margin: 0;
+    font-size: var(--font-size-sm);
+    color: rgba(255, 255, 255, 0.8);
+    letter-spacing: normal;
+    line-height: normal;
+}
+
+.milestone-tier-action button {
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: var(--font-size-sm);
+    background-color: var(--color-accent-yellow);
+    color: var(--color-text-secondary);
+    text-shadow: none !important;
+    white-space: nowrap;
+    border-radius: var(--border-radius-sm);
+    border: 1px solid var(--color-text-secondary);
+    min-height: auto;
+    font-weight: 700;
+}
+
+.milestone-tier-action button.claimed {
+    background-color: var(--color-button-gray);
+    color: var(--color-button-gray-text);
+    cursor: pointer;
+}
+
+.milestone-tier-row.disabled .milestone-tier-action button {
+    background-color: var(--color-button-gray);
+    color: var(--color-button-gray-text);
+    cursor: not-allowed;
+}
+
+#milestone-close-button {
+    margin-top: var(--spacing-lg);
+}
+
+/* --- ✨ 全體里程碑彈窗樣式 --- */
+#global-milestone-modal-content p {
+    line-height: 1.5;
+    letter-spacing: 0.02em;
+    font-size: var(--font-size-md);
+    margin-bottom: var(--spacing-xl);
+}
+
+/* 進度條樣式 */
+.milestone-progress-bar-container {
+    position: relative;
+    width: 100%;
+    height: 40px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: var(--border-radius-xl);
+    overflow: hidden;
+    margin-bottom: var(--spacing-lg);
+    box-shadow: var(--shadow-sm);
+}
+
+#global-milestone-progress-bar-fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    background-color: var(--color-accent-yellow);
+    border-radius: var(--border-radius-xl);
+    width: 0%;
+    transition: width var(--transition-slow) ease;
+}
+
+#global-milestone-current-percent {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--color-text-secondary);
+    font-weight: 700;
+    font-size: var(--font-size-md);
+    text-shadow: none;
+    z-index: 2;
+}
+
+/* 結算流程的按鈕群組 */
+.global-milestone-buttons {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-lg);
+    flex-wrap: wrap;
+}
+
+.global-milestone-buttons button {
+    flex-grow: 1;
+    min-width: 120px;
+}
+
+#global-milestone-share-button {
+    background-color: var(--color-accent-cyan);
+}
+
+/* 行動裝置優化 */
+@media (max-width: 767px) {
+    #global-milestone-current-percent {
+        font-size: var(--font-size-sm);
+    }
+
+    .global-milestone-buttons {
+        flex-direction: column;
+    }
+
+    .global-milestone-buttons button {
+        width: 100%;
+        min-width: auto;
+    }
+}

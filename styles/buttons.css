@@ -1,0 +1,207 @@
+/* ========================================================================
+   ✨ 按鈕樣式系統
+   ======================================================================== */
+
+/* 預設按鈕樣式 */
+.btn {
+    padding: var(--spacing-sm) var(--spacing-xl);
+    font-size: var(--font-size-base);
+    border-radius: var(--border-radius-md);
+    margin-top: var(--spacing-sm);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+}
+
+/* 按鈕顏色變體 */
+.btn-primary {
+    background-color: var(--color-accent-pink);
+    color: var(--color-text-primary);
+}
+
+.btn-secondary {
+    background-color: var(--color-accent-blue);
+    color: var(--color-text-primary);
+}
+
+.btn-success {
+    background-color: var(--color-accent-green);
+    color: var(--color-text-primary);
+}
+
+.btn-info {
+    background-color: var(--color-accent-cyan);
+    color: var(--color-text-primary);
+}
+
+.btn-warning {
+    background-color: var(--color-accent-yellow);
+    color: var(--color-text-secondary);
+}
+
+.btn-danger {
+    background-color: var(--color-accent-red);
+    color: var(--color-text-primary);
+}
+
+.btn-gray {
+    background-color: var(--color-button-gray);
+    color: var(--color-text-primary);
+}
+
+/* 通用開始按鈕樣式 */
+.start-button-style {
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    padding: var(--spacing-sm) var(--spacing-lg);
+    font-size: var(--font-size-base);
+    border: none;
+    border-radius: var(--border-radius-md);
+    background-color: var(--color-accent-blue);
+    color: var(--color-text-primary);
+    cursor: pointer;
+    margin-top: var(--spacing-sm);
+    display: block;
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+    transition: all var(--transition-fast) ease;
+}
+
+.start-button-style:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+.start-button-style:active {
+    transform: translateY(0) scale(0.98);
+}
+
+/* 問題選項按鈕 */
+#question-area button {
+    display: block;
+    width: 100%;
+    margin-top: var(--spacing-sm);
+    background-color: var(--color-accent-blue);
+    color: var(--color-text-primary);
+    padding: var(--spacing-md);
+    font-size: var(--font-size-base);
+}
+
+/* ✨ 新增：答題回饋的樣式 */
+.answer-option {
+    /* 加入一點過渡效果，讓顏色變化更平順 */
+    transition: background-color 0.3s, border 0.3s;
+}
+
+/* 1. 正確答案的樣式 (綠色) - 權重提高 */
+#question-area button.correct-answer {
+    background-color: var(--color-accent-green) !important;
+    border: 3px solid var(--color-accent-light-green) !important;
+    color: var(--color-text-primary) !important;
+    position: relative;
+}
+
+/* 2. 錯誤答案的樣式 (紅色) - 權重提高 */
+#question-area button.incorrect-answer {
+    background-color: var(--color-accent-red) !important;
+    border: 3px solid var(--color-accent-light-red) !important;
+    color: var(--color-text-primary) !important;
+    opacity: 0.8 !important;
+    position: relative;
+}
+
+/* 3. 勾勾樣式 (✓) - 權重提高 */
+#question-area button.correct-answer::after {
+    content: '✓';
+    font-weight: bold;
+    font-size: 1.2em;
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* 4. 叉叉樣式 (✗) - 權重提高 */
+#question-area button.incorrect-answer::after {
+    content: '✗';
+    font-weight: bold;
+    font-size: 1.2em;
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* ✨ 新增：分享格式選擇按鈕樣式 */
+.format-btn {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--color-text-primary);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: var(--border-radius-md);
+    padding: var(--spacing-sm) var(--spacing-md);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    font-size: var(--font-size-sm);
+}
+
+.format-btn:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.format-btn.active {
+    background-color: var(--color-accent-blue);
+    border-color: var(--color-accent-blue);
+    color: var(--color-text-primary);
+}
+
+/* ✨ 新增：分享操作按鈕樣式 */
+.share-btn {
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--border-radius-md);
+    border: none;
+    color: var(--color-text-primary);
+    font-weight: bold;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: var(--font-size-sm);
+}
+
+.share-btn:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+.share-btn:active {
+    transform: translateY(0);
+}
+
+.download-btn {
+    background-color: var(--color-button-gray);
+}
+
+.share-btn-primary {
+    background-color: var(--color-accent-pink);
+}
+
+/* 行動裝置按鈕優化 */
+@media (max-width: 767px) {
+
+    .btn,
+    .start-button-style {
+        padding: var(--spacing-md) var(--spacing-lg);
+        font-size: var(--font-size-md);
+        min-height: 44px;
+        /* 符合觸控標準 */
+        width: 100%;
+        max-width: 100%;
+    }
+
+    #question-area button {
+        padding: var(--spacing-lg);
+        font-size: var(--font-size-md);
+        min-height: 48px;
+    }
+}
