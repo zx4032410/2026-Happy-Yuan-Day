@@ -570,6 +570,14 @@ document.addEventListener('DOMContentLoaded', function () {
         // ✨ 新增：Fever Time 背景閃爍特效
         document.body.classList.add('fever-background');
 
+        // ✨ 新增：Fever Time 速度線與暗角特效
+        const feverOverlay = document.getElementById('fever-effect-overlay');
+        if (feverOverlay) feverOverlay.classList.remove('hidden');
+
+        // ✨ 新增：Fever Time 倒數計時條 (設定為滿)
+        const feverTimerBar = document.getElementById('fever-timer-bar');
+        if (feverTimerBar) feverTimerBar.style.width = '100%';
+
         console.log("FEVER TIME ACTIVATED!");
     }
     function endFeverTime() {
@@ -588,6 +596,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // ✨ 新增：移除 Fever Time 背景閃爍特效
         document.body.classList.remove('fever-background');
+
+        // ✨ 新增：移除 Fever Time 速度線與暗角特效
+        const feverOverlay = document.getElementById('fever-effect-overlay');
+        if (feverOverlay) feverOverlay.classList.add('hidden');
+
+        // ✨ 新增：重置 Fever Time 倒數計時條
+        const feverTimerBar = document.getElementById('fever-timer-bar');
+        if (feverTimerBar) feverTimerBar.style.width = '0%';
 
         console.log("FEVER TIME ENDED.");
     }
@@ -684,7 +700,37 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     function closeSettlementAndCheckBirthday() { modal.classList.add('hidden'); milestoneModal.classList.add('hidden'); globalMilestoneModal.classList.add('hidden'); if (isBirthdayToday()) { birthdayMessage.textContent = i18nStrings[currentLang].birthdayMessage; birthdayModal.classList.remove('hidden'); playSound(audio.birthday, false); } else { restartGame(); } }
     function copyShareText() { const shareSuccessText = i18nStrings[currentLang].shareSuccess || '分享文案已複製到剪貼簿！'; const shareFailureText = i18nStrings[currentLang].shareFailure || '複製失敗，請手動複製！'; const currentScore = score; const cumulativeScore = playerProfile.cumulativeScore; const globalProgress = globalMilestoneCurrentPercent.textContent; let shareText = i18nStrings[currentLang].shareTextTemplate; shareText = shareText.replace('{score}', currentScore); shareText = shareText.replace('{cumulativeScore}', cumulativeScore); shareText = shareText.replace('{globalProgress}', globalProgress); navigator.clipboard.writeText(shareText).then(() => { alert(shareSuccessText); }).catch(err => { console.error('複製失敗: ', err); alert(shareFailureText + '\n' + shareText); }); }
-    function resetGame() { score = 0; timeLeft = GAME_CONFIG.GAME_TIME; isFeverTime = false; feverMeter = 0; feverDurationTimer = 0; fallingItems = []; player.x = canvas.width / 2 - player.width / 2; spawnInterval = baseSpawnInterval; spawnTimer = spawnInterval; stats_items_positive = 0; stats_items_negative = 0; stats_questions_correct = 0; stats_questions_wrong = 0; scoreDisplay.textContent = `0`; timeDisplay.textContent = `${timeLeft}s`; milestoneProgress.textContent = `0%`; if (player.loaded) player.image = player.defaultImage; player.currentFrame = 0; player.frameCounter = 0; shareManager.scoreCardCache = { square: null, story: null, stats: null }; }
+    function resetGame() {
+        score = 0;
+        timeLeft = GAME_CONFIG.GAME_TIME;
+        isFeverTime = false;
+        feverMeter = 0;
+        feverDurationTimer = 0;
+        fallingItems = [];
+        player.x = canvas.width / 2 - player.width / 2;
+        spawnInterval = baseSpawnInterval;
+        spawnTimer = spawnInterval;
+        stats_items_positive = 0;
+        stats_items_negative = 0;
+        stats_questions_correct = 0;
+        stats_questions_wrong = 0;
+        scoreDisplay.textContent = `0`;
+        timeDisplay.textContent = `${timeLeft}s`;
+        milestoneProgress.textContent = `0%`;
+        if (player.loaded) player.image = player.defaultImage;
+        player.currentFrame = 0;
+        player.frameCounter = 0;
+        shareManager.scoreCardCache = { square: null, story: null, stats: null };
+
+        // ✨ Fix: Clear Fever Time effects on reset
+        document.body.classList.remove('fever-background');
+        const feverOverlay = document.getElementById('fever-effect-overlay');
+        if (feverOverlay) feverOverlay.classList.add('hidden');
+        const feverTimerBar = document.getElementById('fever-timer-bar');
+        if (feverTimerBar) feverTimerBar.style.width = '0%';
+        const gameContainer = document.getElementById('game-container');
+        if (gameContainer) gameContainer.classList.remove('fever-shake');
+    }
     function startGame() { gameStarted = true; clearGameTimers(); resetGame(); modal.classList.add('hidden'); gameTimerId = setInterval(updateTimer, 1000); playSound(audio.gameStart); playSound(audio.bgm, false); stats_positive = 0; stats_negative = 0; stats_correct = 0; stats_wrong = 0; stats_feverCount = 0; stats_feverTime = 0; }
     function restartGame() { birthdayModal.classList.add('hidden'); audio.birthday.pause(); audio.birthday.currentTime = 0; showStartModalText(); }
 
@@ -792,7 +838,106 @@ document.addEventListener('DOMContentLoaded', function () {
     function clearGameTimers() { if (gameTimerId !== null) { clearInterval(gameTimerId); gameTimerId = null; } }
 
     // --- 核心 Update & Draw 函式 (省略) ---
-    function update() { if (!gameStarted) return; if (keys.left && player.x > 0) player.x -= player.speed; if (keys.right && player.x < canvas.width - player.width) player.x += player.speed; spawnTimer--; if (spawnTimer <= 0) { spawnItem(); spawnTimer = spawnInterval; } if (isFeverTime) { feverDurationTimer--; if (feverDurationTimer <= 0) { endFeverTime(); } } milestoneProgress.textContent = `${feverMeter}%`; for (let i = fallingItems.length - 1; i >= 0; i--) { const item = fallingItems[i]; item.y += item.speed; if (checkCollision(player, item)) { let pointsToChange = 0; let feverBoost = 0; if (item.type === 'positive') { pointsToChange = item.score; feverBoost = GAME_CONFIG.FEVER.POSITIVE_ITEM_BOOST; if (isFeverTime) pointsToChange *= GAME_CONFIG.SCORING.FEVER_MULTIPLIER; player.image = player.winImage; playSound(audio.collectPositive); stats_items_positive++; } else if (item.type === 'special') { pointsToChange = item.score; feverBoost = GAME_CONFIG.FEVER.SPECIAL_ITEM_BOOST; if (isFeverTime) pointsToChange *= GAME_CONFIG.SCORING.FEVER_MULTIPLIER; player.image = player.winImage; playSound(audio.collectSpecial); stats_items_positive++; } else if (item.type === 'negative') { pointsToChange = -item.score; player.image = player.loseImage; playSound(audio.collectNegative); stats_items_negative++; } else if (item.type === 'question') { playSound(audio.collectQuestion); showQuestion(); } feverMeter = Math.min(GAME_CONFIG.FEVER.MAX_METER, feverMeter + feverBoost); if (feverMeter >= GAME_CONFIG.FEVER.MAX_METER && !isFeverTime) { activateFeverTime(); } if (item.type !== 'question') { score += pointsToChange; showScoreChange(pointsToChange); scoreDisplay.textContent = score; player.animationTimer = GAME_CONFIG.PLAYER.WIN_LOSE_ANIMATION_DURATION; } fallingItems.splice(i, 1); } else if (item.y > canvas.height) { fallingItems.splice(i, 1); } } if (player.animationTimer > 0) { player.animationTimer--; } else { player.frameCounter++; if (player.frameCounter >= player.frameRate) { player.currentFrame = (player.currentFrame + 1) % player.idleFrames.length; player.frameCounter = 0; } } }
+    function update() {
+        if (!gameStarted) return;
+
+        // ✨ Update player position for vignette effect
+        if (isFeverTime) {
+            const feverOverlay = document.getElementById('fever-effect-overlay');
+            if (feverOverlay) {
+                const playerCenterX = player.x + player.width / 2;
+                const percentage = (playerCenterX / canvas.width) * 100;
+                feverOverlay.style.setProperty('--player-x', `${percentage}%`);
+            }
+        }
+
+        if (keys.left && player.x > 0) player.x -= player.speed;
+        if (keys.right && player.x < canvas.width - player.width) player.x += player.speed;
+
+        spawnTimer--;
+        if (spawnTimer <= 0) {
+            spawnItem();
+            spawnTimer = spawnInterval;
+        }
+
+        if (isFeverTime) {
+            feverDurationTimer--;
+
+            // ✨ 新增：更新 Fever Time 倒數計時條
+            const feverTimerBar = document.getElementById('fever-timer-bar');
+            if (feverTimerBar) {
+                const percentage = (feverDurationTimer / GAME_CONFIG.FEVER.DURATION) * 100;
+                feverTimerBar.style.width = `${percentage}%`;
+            }
+
+            if (feverDurationTimer <= 0) {
+                endFeverTime();
+            }
+        }
+
+        milestoneProgress.textContent = `${feverMeter}%`;
+
+        for (let i = fallingItems.length - 1; i >= 0; i--) {
+            const item = fallingItems[i];
+            item.y += item.speed;
+
+            if (checkCollision(player, item)) {
+                let pointsToChange = 0;
+                let feverBoost = 0;
+
+                if (item.type === 'positive') {
+                    pointsToChange = item.score;
+                    feverBoost = GAME_CONFIG.FEVER.POSITIVE_ITEM_BOOST;
+                    if (isFeverTime) pointsToChange *= GAME_CONFIG.SCORING.FEVER_MULTIPLIER;
+                    player.image = player.winImage;
+                    playSound(audio.collectPositive);
+                    stats_items_positive++;
+                } else if (item.type === 'special') {
+                    pointsToChange = item.score;
+                    feverBoost = GAME_CONFIG.FEVER.SPECIAL_ITEM_BOOST;
+                    if (isFeverTime) pointsToChange *= GAME_CONFIG.SCORING.FEVER_MULTIPLIER;
+                    player.image = player.winImage;
+                    playSound(audio.collectSpecial);
+                    stats_items_positive++;
+                } else if (item.type === 'negative') {
+                    pointsToChange = -item.score;
+                    player.image = player.loseImage;
+                    playSound(audio.collectNegative);
+                    stats_items_negative++;
+                } else if (item.type === 'question') {
+                    playSound(audio.collectQuestion);
+                    showQuestion();
+                }
+
+                feverMeter = Math.min(GAME_CONFIG.FEVER.MAX_METER, feverMeter + feverBoost);
+
+                if (feverMeter >= GAME_CONFIG.FEVER.MAX_METER && !isFeverTime) {
+                    activateFeverTime();
+                }
+
+                if (item.type !== 'question') {
+                    score += pointsToChange;
+                    showScoreChange(pointsToChange);
+                    scoreDisplay.textContent = score;
+                    player.animationTimer = GAME_CONFIG.PLAYER.WIN_LOSE_ANIMATION_DURATION;
+                }
+
+                fallingItems.splice(i, 1);
+            } else if (item.y > canvas.height) {
+                fallingItems.splice(i, 1);
+            }
+        }
+
+        if (player.animationTimer > 0) {
+            player.animationTimer--;
+        } else {
+            player.frameCounter++;
+            if (player.frameCounter >= player.frameRate) {
+                player.currentFrame = (player.currentFrame + 1) % player.idleFrames.length;
+                player.frameCounter = 0;
+            }
+        }
+    }
     function draw() { ctx.clearRect(0, 0, canvas.width, canvas.height); let imageToDraw; if (player.animationTimer > 0) { imageToDraw = player.image; } else { if (player.idleFrames.length > 0) { imageToDraw = player.idleFrames[player.currentFrame]; } else { imageToDraw = player.defaultImage; } } if (imageToDraw && imageToDraw.complete) { ctx.drawImage(imageToDraw, player.x, player.y, player.width, player.height); } else if (player.defaultImage.complete) { ctx.drawImage(player.defaultImage, player.x, player.y, player.width, player.height); } else { ctx.fillStyle = '#f72585'; ctx.fillRect(player.x, player.y, player.width, player.height); } fallingItems.forEach(item => { if (item.image && item.image.complete) { ctx.drawImage(item.image, item.x, item.y, item.width, item.height); } }); }
 
     function gameLoop() { update(); draw(); requestAnimationFrame(gameLoop); }

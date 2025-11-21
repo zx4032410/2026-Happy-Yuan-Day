@@ -66,6 +66,9 @@
 
     <div id="game-container" role="main">
         <div id="info-bar" role="region" aria-label="遊戲資訊">
+            <!-- ✨ 新增：Fever Time 倒數計時條 -->
+            <div id="fever-timer-bar"></div>
+
             <span id="score-info">
                 <span id="score-label" data-i18n-key="score">分數</span>：
                 <span id="score-display">0</span>
@@ -80,6 +83,12 @@
             </span>
 
             <button id="mute-button" aria-label="切換靜音">🔊</button>
+        </div>
+
+        <!-- ✨ 新增：Fever Time 特效層 -->
+        <div id="fever-effect-overlay" class="hidden">
+            <div class="speed-lines"></div>
+            <div class="vignette"></div>
         </div>
 
         <canvas id="game-canvas" width="800" height="600" role="img" aria-label="遊戲畫面：請使用左右方向鍵或下方按鈕控制角色移動接取物品"></canvas>
