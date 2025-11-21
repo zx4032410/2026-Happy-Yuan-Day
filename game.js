@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // --- 初始化 HTML 元素 (✨ 更新) ---
-    const db = firebase.firestore();
+
     const databaseManager = new DatabaseManager(); // ✨ Initialize DatabaseManager
     const shareManager = new ShareManager(); // ✨ Initialize ShareManager
     const canvas = document.getElementById('game-canvas');
@@ -734,7 +734,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // ✨ 重構：領取獎勵函式
     async function claimReward(tier) {
-        if (!currentUserID || !db) {
+        if (!currentUserID) {
             alert(i18nStrings[currentLang].igSaveError);
             return;
         }

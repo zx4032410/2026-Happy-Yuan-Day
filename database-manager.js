@@ -1,5 +1,21 @@
 class DatabaseManager {
     constructor() {
+        // Initialize Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyA5vu1AzlUPRbszYzjM0WTxpxZmJhbUR74",
+            authDomain: "yuan-birthday-gam.firebaseapp.com",
+            projectId: "yuan-birthday-gam",
+            storageBucket: "yuan-birthday-gam.firebasestorage.app",
+            messagingSenderId: "891333323583",
+            appId: "1:891333323583:web:2bdf6e420db3ba9f5b018a"
+        };
+
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        } else {
+            firebase.app(); // if already initialized, use that one
+        }
+
         this.db = firebase.firestore();
         this.auth = firebase.auth();
         this.currentUserID = null;
