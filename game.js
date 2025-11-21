@@ -57,6 +57,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // --- 初始化 HTML 元素 (✨ 更新) ---
     const db = firebase.firestore();
     const auth = firebase.auth(); // ✨ 1. 新增：取得 Firebase Auth 服務
+    const shareManager = new ShareManager(); // ✨ Initialize ShareManager
     const canvas = document.getElementById('game-canvas');
     const ctx = canvas.getContext('2d');
 
@@ -332,11 +333,7 @@ document.addEventListener('DOMContentLoaded', function () {
     player.winImage.src = './images/xiao-yuan-bao-win.png'; player.winImage.onload = onAssetLoad; player.winImage.onerror = () => onAssetError('winImage');
     player.loseImage.src = './images/xiao-yuan-bao-lose.png'; player.loseImage.onload = onAssetLoad; player.loseImage.onerror = () => onAssetError('loseImage');
 
-    // ✨ 新增：載入分享圖卡
-    const shareCardImage = new Image();
-    shareCardImage.src = './images/sharecard.PNG';
-    shareCardImage.onload = onAssetLoad;
-    shareCardImage.onerror = () => onAssetError('shareCardImage');
+    // ✨ Share Card Image loading moved to ShareManager
 
     GAME_CONFIG.ITEM_TYPES.forEach(type => { const img = new Image(); img.src = type.src; img.onload = onAssetLoad; img.onerror = () => onAssetError(type.id); itemImages[type.id] = img; });
     idleFrameSources.forEach((src, index) => { const img = new Image(); img.src = src; img.onload = onAssetLoad; img.onerror = () => onAssetError(`idleFrame-${index}`); player.idleFrames.push(img); });
@@ -602,319 +599,7 @@ document.addEventListener('DOMContentLoaded', function () {
         console.log("FEVER TIME ENDED.");
     }
 
-    // --- ✨ 新增：分享功能相關函式 ---
-
-    // 全域變數儲存當前選擇的格式
-    let currentShareFormat = 'square'; // 'square' 或 'story'
-
-    // ✨ 新增：圖卡快取物件 (效能優化)
-    const scoreCardCache = {
-        square: null,   // 儲存方形格式的 Data URL
-        story: null,    // 儲存限動格式的 Data URL
-        stats: null     // 儲存生成時的遊戲統計資料
-    };
-
-    /**
-     * 生成 QR Code 的 Data URL
-     * @param {string} url - 要編碼的網址
-     * @param {number} size - QR Code 大小
-     * @returns {string} Data URL
-     */
-    function generateQRCode(url, size = 4) {
-        const qr = qrcode(0, 'M'); // 0 = 自動選擇最佳版本, 'M' = 中等錯誤修正
-        qr.addData(url);
-        qr.make();
-        return qr.createDataURL(size); // size 是每個模組的像素大小
-    }
-
-    /**
-     * 生成成績圖卡
-     * @param {Object} gameStats - 遊戲統計資料
-     * @param {string} format - 圖卡格式 ('square' 或 'story')
-     * @returns {Promise<string>} 圖片 Data URL
-     */
-    async function generateScoreCard(gameStats, format = 'square') {
-        // ✨ 快取檢查：如果快取有效且統計資料相同,直接返回快取
-        if (scoreCardCache[format] &&
-            scoreCardCache.stats &&
-            JSON.stringify(scoreCardCache.stats) === JSON.stringify(gameStats)) {
-            console.log(`✅ 使用快取的 ${format} 圖卡`);
-            return scoreCardCache[format];
-        }
-
-        console.log(`🎨 生成新的 ${format} 圖卡...`);
-        return new Promise((resolve) => {
-            const canvas = document.getElementById('scoreCardCanvas');
-            const ctx = canvas.getContext('2d');
-
-            // 根據格式設定 Canvas 尺寸
-            if (format === 'story') {
-                // Instagram 限時動態最佳尺寸
-                canvas.width = 1080;
-                canvas.height = 1920;
-            } else {
-                // 通用方形格式 (適合貼文)
-                canvas.width = 1080;
-                canvas.height = 1080;
-            }
-
-            const width = canvas.width;
-            const height = canvas.height;
-
-            // 繪製背景漸層
-            const gradient = ctx.createLinearGradient(0, 0, 0, height);
-            gradient.addColorStop(0, '#667eea');
-            gradient.addColorStop(1, '#764ba2');
-            ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, width, height);
-
-            // 計算內容區域 (根據格式調整)
-            const padding = 80;
-            const contentWidth = width - (padding * 2);
-            const contentHeight = height - (padding * 2);
-
-            // 繪製白色內容區塊
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
-            ctx.roundRect(padding, padding, contentWidth, contentHeight, 30);
-            ctx.fill();
-
-            // 計算垂直間距 (根據格式調整)
-            const isStory = format === 'story';
-            const titleY = isStory ? 200 : 180;
-            const subtitleY = titleY + 60;
-            const dividerY = subtitleY + 40;
-            const statsStartY = dividerY + 80;
-            const statsSpacing = isStory ? 100 : 90;
-            const qrSectionY = isStory ? height - 500 : 740;
-
-            // 繪製標題
-            ctx.fillStyle = '#2d3748';
-            ctx.font = 'bold 72px Arial, sans-serif';
-            ctx.textAlign = 'center';
-            ctx.fillText('🎮 2026 Happy Yuan Day', width / 2, titleY);
-
-            // 繪製副標題
-            ctx.font = '36px Arial, sans-serif';
-            ctx.fillStyle = '#4a5568';
-            ctx.fillText('媛來接力 - 遊戲成績', width / 2, subtitleY);
-
-            // 繪製分隔線
-            ctx.strokeStyle = '#cbd5e0';
-            ctx.lineWidth = 3;
-            ctx.beginPath();
-            ctx.moveTo(padding + 100, dividerY);
-            ctx.lineTo(width - padding - 100, dividerY);
-            ctx.stroke();
-
-            // 繪製成績資訊
-            const stats = [
-                { label: '本局分數', value: gameStats.score, emoji: '⭐' },
-                { label: '接到物品', value: gameStats.itemsCaught, emoji: '🎯' },
-                { label: '答對題數', value: gameStats.correctAnswers, emoji: '✅' },
-                { label: '答錯題數', value: gameStats.wrongAnswers, emoji: '❌' },
-            ];
-
-            ctx.textAlign = 'left';
-            let yPosition = statsStartY;
-
-            stats.forEach(stat => {
-                const leftMargin = padding + 100;
-                const rightMargin = width - padding - 100;
-
-                // 繪製 emoji
-                ctx.font = '48px Arial';
-                ctx.fillText(stat.emoji, leftMargin, yPosition);
-
-                // 繪製標籤
-                ctx.font = 'bold 42px Arial, sans-serif';
-                ctx.fillStyle = '#2d3748';
-                ctx.fillText(stat.label, leftMargin + 80, yPosition);
-
-                // 繪製數值
-                ctx.font = 'bold 48px Arial, sans-serif';
-                ctx.fillStyle = '#667eea';
-                ctx.textAlign = 'right';
-                ctx.fillText(String(stat.value), rightMargin, yPosition);
-                ctx.textAlign = 'left';
-
-                yPosition += statsSpacing;
-            });
-
-            // 繪製 QR Code 說明 (已移除)
-            // ctx.textAlign = 'center';
-            // ctx.font = '32px Arial, sans-serif';
-            // ctx.fillStyle = '#4a5568';
-            // ctx.fillText('掃描 QR Code 開始挑戰', width / 2, qrSectionY);
-
-            // 生成並繪製 QR Code
-            const gameURL = window.location.href; // 使用當前遊戲網址
-            const qrDataURL = generateQRCode(gameURL, 6);
-
-            const qrImage = new Image();
-            qrImage.onload = () => {
-                // ✨ 更新：重新規劃 QR Code 和分享圖卡的位置
-                const qrSize = isStory ? 220 : 200;
-                const qrX = width - padding - qrSize - 50;
-                const qrY = height - padding - qrSize - 50;
-
-                // 繪製 QR Code 背景
-                ctx.fillStyle = '#ffffff';
-                ctx.fillRect(qrX - 10, qrY - 10, qrSize + 20, qrSize + 20);
-
-                // 繪製 QR Code
-                ctx.drawImage(qrImage, qrX, qrY, qrSize, qrSize);
-
-                // ✨ 新增：繪製分享圖卡
-                if (shareCardImage && shareCardImage.complete) {
-                    const cardAspectRatio = shareCardImage.width / shareCardImage.height;
-                    let cardWidth, cardHeight, cardX, cardY;
-
-                    if (isStory) {
-                        // 限動模式：放在左下角探頭
-                        cardHeight = 700;
-                        cardWidth = cardHeight * cardAspectRatio;
-                        cardX = padding - 80;
-                        cardY = height - cardHeight - padding + 120;
-                    } else {
-                        // 方形模式：放在左下角探頭
-                        cardHeight = 490;
-                        cardWidth = cardHeight * cardAspectRatio;
-                        cardX = padding - 80;
-                        cardY = height - cardHeight - padding + 100;
-                    }
-                    ctx.drawImage(shareCardImage, cardX, cardY, cardWidth, cardHeight);
-                }
-
-                // 如果是限時動態格式，加入底部提示
-                if (isStory) {
-                    ctx.font = 'bold 28px Arial, sans-serif';
-                    ctx.fillStyle = '#667eea';
-                    ctx.textAlign = 'center';
-                    ctx.fillText('👆 立即挑戰', qrX + qrSize / 2, qrY + qrSize + 40);
-                }
-
-                // 轉換成 Data URL
-                const imageDataURL = canvas.toDataURL('image/png', 0.95);
-
-                // ✨ 儲存到快取
-                scoreCardCache[format] = imageDataURL;
-                scoreCardCache.stats = { ...gameStats };
-                console.log(`💾 ${format} 圖卡已快取`);
-
-                resolve(imageDataURL);
-            };
-            qrImage.src = qrDataURL;
-        });
-    }
-
-    /**
-     * 切換分享格式並重新生成圖卡
-     */
-    async function switchShareFormat(format) {
-        currentShareFormat = format;
-
-        // 更新按鈕狀態
-        document.querySelectorAll('.format-btn').forEach(btn => {
-            btn.classList.remove('active');
-        });
-        document.querySelector(`[data-format="${format}"]`).classList.add('active');
-
-        // 更新提示文字
-        const shareTipElement = document.getElementById('share-tip');
-        if (shareTipElement) {
-            const tipText = format === 'story'
-                ? i18nStrings[currentLang].shareTipStory
-                : i18nStrings[currentLang].shareTipSquare;
-            shareTipElement.textContent = tipText;
-        }
-
-        // 重新生成圖卡
-        const gameStats = window.currentGameStats; // 從全域變數取得
-        const newImageURL = await generateScoreCard(gameStats, format);
-
-        // 更新全域變數
-        window.currentScoreCardURL = newImageURL;
-    }
-
-    /**
-     * 下載圖片
-     * @param {string} dataURL - 圖片 Data URL
-     */
-    function downloadImage(dataURL) {
-        const formatSuffix = currentShareFormat === 'story' ? 'story' : 'square';
-        const filename = `yuan-game-score-${formatSuffix}-${Date.now()}.png`;
-
-        const link = document.createElement('a');
-        link.download = filename;
-        link.href = dataURL;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    }
-
-    /**
-     * 分享圖片到社群媒體 (優化 Instagram 限時動態體驗)
-     * @param {string} dataURL - 圖片 Data URL
-     * @param {Object} gameStats - 遊戲統計資料
-     */
-    async function shareImage(dataURL, gameStats) {
-        try {
-            // 將 Data URL 轉換成 Blob
-            const response = await fetch(dataURL);
-            const blob = await response.blob();
-
-            // 根據格式設定檔案名稱
-            const formatSuffix = currentShareFormat === 'story' ? 'story' : 'square';
-            const filename = `yuan-game-${formatSuffix}.png`;
-            const file = new File([blob], filename, { type: 'image/png' });
-
-            // 客製化分享文字
-            const shareTitle = '2026 Happy Yuan Day - 媛來接力';
-            const shareText = currentShareFormat === 'story'
-                ? `我在「媛來接力」得到 ${gameStats.score} 分！🎮\n快來挑戰看看你能得幾分！`
-                : `我的遊戲成績：${gameStats.score} 分 🎯\n一起來「媛來接力」玩遊戲！`;
-
-            // 檢查瀏覽器是否支援 Web Share API
-            if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-                await navigator.share({
-                    title: shareTitle,
-                    text: shareText,
-                    files: [file]
-                });
-
-                console.log('✅ 分享成功！');
-
-            } else {
-                // 降級方案：直接下載並顯示提示
-                console.log('⚠️ 瀏覽器不支援 Web Share API，使用下載方案');
-                downloadImage(dataURL);
-                showShareTip();
-            }
-
-        } catch (error) {
-            // 處理錯誤
-            if (error.name === 'AbortError') {
-                // 使用者取消分享，不需顯示錯誤
-                console.log('ℹ️ 使用者取消分享');
-            } else {
-                console.error('❌ 分享失敗:', error);
-                // 發生錯誤時降級為下載
-                downloadImage(dataURL);
-                showShareTip();
-            }
-        }
-    }
-
-    /**
-     * 顯示手動分享提示 (當 Web Share API 不可用時)
-     */
-    function showShareTip() {
-        const tipMessage = currentShareFormat === 'story'
-            ? '✨ 圖片已下載！\n\n請至相簿選擇圖片，然後:\n1. 開啟 Instagram\n2. 點選左上角「+」建立限時動態\n3. 選擇剛下載的圖片\n4. 直接分享到限動！'
-            : '✨ 圖片已下載！\n\n您可以:\n1. 分享到 Instagram 貼文\n2. 傳送給朋友\n3. 發布到其他社群平台';
-
-        alert(tipMessage);
-    }
+    // --- ✨ Share Logic moved to ShareManager ---
 
     async function endGame() {
         gameStarted = false;
@@ -972,34 +657,31 @@ document.addEventListener('DOMContentLoaded', function () {
         window.currentGameStats = gameStats;
 
         // 3. 生成預設格式的成績圖卡 (方形)
-        currentShareFormat = 'square';
-        // ✨ 確保按鈕回到預設狀態
-        document.querySelector('[data-format="square"]').classList.add('active');
-        document.querySelector('[data-format="story"]').classList.remove('active');
-
-        const scoreCardURL = await generateScoreCard(gameStats, currentShareFormat);
+        // 3. 生成預設格式的成績圖卡 (方形)
+        // Use ShareManager
+        const scoreCardURL = await shareManager.switchShareFormat('square', gameStats, currentLang, i18nStrings);
         window.currentScoreCardURL = scoreCardURL;
 
         // 4. 顯示分享區塊
         document.getElementById('share-section').style.display = 'block';
 
         // 5. 綁定格式切換按鈕事件
-        document.getElementById('formatSquareBtn').onclick = () => {
-            switchShareFormat('square');
+        document.getElementById('formatSquareBtn').onclick = async () => {
+            window.currentScoreCardURL = await shareManager.switchShareFormat('square', gameStats, currentLang, i18nStrings);
         };
 
-        document.getElementById('formatStoryBtn').onclick = () => {
-            switchShareFormat('story');
+        document.getElementById('formatStoryBtn').onclick = async () => {
+            window.currentScoreCardURL = await shareManager.switchShareFormat('story', gameStats, currentLang, i18nStrings);
         };
 
         // 6. 綁定下載按鈕事件
         document.getElementById('downloadScoreBtn').onclick = () => {
-            downloadImage(window.currentScoreCardURL);
+            shareManager.downloadImage(window.currentScoreCardURL);
         };
 
         // 7. 綁定分享按鈕事件
         document.getElementById('shareScoreBtn').onclick = () => {
-            shareImage(window.currentScoreCardURL, gameStats);
+            shareManager.shareImage(window.currentScoreCardURL, gameStats);
         };
 
         // 原始的繼續按鈕邏輯
@@ -1007,7 +689,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     function closeSettlementAndCheckBirthday() { modal.classList.add('hidden'); milestoneModal.classList.add('hidden'); globalMilestoneModal.classList.add('hidden'); if (isBirthdayToday()) { birthdayMessage.textContent = i18nStrings[currentLang].birthdayMessage; birthdayModal.classList.remove('hidden'); playSound(audio.birthday, false); } else { restartGame(); } }
     function copyShareText() { const shareSuccessText = i18nStrings[currentLang].shareSuccess || '分享文案已複製到剪貼簿！'; const shareFailureText = i18nStrings[currentLang].shareFailure || '複製失敗，請手動複製！'; const currentScore = score; const cumulativeScore = playerProfile.cumulativeScore; const globalProgress = globalMilestoneCurrentPercent.textContent; let shareText = i18nStrings[currentLang].shareTextTemplate; shareText = shareText.replace('{score}', currentScore); shareText = shareText.replace('{cumulativeScore}', cumulativeScore); shareText = shareText.replace('{globalProgress}', globalProgress); navigator.clipboard.writeText(shareText).then(() => { alert(shareSuccessText); }).catch(err => { console.error('複製失敗: ', err); alert(shareFailureText + '\n' + shareText); }); }
-    function resetGame() { score = 0; timeLeft = GAME_CONFIG.GAME_TIME; isFeverTime = false; feverMeter = 0; feverDurationTimer = 0; fallingItems = []; player.x = canvas.width / 2 - player.width / 2; spawnInterval = baseSpawnInterval; spawnTimer = spawnInterval; stats_items_positive = 0; stats_items_negative = 0; stats_questions_correct = 0; stats_questions_wrong = 0; scoreDisplay.textContent = `0`; timeDisplay.textContent = `${timeLeft}s`; milestoneProgress.textContent = `0%`; if (player.loaded) player.image = player.defaultImage; player.currentFrame = 0; player.frameCounter = 0; scoreCardCache.square = null; scoreCardCache.story = null; scoreCardCache.stats = null; }
+    function resetGame() { score = 0; timeLeft = GAME_CONFIG.GAME_TIME; isFeverTime = false; feverMeter = 0; feverDurationTimer = 0; fallingItems = []; player.x = canvas.width / 2 - player.width / 2; spawnInterval = baseSpawnInterval; spawnTimer = spawnInterval; stats_items_positive = 0; stats_items_negative = 0; stats_questions_correct = 0; stats_questions_wrong = 0; scoreDisplay.textContent = `0`; timeDisplay.textContent = `${timeLeft}s`; milestoneProgress.textContent = `0%`; if (player.loaded) player.image = player.defaultImage; player.currentFrame = 0; player.frameCounter = 0; shareManager.scoreCardCache = { square: null, story: null, stats: null }; }
     function startGame() { gameStarted = true; clearGameTimers(); resetGame(); modal.classList.add('hidden'); gameTimerId = setInterval(updateTimer, 1000); playSound(audio.gameStart); playSound(audio.bgm, false); stats_positive = 0; stats_negative = 0; stats_correct = 0; stats_wrong = 0; stats_feverCount = 0; stats_feverTime = 0; }
     function restartGame() { birthdayModal.classList.add('hidden'); audio.birthday.pause(); audio.birthday.currentTime = 0; showStartModalText(); }
 

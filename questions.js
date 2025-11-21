@@ -50,8 +50,8 @@ const QUESTION_BANK = [
         },
         'en': {
             question: "Which city in Taiwan is Yuan from?",
-            correctAnswer: "高雄市",
-            incorrectAnswers: ["台北市", "台中市"]
+            correctAnswer: "Kaohsiung",
+            incorrectAnswers: ["Taipei", "Taichung"]
         }
     },
     {
@@ -66,7 +66,7 @@ const QUESTION_BANK = [
             correctAnswer: "《SO WHAT》",
             incorrectAnswers: ["《OH!(中文版)》", "《一起走》"]
         }
-    },  
+    },
     {
         id: 'q6',
         'zh-TW': {
@@ -115,8 +115,8 @@ const QUESTION_BANK = [
         },
         'en': {
             question: "Which Taipei MRT station is this birthday cafe near?",
-            correctAnswer: "信義安和站",
-            incorrectAnswers: ["大安站", "忠孝新生站"]
+            correctAnswer: "Xinyi Anhe Station",
+            incorrectAnswers: ["Dahan Station", "Zhongxiao Xingsheng Station"]
         }
     },
     {
