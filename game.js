@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // --- 初始化 HTML 元素 (✨ 更新) ---
     const db = firebase.firestore();
-    const auth = firebase.auth(); // ✨ 1. 新增：取得 Firebase Auth 服務
+    const databaseManager = new DatabaseManager(); // ✨ Initialize DatabaseManager
     const shareManager = new ShareManager(); // ✨ Initialize ShareManager
     const canvas = document.getElementById('game-canvas');
     const ctx = canvas.getContext('2d');
@@ -216,34 +216,25 @@ document.addEventListener('DOMContentLoaded', function () {
     let currentClaimingTier = null; // ✨ 新增：用來追蹤正在領取哪個 Tier
     let wasMilestoneModalOpen = false; // ✨ 新增：用來追蹤顯示 IG 輸入畫面時，個人里程碑視窗是否原本是開著的
 
-    // --- ✨ 2. Firebase 匿名登入與初始化 ---
+    // --- ✨ 2. Database Logic moved to DatabaseManager ---
     let currentUserID = null;
 
     function handleAuthentication() {
-        auth.onAuthStateChanged(async (user) => {
-            if (user) {
-                currentUserID = user.uid;
-                console.log("Firebase 匿名登入成功，UID:", currentUserID);
+        databaseManager.handleAuthentication(
+            (uid) => {
+                currentUserID = uid;
                 // ✨ 暫時隱藏：進度 ID 顯示（未來可能添加匯入進度 ID 功能）
                 // if (userIdDisplay) {
                 //     userIdDisplay.textContent = formatUserID(currentUserID);
                 // }
-                await loadPlayerProfile();
-                await loadTotalMilestoneScore();
                 showStartModalText();
-            } else {
-                console.log("使用者未登入，正在嘗試匿名登入...");
-                try {
-                    await auth.signInAnonymously();
-                    console.log("匿名登入請求成功。");
-                } catch (error) {
-                    console.error("Firebase 匿名登入失敗:", error);
-                    modalTitle.textContent = "登入失敗";
-                    modalText.textContent = "無法連線至伺服器以驗證您的身份，請檢查網路連線後重新整理頁面。";
-                    modal.classList.remove('hidden');
-                }
+            },
+            (error) => {
+                modalTitle.textContent = "登入失敗";
+                modalText.textContent = "無法連線至伺服器以驗證您的身份，請檢查網路連線後重新整理頁面。";
+                modal.classList.remove('hidden');
             }
-        });
+        );
     }
 
     // --- 資源載入 (省略) ---
@@ -419,6 +410,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // ✨ 修改：顯示 IG 輸入畫面（支援修改模式）
     function showIgPrompt(tier) {
         currentClaimingTier = tier; // 記錄正在領取的獎勵（null 表示修改模式）
+        databaseManager.currentClaimingTier = tier; // Sync with DatabaseManager
         hideAllModalScreens();
 
         // ✨ 修正：如果個人里程碑視窗是開著的，暫時隱藏它
@@ -470,7 +462,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // ✨ 修改：顯示個人里程碑彈窗 (垂直列表新版)
     async function showMilestoneModal(isEndGameFlow = false) {
-        await loadPlayerProfile();
+        await databaseManager.loadPlayerProfile();
+        playerProfile = databaseManager.playerProfile; // Sync local profile
 
         const currentScore = playerProfile.cumulativeScore;
         milestoneCurrentScore.textContent = new Intl.NumberFormat().format(currentScore);
@@ -528,7 +521,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function showPersonalMilestoneStep() { modal.classList.add('hidden'); showMilestoneModal(true); }
-    async function showGlobalMilestoneModal(isEndGameFlow = false) { const progressPercent = await loadTotalMilestoneScore(true); globalMilestoneProgressBarFill.style.width = progressPercent; globalMilestoneCurrentPercent.textContent = progressPercent; if (isEndGameFlow) { globalMilestoneCloseButton.classList.add('hidden'); globalMilestoneRestartButton.classList.remove('hidden'); globalMilestoneShareButton.classList.remove('hidden'); globalMilestoneRestartButton.onclick = closeSettlementAndCheckBirthday; globalMilestoneShareButton.onclick = copyShareText; } else { globalMilestoneCloseButton.classList.remove('hidden'); globalMilestoneRestartButton.classList.add('hidden'); globalMilestoneShareButton.classList.add('hidden'); globalMilestoneCloseButton.onclick = () => { globalMilestoneModal.classList.add('hidden'); }; } globalMilestoneModal.classList.remove('hidden'); }
+    async function showGlobalMilestoneModal(isEndGameFlow = false) { const progressPercent = await databaseManager.loadTotalMilestoneScore(); globalMilestoneProgressBarFill.style.width = progressPercent; globalMilestoneCurrentPercent.textContent = progressPercent; if (isEndGameFlow) { globalMilestoneCloseButton.classList.add('hidden'); globalMilestoneRestartButton.classList.remove('hidden'); globalMilestoneShareButton.classList.remove('hidden'); globalMilestoneRestartButton.onclick = closeSettlementAndCheckBirthday; globalMilestoneShareButton.onclick = copyShareText; } else { globalMilestoneCloseButton.classList.remove('hidden'); globalMilestoneRestartButton.classList.add('hidden'); globalMilestoneShareButton.classList.add('hidden'); globalMilestoneCloseButton.onclick = () => { globalMilestoneModal.classList.add('hidden'); }; } globalMilestoneModal.classList.remove('hidden'); }
     function showGlobalMilestoneStep() { milestoneModal.classList.add('hidden'); showGlobalMilestoneModal(true); }
 
     // --- 遊戲狀態函式 (✨ 更新) ---
@@ -622,7 +615,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (score > 0) {
             if (navigator.onLine) {
-                uploadScore(score);
+                databaseManager.uploadScore(score, currentStats, isBirthdayToday());
+                // Update local profile score immediately for UI responsiveness
+                playerProfile.cumulativeScore += score;
             } else {
                 // Construct the data object for offline storage
                 const scoreData = {
@@ -694,87 +689,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function restartGame() { birthdayModal.classList.add('hidden'); audio.birthday.pause(); audio.birthday.currentTime = 0; showStartModalText(); }
 
     // --- 資料庫相關函式 (✨ 重大更新) ---
-
-    async function uploadScore(score) {
-        if (!currentUserID || !db) {
-            console.log("尚未取得 UserID 或 DB，無法上傳分數。");
-            return;
-        }
-
-        const batch = db.batch();
-        const scoreRef = db.collection('scores').doc();
-        const scoreData = {
-            userId: currentUserID,
-            score: score,
-            timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-            version: GAME_CONFIG.VERSION,
-            isBirthday: isBirthdayToday(),
-            stats: currentStats,
-        };
-        batch.set(scoreRef, scoreData);
-
-        const playerRef = db.collection('players').doc(currentUserID);
-
-        // 檢查玩家資料是否存在以及缺少哪些欄位
-        try {
-            const playerDoc = await playerRef.get();
-            const existingData = playerDoc.exists ? playerDoc.data() : {};
-
-            // 定義所有必要的欄位及其預設值
-            const requiredFields = {
-                claimedTier1: false,
-                tier2Qualified: false,
-                tier3Qualified: false,
-                instagramHandle: null
-            };
-
-            // 檢查缺少的欄位
-            const missingFields = {};
-            let hasMissingFields = false;
-            for (const [field, defaultValue] of Object.entries(requiredFields)) {
-                if (!(field in existingData)) {
-                    missingFields[field] = defaultValue;
-                    hasMissingFields = true;
-                }
-            }
-
-            if (!playerDoc.exists) {
-                // 如果玩家資料不存在，建立完整的初始資料
-                const initialPlayerData = {
-                    cumulativeScore: score,
-                    lastPlayed: firebase.firestore.FieldValue.serverTimestamp(),
-                    ...requiredFields
-                };
-                batch.set(playerRef, initialPlayerData);
-                console.log("建立新的玩家資料，包含所有必要欄位");
-            } else if (hasMissingFields) {
-                // 如果玩家資料存在但缺少某些欄位，補上缺少的欄位
-                const updateData = {
-                    cumulativeScore: firebase.firestore.FieldValue.increment(score),
-                    lastPlayed: firebase.firestore.FieldValue.serverTimestamp(),
-                    ...missingFields
-                };
-                batch.set(playerRef, updateData, { merge: true });
-                console.log("更新玩家資料並補上缺少的欄位:", Object.keys(missingFields));
-            } else {
-                // 如果玩家資料已存在且完整，只更新分數相關欄位
-                const playerData = {
-                    cumulativeScore: firebase.firestore.FieldValue.increment(score),
-                    lastPlayed: firebase.firestore.FieldValue.serverTimestamp(),
-                };
-                batch.set(playerRef, playerData, { merge: true });
-                console.log("更新現有玩家資料的分數");
-            }
-
-            await batch.commit();
-            console.log("分數上傳與個人總分累加成功 (Batch Commit)！");
-            playerProfile.cumulativeScore += score;
-        } catch (error) {
-            console.error("分數上傳或個人總分累加失敗:", error);
-        }
-    }
-    async function loadTotalMilestoneScore(isEndGame = false) { if (!db) return '0%'; let totalScore = 0; let progressPercent = '0%'; try { const querySnapshot = await db.collection("scores").get(); querySnapshot.forEach((doc) => { totalScore += doc.data().score; }); console.log("目前里程碑總分: ", totalScore); const milestoneTarget = GAME_CONFIG.MILESTONES.GLOBAL_TARGET; progressPercent = Math.min(100, (totalScore / milestoneTarget) * 100).toFixed(1) + '%'; milestoneProgress.textContent = progressPercent; } catch (error) { console.error("讀取總分失敗: ", error); } return progressPercent; }
-    async function loadPlayerProfile() { if (!currentUserID || !db) { console.log("尚未取得 UserID 或 DB，無法讀取個人資料。"); return; } const playerRef = db.collection('players').doc(currentUserID); try { const doc = await playerRef.get(); if (doc.exists) { console.log("成功讀取玩家資料:", doc.data()); playerProfile = { ...{ cumulativeScore: 0, claimedTier1: false, tier2Qualified: false, tier3Qualified: false, instagramHandle: null }, ...doc.data() }; } else { console.log("找不到玩家資料，將在遊戲結束後自動建立。"); } } catch (error) { console.error("讀取玩家資料失敗:", error); } }
+    // Logic moved to DatabaseManager
 
     // ✨ 修改：提交 IG 帳號（支援修改模式）
     async function submitIgHandle() {
@@ -784,31 +699,14 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        if (!currentUserID || !db) {
-            alert(i18nStrings[currentLang].igSaveError);
-            return;
-        }
-
-        const playerRef = db.collection('players').doc(currentUserID);
-
         try {
             igSubmitButton.disabled = true; // 防止重複點擊
+            await databaseManager.submitIgHandle(handle, currentClaimingTier);
 
+            // Sync local profile
+            playerProfile.instagramHandle = handle;
             if (currentClaimingTier) {
-                // 領取獎勵模式：更新 IG 帳號並標記對應 tier 為已獲得資格
-                const tierField = `tier${currentClaimingTier}Qualified`;
-                await playerRef.update({
-                    instagramHandle: handle,
-                    [tierField]: true
-                });
-                playerProfile.instagramHandle = handle;
-                playerProfile[tierField] = true;
-            } else {
-                // 修改模式：只更新 IG 帳號
-                await playerRef.update({
-                    instagramHandle: handle
-                });
-                playerProfile.instagramHandle = handle;
+                playerProfile[`tier${currentClaimingTier}Qualified`] = true;
             }
 
             alert(i18nStrings[currentLang].igSaveSuccess);
@@ -829,6 +727,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (playerProfile.instagramHandle) {
             // 設定為修改模式（不指定 tier，只更新 IG 帳號）
             currentClaimingTier = null;
+            databaseManager.currentClaimingTier = null;
             showIgPrompt(null);
         }
     }
@@ -871,11 +770,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     return;
                 } else if (playerProfile.instagramHandle) {
                     // 已有 IG 帳號但未獲得資格，直接標記為已獲得資格並顯示成功訊息
-                    const playerRef = db.collection('players').doc(currentUserID);
                     try {
-                        await playerRef.update({
-                            tier3Qualified: true
-                        });
+                        await databaseManager.markTier3Qualified();
                         playerProfile.tier3Qualified = true;
                         alert(i18nStrings[currentLang].tier3ClaimSuccess || i18nStrings[currentLang].igSaveSuccess);
                         showMilestoneModal(); // 重新整理里程碑畫面
