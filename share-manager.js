@@ -72,28 +72,36 @@ class ShareManager {
             const width = canvas.width;
             const height = canvas.height;
 
-            // Background Gradient
+            // Background - 使用遊戲風格的深色漸層
             const gradient = ctx.createLinearGradient(0, 0, 0, height);
-            gradient.addColorStop(0, '#667eea');
-            gradient.addColorStop(1, '#764ba2');
+            gradient.addColorStop(0, '#1a1a2e'); // 深藍黑色
+            gradient.addColorStop(0.5, '#252540'); // 遊戲主背景色
+            gradient.addColorStop(1, '#16213e'); // 更深的藍黑色
             ctx.fillStyle = gradient;
             ctx.fillRect(0, 0, width, height);
 
-            // Content Area
+            // Content Area - 使用半透明的深色背景而非白色
             const padding = 80;
             const contentWidth = width - (padding * 2);
             const contentHeight = height - (padding * 2);
 
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
-            // Ensure roundRect exists or use polyfill (assumed handled in game.js or here if needed, 
-            // but game.js had a polyfill. We might need to ensure it's available or copy it.)
+            // 深色半透明背景
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
             if (ctx.roundRect) {
                 ctx.beginPath();
                 ctx.roundRect(padding, padding, contentWidth, contentHeight, 30);
                 ctx.fill();
             } else {
-                // Simple fallback if polyfill isn't global (it was added to prototype in game.js)
                 ctx.fillRect(padding, padding, contentWidth, contentHeight);
+            }
+
+            // 添加邊框光暈效果
+            ctx.strokeStyle = '#f72585'; // 粉紅色邊框
+            ctx.lineWidth = 4;
+            if (ctx.roundRect) {
+                ctx.beginPath();
+                ctx.roundRect(padding, padding, contentWidth, contentHeight, 30);
+                ctx.stroke();
             }
 
             // Layout calculations
@@ -105,18 +113,13 @@ class ShareManager {
             const statsSpacing = isStory ? 100 : 90;
 
             // Title
-            ctx.fillStyle = '#2d3748';
+            ctx.fillStyle = '#ffffff'; // 白色標題
             ctx.font = 'bold 72px Arial, sans-serif';
             ctx.textAlign = 'center';
             ctx.fillText('🎮 2026 Happy Yuan Day', width / 2, titleY);
 
-            // Subtitle
-            ctx.font = '36px Arial, sans-serif';
-            ctx.fillStyle = '#4a5568';
-            ctx.fillText('媛來接力 - 遊戲成績', width / 2, subtitleY);
-
             // Divider
-            ctx.strokeStyle = '#cbd5e0';
+            ctx.strokeStyle = '#f72585'; // 粉紅色分隔線
             ctx.lineWidth = 3;
             ctx.beginPath();
             ctx.moveTo(padding + 100, dividerY);
@@ -142,11 +145,11 @@ class ShareManager {
                 ctx.fillText(stat.emoji, leftMargin, yPosition);
 
                 ctx.font = 'bold 42px Arial, sans-serif';
-                ctx.fillStyle = '#2d3748';
+                ctx.fillStyle = '#ffffff'; // 白色標籤
                 ctx.fillText(stat.label, leftMargin + 80, yPosition);
 
                 ctx.font = 'bold 48px Arial, sans-serif';
-                ctx.fillStyle = '#667eea';
+                ctx.fillStyle = '#f72585'; // 粉紅色數值
                 ctx.textAlign = 'right';
                 ctx.fillText(String(stat.value), rightMargin, yPosition);
                 ctx.textAlign = 'left';
@@ -185,13 +188,6 @@ class ShareManager {
                         cardY = height - cardHeight - padding + 100;
                     }
                     ctx.drawImage(this.shareCardImage, cardX, cardY, cardWidth, cardHeight);
-                }
-
-                if (isStory) {
-                    ctx.font = 'bold 28px Arial, sans-serif';
-                    ctx.fillStyle = '#667eea';
-                    ctx.textAlign = 'center';
-                    ctx.fillText('👆 立即挑戰', qrX + qrSize / 2, qrY + qrSize + 40);
                 }
 
                 const imageDataURL = canvas.toDataURL('image/png', 0.95);
