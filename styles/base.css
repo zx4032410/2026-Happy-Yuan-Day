@@ -6,22 +6,31 @@
 body {
     margin: 0;
     padding: 0;
+    width: 100%;
+    height: 100dvh;
+    /* ✨ Fix: Use dynamic viewport height for mobile browsers */
+    background-color: #252540;
+    color: #ffffff;
+    overflow: hidden;
     font-family: 'Noto Sans TC', sans-serif;
-    background-color: var(--color-bg-primary);
-    /* Fallback color */
-    background-image: url('../images/badassbackground.webp');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    /* ✨ 讓背景固定,滾動時不會移動 */
-    color: var(--color-text-primary);
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 100vh;
-    padding: var(--spacing-lg) 0;
-    /* ✨ 上下留白,避免內容貼邊 */
+}
+
+#game-container {
+    position: relative;
+    width: 100%;
+    max-width: 800px;
+    height: 100dvh;
+    /* ✨ Fix: Use dynamic viewport height */
+    background-color: #333;
+    overflow: hidden;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    padding-bottom: env(safe-area-inset-bottom);
+    /* ✨ Fix: Respect Home Indicator */
+    box-sizing: border-box;
+    /* Ensure padding is included in height */
 }
 
 /* 2. ✨ 核心描邊效果 (模擬深咖啡色描邊) */

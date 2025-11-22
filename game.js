@@ -157,19 +157,45 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // --- 音效初始化區 (不變) ---
+    // ✨ 新增：Audio Pool 系統
+    class AudioPool {
+        constructor(src, size = 5) {
+            this.pool = [];
+            this.index = 0;
+            for (let i = 0; i < size; i++) {
+                const audio = new Audio(src);
+                audio.preload = 'auto';
+                this.pool.push(audio);
+            }
+        }
+
+        play() {
+            if (isMuted) return;
+            const audio = this.pool[this.index];
+            audio.currentTime = 0;
+            audio.play().catch(e => console.warn('Audio play failed:', e));
+            this.index = (this.index + 1) % this.pool.length;
+        }
+    }
+
+    // --- 音效初始化區 (✨ 更新：使用 Audio Pool) ---
     const audio = {};
     audio.bgm = new Audio('./audio/bgm.mp3'); audio.bgm.loop = true;
     audio.gameStart = new Audio('./audio/game-start.mp3');
     audio.gameOver = new Audio('./audio/game-over.mp3');
-    audio.collectPositive = new Audio('./audio/collect-positive.mp3');
-    audio.collectNegative = new Audio('./audio/collect-negative.mp3');
     audio.bgmFever = new Audio('./audio/bgm-fever.m4a');
-    audio.collectSpecial = new Audio('./audio/collect-special.mp3');
-    audio.collectQuestion = new Audio('./audio/collect-question.mp3');
     audio.answerCorrect = new Audio('./audio/answer-correct.mp3');
     audio.answerIncorrect = new Audio('./audio/answer-incorrect.mp3');
     audio.birthday = new Audio('./audio/Happy Birthday_8bit.mp3');
     audio.birthday.loop = true;
+
+    // 使用 Pool 的音效 (高頻率觸發)
+    const sfxPools = {
+        collectPositive: new AudioPool('./audio/collect-positive.mp3', 5),
+        collectNegative: new AudioPool('./audio/collect-negative.mp3', 5),
+        collectSpecial: new AudioPool('./audio/collect-special.mp3', 3),
+        collectQuestion: new AudioPool('./audio/collect-question.mp3', 3)
+    };
 
     // --- 遊戲變數 (✨ 更新) ---
     let gameStarted = false;
@@ -380,9 +406,21 @@ document.addEventListener('DOMContentLoaded', function () {
     document.addEventListener('mouseup', () => { keys.left = false; keys.right = false; });
 
     // --- 遊戲核心函式 (省略部分) ---
-    function spawnItem() { const totalProbability = GAME_CONFIG.ITEM_TYPES.reduce((sum, item) => sum + item.probability, 0); let random = Math.random() * totalProbability; let chosenItemType; for (const itemType of GAME_CONFIG.ITEM_TYPES) { if (random < itemType.probability) { chosenItemType = itemType; break; } random -= itemType.probability; } if (!chosenItemType || !itemImages[chosenItemType.id] || !itemImages[chosenItemType.id].complete) { return; } const scaledItemSize = GAME_CONFIG.ITEM_DEFAULT_SIZE * gameScale; fallingItems.push({ x: Math.random() * (canvas.width - scaledItemSize), y: GAME_CONFIG.ITEM_SPAWN_Y_OFFSET * gameScale, width: scaledItemSize, height: scaledItemSize, speed: chosenItemType.speed, score: chosenItemType.score, type: chosenItemType.type, image: itemImages[chosenItemType.id] }); }
+    function spawnItem() { const totalProbability = GAME_CONFIG.ITEM_TYPES.reduce((sum, item) => sum + item.probability, 0); let random = Math.random() * totalProbability; let chosenItemType; for (const itemType of GAME_CONFIG.ITEM_TYPES) { if (random < itemType.probability) { chosenItemType = itemType; break; } random -= itemType.probability; } if (!chosenItemType || !itemImages[chosenItemType.id] || !itemImages[chosenItemType.id].complete) { return; } const scaledItemSize = GAME_CONFIG.ITEM_DEFAULT_SIZE * gameScale; fallingItems.push({ x: Math.random() * (canvas.width - scaledItemSize), y: GAME_CONFIG.ITEM_SPAWN_Y_OFFSET * gameScale, width: scaledItemSize, height: scaledItemSize, speed: chosenItemType.speed * gameScale, score: chosenItemType.score, type: chosenItemType.type, image: itemImages[chosenItemType.id] }); }
     function checkCollision(obj1, obj2) { return obj1.x < obj2.x + obj2.width && obj1.x + obj1.width > obj2.x && obj1.y < obj2.y + obj2.height && obj1.y + obj1.height > obj2.y; }
-    function playSound(audioObject, isSFX = true) { if (isMuted) return; if (!audioObject) return; if (isSFX) { audioObject.currentTime = 0; } audioObject.play().catch(error => { console.warn(`音效播放失敗: ${error.message}`); }); }
+    function playSound(audioObject, isSFX = true) {
+        if (isMuted) return;
+        if (!audioObject) return;
+
+        // 檢查是否為 Pool 物件
+        if (audioObject instanceof AudioPool) {
+            audioObject.play();
+            return;
+        }
+
+        if (isSFX) { audioObject.currentTime = 0; }
+        audioObject.play().catch(error => { console.warn(`音效播放失敗: ${error.message}`); });
+    }
     function showScoreChange(score) { const scoreChangeElement = document.getElementById('score-change'); if (!scoreChangeElement) return; const scoreValue = parseInt(score, 10); if (isNaN(scoreValue) || scoreValue === 0) return; scoreChangeElement.textContent = (scoreValue > 0 ? '+' : '') + scoreValue; scoreChangeElement.classList.remove('positive', 'negative', 'show'); if (scoreValue > 0) { scoreChangeElement.classList.add('positive'); } else { scoreChangeElement.classList.add('negative'); } void scoreChangeElement.offsetWidth; scoreChangeElement.classList.add('show'); setTimeout(() => { scoreChangeElement.classList.remove('show'); }, GAME_CONFIG.UI.SCORE_CHANGE_DURATION); }
     function applyLanguage(lang) { if (!i18nStrings[lang]) { console.warn(`找不到語言 ${lang}，使用 zh-TW。`); lang = 'zh-TW'; } currentLang = lang; langSelect.value = lang; document.querySelectorAll('[data-i18n-key]').forEach(element => { const key = element.dataset.i18nKey; if (i18nStrings[lang][key]) { element.textContent = i18nStrings[lang][key]; } }); document.querySelectorAll('[data-i18n-key-placeholder]').forEach(element => { const key = element.dataset.i18nKeyPlaceholder; if (i18nStrings[lang][key]) { element.placeholder = i18nStrings[lang][key]; } }); document.title = i18nStrings[lang].modalStartTitle; showStartModalText(); }
     function detectLanguage() { let browserLang = navigator.language || navigator.userLanguage; if (browserLang.startsWith('en')) { applyLanguage('en'); } else if (browserLang.startsWith('zh')) { applyLanguage('zh-TW'); } else { applyLanguage('zh-TW'); } }
@@ -890,22 +928,22 @@ document.addEventListener('DOMContentLoaded', function () {
                     feverBoost = GAME_CONFIG.FEVER.POSITIVE_ITEM_BOOST;
                     if (isFeverTime) pointsToChange *= GAME_CONFIG.SCORING.FEVER_MULTIPLIER;
                     player.image = player.winImage;
-                    playSound(audio.collectPositive);
+                    playSound(sfxPools.collectPositive);
                     stats_items_positive++;
                 } else if (item.type === 'special') {
                     pointsToChange = item.score;
                     feverBoost = GAME_CONFIG.FEVER.SPECIAL_ITEM_BOOST;
                     if (isFeverTime) pointsToChange *= GAME_CONFIG.SCORING.FEVER_MULTIPLIER;
                     player.image = player.winImage;
-                    playSound(audio.collectSpecial);
+                    playSound(sfxPools.collectSpecial);
                     stats_items_positive++;
                 } else if (item.type === 'negative') {
                     pointsToChange = -item.score;
                     player.image = player.loseImage;
-                    playSound(audio.collectNegative);
+                    playSound(sfxPools.collectNegative);
                     stats_items_negative++;
                 } else if (item.type === 'question') {
-                    playSound(audio.collectQuestion);
+                    playSound(sfxPools.collectQuestion);
                     showQuestion();
                 }
 

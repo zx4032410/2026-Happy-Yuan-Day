@@ -218,10 +218,12 @@
     justify-content: space-between;
     width: 100%;
     position: absolute;
-    bottom: var(--spacing-lg);
-    padding: 0 var(--spacing-lg);
+    bottom: calc(20px + env(safe-area-inset-bottom));
+    /* ✨ Fix: Move up to avoid address bar */
+    left: 0;
+    padding: 0 20px;
     box-sizing: border-box;
-    z-index: var(--z-index-base);
+    z-index: 20;
     pointer-events: none;
     gap: var(--spacing-md);
 }
