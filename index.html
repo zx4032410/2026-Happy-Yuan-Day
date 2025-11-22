@@ -110,30 +110,20 @@
         </div>
     </div>
 
-    <div id="global-ui-container">
-        <div id="lang-switcher-area">
-            <span aria-hidden="true">🌍</span>
-            <select id="lang-select" aria-label="選擇語言">
-                <option value="zh-TW">繁體中文</option>
-                <option value="en">English</option>
-            </select>
-        </div>
-        <!-- ✨ 暫時隱藏：進度 ID 顯示區（未來可能添加匯入進度 ID 功能） -->
-        <!--
-        <div id="user-id-area">
-            <span data-i18n-key="transferTitle">進度 ID</span>:
-            <span id="user-id-display">ABC-DEF-GHI</span>
-            <button id="copy-id-button" aria-label="複製進度 ID">
-                <img src="./images/copy_icon.png" alt="複製圖示">
-            </button>
-        </div>
-        -->
-    </div>
+
 
     <div id="modal-overlay" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="modal-title">
         <div id="modal-content" class="modal-content">
 
             <div id="start-screen-ui">
+                <!-- ✨ Move Language Switcher Here -->
+                <div id="lang-switcher-area">
+                    <span aria-hidden="true">🌍</span>
+                    <select id="lang-select" aria-label="選擇語言">
+                        <option value="zh-TW">繁體中文</option>
+                        <option value="en">English</option>
+                    </select>
+                </div>
                 <h2 id="modal-title" data-i18n-key="modalStartTitle"></h2>
                 <p id="modal-text" data-i18n-key="modalStartText"></p>
                 <button id="start-button" data-i18n-key="modalStartButton" class="start-button-style"></button>

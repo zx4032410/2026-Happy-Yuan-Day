@@ -10,6 +10,13 @@ body {
     height: 100dvh;
     /* ✨ Fix: Use dynamic viewport height for mobile browsers */
     background-color: #252540;
+    /* Fallback color */
+    background-image: url('../images/badassbackground.webp');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    /* ✨ 讓背景固定,滾動時不會移動 */
     color: #ffffff;
     overflow: hidden;
     font-family: 'Noto Sans TC', sans-serif;
