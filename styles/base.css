@@ -31,7 +31,8 @@ body {
     max-width: 800px;
     height: 100dvh;
     /* ✨ Fix: Use dynamic viewport height */
-    background-color: #333;
+    background-color: transparent;
+    /* ✨ Fix: Make transparent to show body background */
     overflow: hidden;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
     padding-bottom: env(safe-area-inset-bottom);

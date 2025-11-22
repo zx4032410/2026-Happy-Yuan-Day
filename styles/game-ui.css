@@ -106,18 +106,23 @@
 
 /* --- ✨ 語言切換器樣式 --- */
 #lang-switcher-area span {
-    font-size: 1.5em;
-    /* 地球圖示 */
-    margin-right: 5px;
+    font-size: 1.2em;
+    /* ✨ Smaller icon */
+    margin-right: 3px;
+    /* ✨ Less spacing */
 }
 
 #lang-switcher-area select {
-    background-color: rgba(255, 255, 255, 0.2);
+    background-color: rgba(0, 0, 0, 0.4);
+    /* ✨ Subtle dark background */
     color: white;
-    border: 1px solid rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    /* ✨ Lighter border */
     border-radius: 5px;
-    padding: 5px;
-    font-size: 0.9em;
+    padding: 3px 8px;
+    /* ✨ Smaller padding */
+    font-size: 0.85em;
+    /* ✨ Smaller font */
     font-family: 'Noto Sans TC', sans-serif;
     font-weight: 700;
     cursor: pointer;
@@ -165,9 +170,14 @@
 #lang-switcher-area {
     display: flex;
     align-items: center;
-    justify-content: center;
-    margin-bottom: 15px;
-    /* Add space below */
+    justify-content: flex-end;
+    /* ✨ Align to right */
+    position: absolute;
+    /* ✨ Position in top-right of modal */
+    top: 15px;
+    right: 15px;
+    gap: 5px;
+    z-index: 10;
 }
 
 #user-id-display {
