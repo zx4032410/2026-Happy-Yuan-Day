@@ -38,14 +38,14 @@ class DatabaseManager {
         this.auth.onAuthStateChanged(async (user) => {
             if (user) {
                 this.currentUserID = user.uid;
-                console.log("Firebase 匿名登入成功，UID:", this.currentUserID);
+                // console.log("Firebase 匿名登入成功，UID:", this.currentUserID);
                 await this.loadPlayerProfile();
                 if (onLoginSuccess) onLoginSuccess(this.currentUserID);
             } else {
-                console.log("使用者未登入，正在嘗試匿名登入...");
+                // console.log("使用者未登入，正在嘗試匿名登入...");
                 try {
                     await this.auth.signInAnonymously();
-                    console.log("匿名登入請求成功。");
+                    // console.log("匿名登入請求成功。");
                 } catch (error) {
                     console.error("Firebase 匿名登入失敗:", error);
                     if (onLoginFailure) onLoginFailure(error);
@@ -59,20 +59,20 @@ class DatabaseManager {
      */
     async loadPlayerProfile() {
         if (!this.currentUserID || !this.db) {
-            console.log("尚未取得 UserID 或 DB，無法讀取個人資料。");
+            // console.log("尚未取得 UserID 或 DB，無法讀取個人資料。");
             return;
         }
         const playerRef = this.db.collection('players').doc(this.currentUserID);
         try {
             const doc = await playerRef.get();
             if (doc.exists) {
-                console.log("成功讀取玩家資料:", doc.data());
+                // console.log("成功讀取玩家資料:", doc.data());
                 this.playerProfile = {
                     ...{ cumulativeScore: 0, claimedTier1: false, tier2Qualified: false, tier3Qualified: false, instagramHandle: null },
                     ...doc.data()
                 };
             } else {
-                console.log("找不到玩家資料，將在遊戲結束後自動建立。");
+                // console.log("找不到玩家資料，將在遊戲結束後自動建立。");
             }
         } catch (error) {
             console.error("讀取玩家資料失敗:", error);
@@ -88,7 +88,7 @@ class DatabaseManager {
      */
     async uploadScore(score, currentStats, isBirthday) {
         if (!this.currentUserID || !this.db) {
-            console.log("尚未取得 UserID 或 DB，無法上傳分數。");
+            // console.log("尚未取得 UserID 或 DB，無法上傳分數。");
             return;
         }
 
@@ -133,7 +133,7 @@ class DatabaseManager {
                     ...requiredFields
                 };
                 batch.set(playerRef, initialPlayerData);
-                console.log("建立新的玩家資料，包含所有必要欄位");
+                // console.log("建立新的玩家資料，包含所有必要欄位");
             } else if (hasMissingFields) {
                 const updateData = {
                     cumulativeScore: firebase.firestore.FieldValue.increment(score),
@@ -141,18 +141,18 @@ class DatabaseManager {
                     ...missingFields
                 };
                 batch.set(playerRef, updateData, { merge: true });
-                console.log("更新玩家資料並補上缺少的欄位:", Object.keys(missingFields));
+                // console.log("更新玩家資料並補上缺少的欄位:", Object.keys(missingFields));
             } else {
                 const playerData = {
                     cumulativeScore: firebase.firestore.FieldValue.increment(score),
                     lastPlayed: firebase.firestore.FieldValue.serverTimestamp(),
                 };
                 batch.set(playerRef, playerData, { merge: true });
-                console.log("更新現有玩家資料的分數");
+                // console.log("更新現有玩家資料的分數");
             }
 
             await batch.commit();
-            console.log("分數上傳與個人總分累加成功 (Batch Commit)！");
+            // console.log("分數上傳與個人總分累加成功 (Batch Commit)！");
             this.playerProfile.cumulativeScore += score;
         } catch (error) {
             console.error("分數上傳或個人總分累加失敗:", error);
@@ -172,7 +172,7 @@ class DatabaseManager {
             querySnapshot.forEach((doc) => {
                 totalScore += doc.data().score;
             });
-            console.log("目前里程碑總分: ", totalScore);
+            // console.log("目前里程碑總分: ", totalScore);
             const milestoneTarget = GAME_CONFIG.MILESTONES.GLOBAL_TARGET;
             progressPercent = Math.min(100, (totalScore / milestoneTarget) * 100).toFixed(1) + '%';
         } catch (error) {

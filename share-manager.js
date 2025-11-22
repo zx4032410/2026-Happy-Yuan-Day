@@ -9,7 +9,7 @@ class ShareManager {
         this.shareCardImage = new Image();
         this.shareCardImage.src = './images/sharecard.PNG';
         // Preload image
-        this.shareCardImage.onload = () => console.log('Share card image loaded');
+        this.shareCardImage.onload = () => { }; // console.log('Share card image loaded');
         this.shareCardImage.onerror = () => console.error('Failed to load share card image');
     }
 
@@ -41,7 +41,7 @@ class ShareManager {
         if (this.scoreCardCache[format] &&
             this.scoreCardCache.stats &&
             JSON.stringify(this.scoreCardCache.stats) === JSON.stringify(gameStats)) {
-            console.log(`✅ Using cached ${format} card`);
+            // console.log(`✅ Using cached ${format} card`);
             return new Promise((resolve) => {
                 const canvas = document.getElementById('scoreCardCanvas');
                 const ctx = canvas.getContext('2d');
@@ -56,7 +56,7 @@ class ShareManager {
             });
         }
 
-        console.log(`🎨 Generating new ${format} card...`);
+        // console.log(`🎨 Generating new ${format} card...`);
         return new Promise((resolve) => {
             const canvas = document.getElementById('scoreCardCanvas');
             const ctx = canvas.getContext('2d');
@@ -195,7 +195,7 @@ class ShareManager {
                 // Update Cache
                 this.scoreCardCache[format] = imageDataURL;
                 this.scoreCardCache.stats = { ...gameStats };
-                console.log(`💾 ${format} card cached`);
+                // console.log(`💾 ${format} card cached`);
 
                 resolve(imageDataURL);
             };
@@ -274,16 +274,16 @@ class ShareManager {
                     text: shareText,
                     files: [file]
                 });
-                console.log('✅ Shared successfully!');
+                // console.log('✅ Shared successfully!');
             } else {
-                console.log('⚠️ Web Share API not supported, falling back to download');
+                // console.log('⚠️ Web Share API not supported, falling back to download');
                 this.downloadImage(dataURL);
                 this.showShareTip();
             }
 
         } catch (error) {
             if (error.name === 'AbortError') {
-                console.log('ℹ️ Share cancelled');
+                // console.log('ℹ️ Share cancelled');
             } else {
                 console.error('❌ Share failed:', error);
                 this.downloadImage(dataURL);

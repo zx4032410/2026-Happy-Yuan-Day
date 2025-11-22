@@ -289,7 +289,7 @@ document.addEventListener('DOMContentLoaded', function () {
         assetsLoaded++;
         updateLoadingProgress();
         if (assetsLoaded === assetsToLoad) {
-            console.log("所有圖片資源載入完成！");
+            // console.log("所有圖片資源載入完成！");
             player.image = player.defaultImage;
             player.loaded = true;
             setTimeout(() => {
@@ -578,7 +578,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const feverTimerBar = document.getElementById('fever-timer-bar');
         if (feverTimerBar) feverTimerBar.style.width = '100%';
 
-        console.log("FEVER TIME ACTIVATED!");
+        // console.log("FEVER TIME ACTIVATED!");
     }
     function endFeverTime() {
         if (!isFeverTime) return;
@@ -605,7 +605,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const feverTimerBar = document.getElementById('fever-timer-bar');
         if (feverTimerBar) feverTimerBar.style.width = '0%';
 
-        console.log("FEVER TIME ENDED.");
+        // console.log("FEVER TIME ENDED.");
     }
 
     // --- ✨ Share Logic moved to ShareManager ---
