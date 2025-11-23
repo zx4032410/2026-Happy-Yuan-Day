@@ -86,7 +86,13 @@ class DatabaseManager {
      * @param {boolean} isBirthday 
      * @returns {Promise<void>}
      */
-    async uploadScore(score, currentStats, isBirthday) {
+    /**
+     * Upload Score to Firestore
+     * @param {string} userId 
+     * @param {Object} currentStats 
+     * @returns {Promise<void>}
+     */
+    async saveScore(userId, currentStats) {
         if (!this.currentUserID || !this.db) {
             // console.log("尚未取得 UserID 或 DB，無法上傳分數。");
             return;
@@ -96,10 +102,9 @@ class DatabaseManager {
         const scoreRef = this.db.collection('scores').doc();
         const scoreData = {
             userId: this.currentUserID,
-            score: score,
+            score: currentStats.score,
             timestamp: firebase.firestore.FieldValue.serverTimestamp(),
             version: GAME_CONFIG.VERSION,
-            isBirthday: isBirthday,
             stats: currentStats,
         };
         batch.set(scoreRef, scoreData);
@@ -128,32 +133,28 @@ class DatabaseManager {
 
             if (!playerDoc.exists) {
                 const initialPlayerData = {
-                    cumulativeScore: score,
+                    cumulativeScore: currentStats.score,
                     lastPlayed: firebase.firestore.FieldValue.serverTimestamp(),
                     ...requiredFields
                 };
                 batch.set(playerRef, initialPlayerData);
-                // console.log("建立新的玩家資料，包含所有必要欄位");
             } else if (hasMissingFields) {
                 const updateData = {
-                    cumulativeScore: firebase.firestore.FieldValue.increment(score),
+                    cumulativeScore: firebase.firestore.FieldValue.increment(currentStats.score),
                     lastPlayed: firebase.firestore.FieldValue.serverTimestamp(),
                     ...missingFields
                 };
                 batch.set(playerRef, updateData, { merge: true });
-                // console.log("更新玩家資料並補上缺少的欄位:", Object.keys(missingFields));
             } else {
                 const playerData = {
-                    cumulativeScore: firebase.firestore.FieldValue.increment(score),
+                    cumulativeScore: firebase.firestore.FieldValue.increment(currentStats.score),
                     lastPlayed: firebase.firestore.FieldValue.serverTimestamp(),
                 };
                 batch.set(playerRef, playerData, { merge: true });
-                // console.log("更新現有玩家資料的分數");
             }
 
             await batch.commit();
-            // console.log("分數上傳與個人總分累加成功 (Batch Commit)！");
-            this.playerProfile.cumulativeScore += score;
+            this.playerProfile.cumulativeScore += currentStats.score;
         } catch (error) {
             console.error("分數上傳或個人總分累加失敗:", error);
         }
@@ -184,32 +185,38 @@ class DatabaseManager {
     /**
      * Submit IG Handle
      * @param {string} handle 
-     * @param {number|null} tier - The tier being claimed, or null for edit mode
      * @returns {Promise<void>}
      */
-    async submitIgHandle(handle, tier) {
+    async saveInstagramHandle(handle) {
         if (!this.currentUserID || !this.db) {
             throw new Error("Database not initialized");
         }
 
         const playerRef = this.db.collection('players').doc(this.currentUserID);
+        await playerRef.update({
+            instagramHandle: handle
+        });
+        this.playerProfile.instagramHandle = handle;
+    }
 
-        if (tier) {
-            // Claiming reward mode
-            const tierField = `tier${tier}Qualified`;
-            await playerRef.update({
-                instagramHandle: handle,
-                [tierField]: true
-            });
-            this.playerProfile.instagramHandle = handle;
-            this.playerProfile[tierField] = true;
-        } else {
-            // Edit mode
-            await playerRef.update({
-                instagramHandle: handle
-            });
-            this.playerProfile.instagramHandle = handle;
-        }
+    /**
+     * Claim Tier Reward
+     * @param {number} tier 
+     */
+    async claimTier(tier) {
+        if (!this.currentUserID || !this.db) return;
+        const playerRef = this.db.collection('players').doc(this.currentUserID);
+
+        const updateData = {};
+        if (tier === 1) updateData.claimedTier1 = true;
+        else if (tier === 2) updateData.tier2Qualified = true;
+        else if (tier === 3) updateData.tier3Qualified = true;
+
+        await playerRef.update(updateData);
+
+        if (tier === 1) this.playerProfile.claimedTier1 = true;
+        else if (tier === 2) this.playerProfile.tier2Qualified = true;
+        else if (tier === 3) this.playerProfile.tier3Qualified = true;
     }
 
     /**
