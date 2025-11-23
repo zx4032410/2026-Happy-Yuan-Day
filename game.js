@@ -197,6 +197,118 @@ document.addEventListener('DOMContentLoaded', function () {
         collectQuestion: new AudioPool('./audio/collect-question.mp3', 3)
     };
 
+    // --- ✨ 效能優化：物件池 (ItemPool) ---
+    class ItemPool {
+        constructor(size = 30) {
+            this.pool = [];
+            for (let i = 0; i < size; i++) {
+                this.pool.push({
+                    active: false,
+                    x: 0,
+                    y: 0,
+                    width: 0,
+                    height: 0,
+                    speed: 0,
+                    score: 0,
+                    type: '',
+                    image: null
+                });
+            }
+        }
+
+        getItem() {
+            const item = this.pool.find(i => !i.active);
+            if (item) {
+                item.active = true;
+                return item;
+            }
+            // 如果池子不夠用，動態擴充 (雖然理想情況是預設夠大)
+            const newItem = {
+                active: true,
+                x: 0,
+                y: 0,
+                width: 0,
+                height: 0,
+                speed: 0,
+                score: 0,
+                type: '',
+                image: null
+            };
+            this.pool.push(newItem);
+            return newItem;
+        }
+
+        releaseItem(item) {
+            item.active = false;
+        }
+
+        reset() {
+            this.pool.forEach(item => item.active = false);
+        }
+    }
+
+    const itemPool = new ItemPool(50); // 預設 50 個物件
+
+    // --- ✨ 效能優化：Canvas 分數特效 (ScoreEffect) ---
+    class ScoreEffectSystem {
+        constructor() {
+            this.effects = [];
+        }
+
+        addEffect(x, y, score, type) {
+            this.effects.push({
+                x: x,
+                y: y,
+                score: score,
+                type: type, // 'positive', 'negative'
+                life: 1.0, // 生命週期 1.0 -> 0.0
+                velocityY: -2 // 向上飄移速度
+            });
+        }
+
+        update() {
+            for (let i = this.effects.length - 1; i >= 0; i--) {
+                const effect = this.effects[i];
+                effect.y += effect.velocityY;
+                effect.life -= 0.02; // 減少生命值
+                if (effect.life <= 0) {
+                    this.effects.splice(i, 1);
+                }
+            }
+        }
+
+        draw(ctx) {
+            ctx.save();
+            ctx.textAlign = 'center';
+            ctx.font = 'bold 24px "Outfit", sans-serif'; // 使用與 CSS 相同的字體
+
+            this.effects.forEach(effect => {
+                ctx.globalAlpha = Math.max(0, effect.life); // 淡出效果
+                const text = (effect.score > 0 ? '+' : '') + effect.score;
+
+                if (effect.type === 'positive') {
+                    ctx.fillStyle = '#2ecc71'; // 綠色
+                    ctx.strokeStyle = '#ffffff';
+                } else {
+                    ctx.fillStyle = '#e74c3c'; // 紅色
+                    ctx.strokeStyle = '#ffffff';
+                }
+
+                ctx.lineWidth = 3;
+                ctx.strokeText(text, effect.x, effect.y);
+                ctx.fillText(text, effect.x, effect.y);
+            });
+
+            ctx.restore();
+        }
+
+        reset() {
+            this.effects = [];
+        }
+    }
+
+    const scoreEffectSystem = new ScoreEffectSystem();
+
     // --- 遊戲變數 (✨ 更新) ---
     let gameStarted = false;
     let score = 0;
@@ -237,10 +349,14 @@ document.addEventListener('DOMContentLoaded', function () {
     let totalGameTime = 0, stats_feverCount = 0, stats_feverTime = 0;
     let stats_items_positive = 0, stats_items_negative = 0, stats_questions_correct = 0, stats_questions_wrong = 0;
     const itemImages = {};
-    let fallingItems = [];
+    // let fallingItems = []; // ✨ 改用 itemPool 管理，這裡只需要存 active items
+    let activeItems = []; // ✨ 新增：用來追蹤目前場上的 items
     let baseSpawnInterval = GAME_CONFIG.BASE_SPAWN_INTERVAL, spawnInterval = baseSpawnInterval, spawnTimer = spawnInterval;
     let currentClaimingTier = null; // ✨ 新增：用來追蹤正在領取哪個 Tier
     let wasMilestoneModalOpen = false; // ✨ 新增：用來追蹤顯示 IG 輸入畫面時，個人里程碑視窗是否原本是開著的
+
+    // ✨ 效能優化：預先計算總機率
+    const totalSpawnProbability = GAME_CONFIG.ITEM_TYPES.reduce((sum, item) => sum + item.probability, 0);
 
     // --- ✨ 2. Database Logic moved to DatabaseManager ---
     let currentUserID = null;
@@ -406,7 +522,36 @@ document.addEventListener('DOMContentLoaded', function () {
     document.addEventListener('mouseup', () => { keys.left = false; keys.right = false; });
 
     // --- 遊戲核心函式 (省略部分) ---
-    function spawnItem() { const totalProbability = GAME_CONFIG.ITEM_TYPES.reduce((sum, item) => sum + item.probability, 0); let random = Math.random() * totalProbability; let chosenItemType; for (const itemType of GAME_CONFIG.ITEM_TYPES) { if (random < itemType.probability) { chosenItemType = itemType; break; } random -= itemType.probability; } if (!chosenItemType || !itemImages[chosenItemType.id] || !itemImages[chosenItemType.id].complete) { return; } const scaledItemSize = GAME_CONFIG.ITEM_DEFAULT_SIZE * gameScale; fallingItems.push({ x: Math.random() * (canvas.width - scaledItemSize), y: GAME_CONFIG.ITEM_SPAWN_Y_OFFSET * gameScale, width: scaledItemSize, height: scaledItemSize, speed: chosenItemType.speed * gameScale, score: chosenItemType.score, type: chosenItemType.type, image: itemImages[chosenItemType.id] }); }
+    function spawnItem() {
+        // ✨ 效能優化：使用預先計算的 totalSpawnProbability
+        let random = Math.random() * totalSpawnProbability;
+        let chosenItemType;
+        for (const itemType of GAME_CONFIG.ITEM_TYPES) {
+            if (random < itemType.probability) {
+                chosenItemType = itemType;
+                break;
+            }
+            random -= itemType.probability;
+        }
+        if (!chosenItemType || !itemImages[chosenItemType.id] || !itemImages[chosenItemType.id].complete) {
+            return;
+        }
+
+        const scaledItemSize = GAME_CONFIG.ITEM_DEFAULT_SIZE * gameScale;
+
+        // ✨ 效能優化：使用 ItemPool
+        const item = itemPool.getItem();
+        item.x = Math.random() * (canvas.width - scaledItemSize);
+        item.y = GAME_CONFIG.ITEM_SPAWN_Y_OFFSET * gameScale;
+        item.width = scaledItemSize;
+        item.height = scaledItemSize;
+        item.speed = chosenItemType.speed * gameScale;
+        item.score = chosenItemType.score;
+        item.type = chosenItemType.type;
+        item.image = itemImages[chosenItemType.id];
+
+        activeItems.push(item);
+    }
     function checkCollision(obj1, obj2) { return obj1.x < obj2.x + obj2.width && obj1.x + obj1.width > obj2.x && obj1.y < obj2.y + obj2.height && obj1.y + obj1.height > obj2.y; }
     function playSound(audioObject, isSFX = true) {
         if (isMuted) return;
@@ -421,7 +566,8 @@ document.addEventListener('DOMContentLoaded', function () {
         if (isSFX) { audioObject.currentTime = 0; }
         audioObject.play().catch(error => { console.warn(`音效播放失敗: ${error.message}`); });
     }
-    function showScoreChange(score) { const scoreChangeElement = document.getElementById('score-change'); if (!scoreChangeElement) return; const scoreValue = parseInt(score, 10); if (isNaN(scoreValue) || scoreValue === 0) return; scoreChangeElement.textContent = (scoreValue > 0 ? '+' : '') + scoreValue; scoreChangeElement.classList.remove('positive', 'negative', 'show'); if (scoreValue > 0) { scoreChangeElement.classList.add('positive'); } else { scoreChangeElement.classList.add('negative'); } void scoreChangeElement.offsetWidth; scoreChangeElement.classList.add('show'); setTimeout(() => { scoreChangeElement.classList.remove('show'); }, GAME_CONFIG.UI.SCORE_CHANGE_DURATION); }
+    // ✨ 效能優化：移除 DOM 操作的 showScoreChange，改用 Canvas ScoreEffect
+    // function showScoreChange(score) { ... } // Removed
     function applyLanguage(lang) { if (!i18nStrings[lang]) { console.warn(`找不到語言 ${lang}，使用 zh-TW。`); lang = 'zh-TW'; } currentLang = lang; langSelect.value = lang; document.querySelectorAll('[data-i18n-key]').forEach(element => { const key = element.dataset.i18nKey; if (i18nStrings[lang][key]) { element.textContent = i18nStrings[lang][key]; } }); document.querySelectorAll('[data-i18n-key-placeholder]').forEach(element => { const key = element.dataset.i18nKeyPlaceholder; if (i18nStrings[lang][key]) { element.placeholder = i18nStrings[lang][key]; } }); document.title = i18nStrings[lang].modalStartTitle; showStartModalText(); }
     function detectLanguage() { let browserLang = navigator.language || navigator.userLanguage; if (browserLang.startsWith('en')) { applyLanguage('en'); } else if (browserLang.startsWith('zh')) { applyLanguage('zh-TW'); } else { applyLanguage('zh-TW'); } }
     function shuffleArray(array) { for (let i = array.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1));[array[i], array[j]] = [array[j], array[i]]; } return array; }
@@ -744,7 +890,14 @@ document.addEventListener('DOMContentLoaded', function () {
         isFeverTime = false;
         feverMeter = 0;
         feverDurationTimer = 0;
-        fallingItems = [];
+
+        // ✨ 效能優化：重置 ItemPool
+        itemPool.reset();
+        activeItems = [];
+
+        // ✨ 效能優化：重置 ScoreEffect
+        scoreEffectSystem.reset();
+
         player.x = canvas.width / 2 - player.width / 2;
         spawnInterval = baseSpawnInterval;
         spawnTimer = spawnInterval;
@@ -915,8 +1068,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
         milestoneProgress.textContent = `${feverMeter}%`;
 
-        for (let i = fallingItems.length - 1; i >= 0; i--) {
-            const item = fallingItems[i];
+        // ✨ 效能優化：更新 activeItems
+        for (let i = activeItems.length - 1; i >= 0; i--) {
+            const item = activeItems[i];
             item.y += item.speed;
 
             if (checkCollision(player, item)) {
@@ -955,16 +1109,27 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 if (item.type !== 'question') {
                     score += pointsToChange;
-                    showScoreChange(pointsToChange);
+                    // ✨ 效能優化：使用 Canvas ScoreEffect
+                    // showScoreChange(pointsToChange);
+                    scoreEffectSystem.addEffect(item.x + item.width / 2, item.y, pointsToChange, pointsToChange > 0 ? 'positive' : 'negative');
+
                     scoreDisplay.textContent = score;
                     player.animationTimer = GAME_CONFIG.PLAYER.WIN_LOSE_ANIMATION_DURATION;
                 }
 
-                fallingItems.splice(i, 1);
+                // ✨ 效能優化：回收 item
+                itemPool.releaseItem(item);
+                activeItems.splice(i, 1);
+
             } else if (item.y > canvas.height) {
-                fallingItems.splice(i, 1);
+                // ✨ 效能優化：回收 item
+                itemPool.releaseItem(item);
+                activeItems.splice(i, 1);
             }
         }
+
+        // ✨ 效能優化：更新 ScoreEffect
+        scoreEffectSystem.update();
 
         if (player.animationTimer > 0) {
             player.animationTimer--;
@@ -976,7 +1141,37 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
     }
-    function draw() { ctx.clearRect(0, 0, canvas.width, canvas.height); let imageToDraw; if (player.animationTimer > 0) { imageToDraw = player.image; } else { if (player.idleFrames.length > 0) { imageToDraw = player.idleFrames[player.currentFrame]; } else { imageToDraw = player.defaultImage; } } if (imageToDraw && imageToDraw.complete) { ctx.drawImage(imageToDraw, player.x, player.y, player.width, player.height); } else if (player.defaultImage.complete) { ctx.drawImage(player.defaultImage, player.x, player.y, player.width, player.height); } else { ctx.fillStyle = '#f72585'; ctx.fillRect(player.x, player.y, player.width, player.height); } fallingItems.forEach(item => { if (item.image && item.image.complete) { ctx.drawImage(item.image, item.x, item.y, item.width, item.height); } }); }
+    function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        let imageToDraw;
+        if (player.animationTimer > 0) {
+            imageToDraw = player.image;
+        } else {
+            if (player.idleFrames.length > 0) {
+                imageToDraw = player.idleFrames[player.currentFrame];
+            } else {
+                imageToDraw = player.defaultImage;
+            }
+        }
+        if (imageToDraw && imageToDraw.complete) {
+            ctx.drawImage(imageToDraw, player.x, player.y, player.width, player.height);
+        } else if (player.defaultImage.complete) {
+            ctx.drawImage(player.defaultImage, player.x, player.y, player.width, player.height);
+        } else {
+            ctx.fillStyle = '#f72585';
+            ctx.fillRect(player.x, player.y, player.width, player.height);
+        }
+
+        // ✨ 效能優化：繪製 activeItems
+        activeItems.forEach(item => {
+            if (item.image && item.image.complete) {
+                ctx.drawImage(item.image, item.x, item.y, item.width, item.height);
+            }
+        });
+
+        // ✨ 效能優化：繪製 ScoreEffect
+        scoreEffectSystem.draw(ctx);
+    }
 
     function gameLoop() { update(); draw(); requestAnimationFrame(gameLoop); }
 
