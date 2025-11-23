@@ -78,17 +78,50 @@
 ## 專案結構
 
 ```
-.
+2026 Happy Yuan Day/
 ├── index.html              # 遊戲主頁面
-├── styles/                 # CSS 模組化樣式（8 個模組檔案）
-├── *.js                    # 遊戲邏輯與管理模組
-├── docs/                   # 技術文檔
+├── favicon.ico             # 網站圖示
+├── README.md               # 專案說明文件
+│
+├── js/                     # JavaScript 原始碼
+│   ├── managers/           # 模組化管理器
+│   │   ├── audio-manager.js      # 音效與音樂管理
+│   │   ├── database-manager.js   # Firebase 資料庫操作
+│   │   ├── effect-manager.js     # 視覺特效系統
+│   │   ├── share-manager.js      # 分享卡片生成
+│   │   └── ui-manager.js         # UI 介面管理
+│   ├── game.js             # 主遊戲邏輯
+│   ├── game-config.js      # 遊戲設定檔
+│   ├── lang.js             # 多語系字串
+│   ├── questions.js        # 測驗題庫
+│   └── offline-handler.js  # 離線狀態處理
+│
+├── styles/                 # CSS 模組化樣式
+│   ├── variables.css       # CSS 變數定義
+│   ├── base.css            # 基礎樣式
+│   ├── buttons.css         # 按鈕樣式
+│   ├── game-ui.css         # 遊戲介面
+│   ├── modals.css          # 彈窗樣式
+│   ├── milestones.css      # 里程碑介面
+│   ├── loading.css         # 載入畫面
+│   └── animations.css      # 動畫效果
+│
 ├── images/                 # 遊戲圖片資源
 ├── audio/                  # 音效與音樂檔案
-└── favicon.ico             # 網站圖示
+└── docs/                   # 技術文檔
 ```
 
-> 💡 **技術細節**：專案採用模組化架構設計，CSS 拆分為 8 個獨立模組，JavaScript 按功能分離。詳細的架構說明可參考 `docs/` 目錄中的技術文檔。
+### 模組化架構說明
+
+專案採用**模組化設計**，將功能拆分為獨立的管理器（Manager），提升程式碼可維護性：
+
+- **AudioManager**: 統一管理所有音效與背景音樂，包含音效池（AudioPool）機制防止音效重疊
+- **EffectManager**: 處理 Canvas 視覺特效，包含分數飄字動畫和 Fever Time 特效
+- **UIManager**: 集中管理所有 UI 元素更新、畫面切換和使用者互動
+- **DatabaseManager**: 封裝 Firebase 操作，處理玩家資料、分數上傳和里程碑系統
+- **ShareManager**: 負責生成分享卡片、QR Code 和社群分享功能
+
+> 💡 **技術細節**：模組化架構讓每個功能職責單一、易於測試和維護。詳細的架構說明可參考 `docs/` 目錄中的技術文檔。
 
 ## 瀏覽器支援
 
@@ -102,4 +135,4 @@
 
 ---
 
-**版本**: 2.0 | **最後更新**: 2025-11-22
+**版本**: 2.1 | **最後更新**: 2025-11-24
