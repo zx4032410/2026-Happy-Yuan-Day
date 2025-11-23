@@ -63,7 +63,7 @@ const GAME_CONFIG = {
         },
         GLOBAL_TARGET: 1000000,
         REWARDS: {
-            TIER_1_URL: "https://www.instagram.com/weand_studio/",
+            TIER_1_URL: "https://drive.google.com/drive/folders/1jBF9NAr7vN8Qn_OpwHz5vTpuYwKyUmJT?usp=drive_link",
             TIER_2_MESSAGE: "恭喜您達成 Tier 2！您已獲得實體獎品抽獎資格，請等待活動結束後的官方公告。",
             TIER_3_MESSAGE: "恭喜您達成 Tier 3！您已獲得月曆卡抽獎資格，請等待活動結束後的官方公告。",
         }
