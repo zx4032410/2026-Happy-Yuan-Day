@@ -7,6 +7,8 @@ class ShareManager {
             stats: null
         };
         this.shareCardImage = new Image();
+        // ✨ 修復 CORS 問題：必須在設置 src 之前設置 crossOrigin
+        this.shareCardImage.crossOrigin = 'anonymous';
         this.shareCardImage.src = './images/sharecard.PNG';
         // Preload image
         this.shareCardImage.onload = () => { }; // console.log('Share card image loaded');
@@ -161,6 +163,7 @@ class ShareManager {
             const gameURL = window.location.href;
             const qrDataURL = this.generateQRCode(gameURL, 6);
             const qrImage = new Image();
+            qrImage.crossOrigin = 'anonymous'; // ✨ 修復 CORS 問題
 
             qrImage.onload = () => {
                 const qrSize = isStory ? 220 : 200;

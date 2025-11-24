@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const shareManager = new ShareManager();
     const audioManager = new AudioManager();
     const uiManager = new UIManager();
-    const effectManager = new EffectManager();
+    let effectManager; // ✨ 先聲明，在 gameScale 計算後初始化
 
     const canvas = document.getElementById('game-canvas');
     const ctx = canvas.getContext('2d');
@@ -110,6 +110,9 @@ document.addEventListener('DOMContentLoaded', function () {
         canvas.height = GAME_CONFIG.CANVAS_HEIGHT;
         gameScale = 1; // 桌機版保持原始大小
     }
+
+    // ✨ 初始化 EffectManager 時傳入 gameScale
+    effectManager = new EffectManager(gameScale);
 
     // --- ✨ 效能優化：物件池 (ItemPool) ---
     class ItemPool {
@@ -207,6 +210,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let baseSpawnInterval = GAME_CONFIG.BASE_SPAWN_INTERVAL, spawnInterval = baseSpawnInterval, spawnTimer = spawnInterval;
     let currentClaimingTier = null; // ✨ 新增：用來追蹤正在領取哪個 Tier
     let wasMilestoneModalOpen = false; // ✨ 新增：用來追蹤顯示 IG 輸入畫面時，個人里程碑視窗是否原本是開著的
+    let lastGameStats = null; // ✨ 新增：儲存最後一局遊戲統計數據供分享功能使用
 
     // ✨ 效能優化：預先計算總機率
     const totalSpawnProbability = GAME_CONFIG.ITEM_TYPES.reduce((sum, item) => sum + item.probability, 0);
@@ -314,6 +318,9 @@ document.addEventListener('DOMContentLoaded', function () {
             canvas.height = GAME_CONFIG.CANVAS_HEIGHT;
             gameScale = 1; // ✨ 更新縮放係數
         }
+
+        // ✨ 更新 EffectManager 的縮放係數
+        effectManager.setGameScale(gameScale);
 
         // 如果尺寸改變了,重新定位玩家並調整大小
         if (wasMobile !== isMobileNow && player) {
@@ -934,6 +941,13 @@ document.addEventListener('DOMContentLoaded', function () {
     handleAuthentication();
 
     // 按鈕事件
+    const langSelect = document.getElementById('lang-select');
+    if (langSelect) {
+        langSelect.addEventListener('change', (e) => {
+            applyLanguage(e.target.value);
+        });
+    }
+
     startButton.addEventListener('click', startGame);
     openMilestoneButton.addEventListener('click', () => showMilestoneModal(false));
     openGlobalMilestoneButton.addEventListener('click', () => showGlobalMilestoneModal(false));

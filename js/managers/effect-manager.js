@@ -1,6 +1,12 @@
 class EffectManager {
-    constructor() {
-        this.scoreEffectSystem = new ScoreEffectSystem();
+    constructor(gameScale = 1) {
+        this.scoreEffectSystem = new ScoreEffectSystem(gameScale);
+        this.gameScale = gameScale;
+    }
+
+    setGameScale(scale) {
+        this.gameScale = scale;
+        this.scoreEffectSystem.setGameScale(scale);
     }
 
     addScoreEffect(x, y, score, type) {
@@ -34,8 +40,13 @@ class EffectManager {
 }
 
 class ScoreEffectSystem {
-    constructor() {
+    constructor(gameScale = 1) {
         this.effects = [];
+        this.gameScale = gameScale;
+    }
+
+    setGameScale(scale) {
+        this.gameScale = scale;
     }
 
     addEffect(x, y, score, type) {
@@ -45,7 +56,7 @@ class ScoreEffectSystem {
             score: score,
             type: type, // 'positive', 'negative'
             life: 1.0, // 生命週期 1.0 -> 0.0
-            velocityY: -2 // 向上飄移速度
+            velocityY: -2 * this.gameScale // ✨ 向上飄移速度根據縮放調整
         });
     }
 
@@ -63,7 +74,9 @@ class ScoreEffectSystem {
     draw(ctx) {
         ctx.save();
         ctx.textAlign = 'center';
-        ctx.font = 'bold 24px "Outfit", sans-serif'; // 使用與 CSS 相同的字體
+        // ✨ 字體大小根據 gameScale 動態調整
+        const fontSize = Math.floor(24 * this.gameScale);
+        ctx.font = `bold ${fontSize}px "Outfit", sans-serif`;
 
         this.effects.forEach(effect => {
             ctx.globalAlpha = Math.max(0, effect.life); // 淡出效果
@@ -77,7 +90,8 @@ class ScoreEffectSystem {
                 ctx.strokeStyle = '#ffffff';
             }
 
-            ctx.lineWidth = 3;
+            // ✨ 描邊寬度也根據縮放調整
+            ctx.lineWidth = 3 * this.gameScale;
             ctx.strokeText(text, effect.x, effect.y);
             ctx.fillText(text, effect.x, effect.y);
         });
