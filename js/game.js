@@ -433,10 +433,15 @@ document.addEventListener('DOMContentLoaded', function () {
     const settingsModal = document.getElementById('settings-modal');
     const settingsMainView = document.getElementById('settings-main-view');
     const settingsLanguageView = document.getElementById('settings-language-view');
+    const settingsTroubleshootView = document.getElementById('settings-troubleshoot-view'); // ✨ 新增
+
     const btnLanguageSettings = document.getElementById('btn-language-settings');
-    const btnOtherOptions = document.getElementById('btn-other-options');
+    const btnTroubleshoot = document.getElementById('btn-troubleshoot'); // ✨ 新增
     const btnCloseSettings = document.getElementById('btn-close-settings');
-    const btnBackSettings = document.getElementById('btn-back-settings');
+    const btnBackSettingsLang = document.getElementById('btn-back-settings-lang'); // ✨ 修改 ID
+    const btnBackSettingsTrouble = document.getElementById('btn-back-settings-trouble'); // ✨ 新增
+    const btnRepairGame = document.getElementById('btn-repair-game'); // ✨ 新增
+
     const langOptions = document.querySelectorAll('.lang-option');
 
     if (settingsButton) {
@@ -444,6 +449,7 @@ document.addEventListener('DOMContentLoaded', function () {
             settingsModal.classList.remove('hidden');
             settingsMainView.classList.remove('hidden');
             settingsLanguageView.classList.add('hidden');
+            if (settingsTroubleshootView) settingsTroubleshootView.classList.add('hidden');
         });
     }
 
@@ -460,16 +466,54 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    if (btnBackSettings) {
-        btnBackSettings.addEventListener('click', () => {
+    // ✨ 新增：故障排除按鈕
+    if (btnTroubleshoot) {
+        btnTroubleshoot.addEventListener('click', () => {
+            settingsMainView.classList.add('hidden');
+            if (settingsTroubleshootView) settingsTroubleshootView.classList.remove('hidden');
+        });
+    }
+
+    // ✨ 修改：語言設定返回按鈕 (注意 HTML ID 變更)
+    // 為了相容舊 ID，嘗試抓取兩個可能的 ID
+    const btnBackSettings = document.getElementById('btn-back-settings');
+    const actualBackLangBtn = btnBackSettingsLang || btnBackSettings;
+    
+    if (actualBackLangBtn) {
+        actualBackLangBtn.addEventListener('click', () => {
             settingsLanguageView.classList.add('hidden');
             settingsMainView.classList.remove('hidden');
         });
     }
 
-    if (btnOtherOptions) {
-        btnOtherOptions.addEventListener('click', () => {
-            alert(currentLang === 'zh-TW' ? "敬請期待！" : "Coming Soon!");
+    // ✨ 新增：故障排除返回按鈕
+    if (btnBackSettingsTrouble) {
+        btnBackSettingsTrouble.addEventListener('click', () => {
+            if (settingsTroubleshootView) settingsTroubleshootView.classList.add('hidden');
+            settingsMainView.classList.remove('hidden');
+        });
+    }
+
+    // ✨ 新增：修復遊戲功能 (清除快取並重整)
+    if (btnRepairGame) {
+        btnRepairGame.addEventListener('click', () => {
+            const confirmText = currentLang === 'zh-TW' ? 
+                "這將會清除遊戲的暫存資料並重新載入，您的累積紀錄（若已登入）不會消失。確定要執行嗎？" : 
+                "This will clear game cache and reload. Your saved progress (if logged in) will remain. Continue?";
+            
+            if (confirm(confirmText)) {
+                // 1. 清除 LocalStorage (保留重要的 UUID)
+                const savedUUID = localStorage.getItem(GAME_CONFIG.USER_ID_KEY);
+                localStorage.clear();
+                if (savedUUID) {
+                    localStorage.setItem(GAME_CONFIG.USER_ID_KEY, savedUUID);
+                }
+
+                // 2. 強制重整 (帶上時間戳記避免瀏覽器快取)
+                const url = new URL(window.location.href);
+                url.searchParams.set('t', Date.now());
+                window.location.href = url.toString();
+            }
         });
     }
 
@@ -711,7 +755,8 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         // ✨ 修正：重新啟動遊戲迴圈，否則畫面會卡住
-        gameLoop();
+        lastTime = performance.now(); // ✨ Reset time on resume
+        gameLoop(lastTime);
     }
 
     function updateTimer() {
@@ -728,6 +773,10 @@ document.addEventListener('DOMContentLoaded', function () {
         feverDurationTimer = GAME_CONFIG.FEVER.DURATION;
         spawnInterval = Math.floor(baseSpawnInterval * GAME_CONFIG.FEVER.SPAWN_INTERVAL_MULTIPLIER);
 
+        // ✨ 更新 UI 與統計
+        uiManager.updateFeverProgress(100);
+        stats_feverCount++;
+
         audioManager.pauseBGM('bgm');
         audioManager.audio.bgm.currentTime = 0;
         audioManager.audio.bgmFever.loop = true;
@@ -742,6 +791,9 @@ document.addEventListener('DOMContentLoaded', function () {
         feverMeter = 0;
         feverDurationTimer = 0;
         spawnInterval = baseSpawnInterval;
+
+        // ✨ 更新 UI
+        uiManager.updateFeverProgress(0);
 
         audioManager.pauseBGM('bgmFever');
         audioManager.audio.bgmFever.currentTime = 0;
@@ -759,12 +811,6 @@ document.addEventListener('DOMContentLoaded', function () {
         audioManager.stopBGM('bgmFever');
         audioManager.playSound('gameOver');
 
-        // ✨ 修正：關閉 Fever Time 視覺特效
-        if (isFeverTime) {
-            effectManager.deactivateFeverVisuals();
-            isFeverTime = false;
-        }
-
         // 記錄統計數據
         currentStats = {
             score: score,
@@ -776,6 +822,15 @@ document.addEventListener('DOMContentLoaded', function () {
             maxFeverTime: stats_feverTime,
             timestamp: new Date()
         };
+
+        // ✨ 修正：確保遊戲結束時所有 Fever Time 相關狀態完全重置
+        if (isFeverTime) {
+            effectManager.deactivateFeverVisuals();
+        }
+        isFeverTime = false; // 強制設定為 false
+        feverMeter = 0; // 重置能量條
+        feverDurationTimer = 0; // 重置倒數計時器
+        uiManager.updateFeverProgress(0); // 清空 UI 顯示
 
         // ✨ 修正：準備分享用的數據格式
         const shareStats = {
@@ -843,6 +898,11 @@ document.addEventListener('DOMContentLoaded', function () {
         player.image = player.defaultImage;
     }
 
+    // ✨ FPS Control Variables
+    let lastTime = 0;
+    const FPS_LIMIT = 60;
+    const FRAME_INTERVAL = 1000 / FPS_LIMIT;
+
     function startGame() {
         resetGame();
         uiManager.hideAllModalScreens();
@@ -853,12 +913,25 @@ document.addEventListener('DOMContentLoaded', function () {
         audioManager.playBGM('bgm');
 
         gameTimerId = setInterval(updateTimer, 1000);
-        gameLoop();
+        lastTime = performance.now(); // ✨ Initialize time
+        gameLoop(lastTime);
     }
 
     // --- 遊戲主迴圈 ---
-    function gameLoop() {
+    function gameLoop(timestamp) {
         if (!gameStarted) return;
+
+        // ✨ FPS Cap Logic
+        if (!timestamp) timestamp = performance.now();
+        const deltaTime = timestamp - lastTime;
+
+        if (deltaTime < FRAME_INTERVAL) {
+            requestAnimationFrame(gameLoop);
+            return;
+        }
+
+        // Adjust lastTime to account for the extra time (avoids drift)
+        lastTime = timestamp - (deltaTime % FRAME_INTERVAL);
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -906,6 +979,20 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         ctx.drawImage(player.image, player.x, player.y, player.width, player.height);
+
+        // ✨ 新增：Fever Time 倒數邏輯
+        if (isFeverTime) {
+            feverDurationTimer--;
+            stats_feverTime++; // 記錄 Fever 總時間 (frames)
+            
+            // 更新 UI (倒數)
+            const percent = Math.max(0, Math.floor((feverDurationTimer / GAME_CONFIG.FEVER.DURATION) * 100));
+            uiManager.updateFeverProgress(percent);
+
+            if (feverDurationTimer <= 0) {
+                endFeverTime();
+            }
+        }
 
         // 2. 生成物品
         spawnTimer--;

@@ -104,6 +104,9 @@ const i18nStrings = {
         languageSettings: "Language Settings",
         otherOptions: "Other Options",
         backButton: "Back",
+        troubleshoot: "Troubleshoot",
+        troubleshootDesc: "If the game is lagging or displaying incorrectly, try repairing it.",
+        repairGame: "Repair Game (Clear Cache)",
         // Start Modal
         modalStartTitle: "Yuan's Birthday Support!",
         modalStartText: "Catch items Yuan loves to build up support power!",

@@ -23,6 +23,7 @@ class UIManager {
             score: document.getElementById('score-display'),
             time: document.getElementById('time-display'),
             fever: document.getElementById('milestone-progress'), // Using milestone-progress as fever label based on original code
+            feverBar: document.getElementById('fever-timer-bar'), // ✨ 新增：Fever Time 倒數計時條
             muteBtn: document.getElementById('mute-button'),
             langSelect: document.getElementById('lang-select')
         };
@@ -88,6 +89,7 @@ class UIManager {
 
     updateFeverProgress(percent) {
         if (this.hud.fever) this.hud.fever.textContent = `${percent}%`;
+        if (this.hud.feverBar) this.hud.feverBar.style.width = `${percent}%`;
     }
 
     updateMuteButton(isMuted) {

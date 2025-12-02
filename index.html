@@ -133,8 +133,10 @@
                             <h2 data-i18n-key="settingsTitle">設定</h2>
                             <button id="btn-language-settings" class="settings-option-btn"
                                 data-i18n-key="languageSettings">語言設定</button>
-                            <button id="btn-other-options" class="settings-option-btn"
-                                data-i18n-key="otherOptions">其他選項</button>
+                            <!-- ✨ 修改：將其他選項改為故障排除 -->
+                            <button id="btn-troubleshoot" class="settings-option-btn"
+                                style="background-color: var(--color-accent-orange);"
+                                data-i18n-key="troubleshoot">故障排除</button>
                             <button id="btn-close-settings" class="settings-close-btn"
                                 data-i18n-key="closeButton">關閉</button>
                         </div>
@@ -142,7 +144,19 @@
                             <h2 data-i18n-key="languageSettings">語言設定</h2>
                             <button class="settings-option-btn lang-option" data-lang="zh-TW">繁體中文</button>
                             <button class="settings-option-btn lang-option" data-lang="en">English</button>
-                            <button id="btn-back-settings" class="settings-back-btn"
+                            <button id="btn-back-settings-lang" class="settings-back-btn"
+                                data-i18n-key="backButton">返回</button>
+                        </div>
+                        <!-- ✨ 新增：故障排除頁面 -->
+                        <div id="settings-troubleshoot-view" class="hidden">
+                            <h2 data-i18n-key="troubleshoot">故障排除</h2>
+                            <p style="font-size: 0.9em; color: #666; margin-bottom: 15px;" data-i18n-key="troubleshootDesc">
+                                如果遊戲遇到卡頓或顯示異常，請嘗試修復。
+                            </p>
+                            <button id="btn-repair-game" class="settings-option-btn"
+                                style="background-color: var(--color-accent-red);"
+                                data-i18n-key="repairGame">修復遊戲 (清除快取)</button>
+                            <button id="btn-back-settings-trouble" class="settings-back-btn"
                                 data-i18n-key="backButton">返回</button>
                         </div>
                     </div>
