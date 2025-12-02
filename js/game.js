@@ -60,6 +60,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const shareManager = new ShareManager();
     const audioManager = new AudioManager();
     const uiManager = new UIManager();
+    const inputManager = new InputManager(); // ✨ 新增：輸入管理器
     let effectManager; // ✨ 先聲明，在 gameScale 計算後初始化
 
     const canvas = document.getElementById('game-canvas');
@@ -93,9 +94,9 @@ document.addEventListener('DOMContentLoaded', function () {
     // Birthday Modal
     const birthdayCloseButton = document.getElementById('birthday-close-button');
 
-    // Controls
-    const moveLeftButton = document.getElementById('move-left');
-    const moveRightButton = document.getElementById('move-right');
+    // Controls - ✨ 移至 InputManager 處理
+    // const moveLeftButton = document.getElementById('move-left');
+    // const moveRightButton = document.getElementById('move-right');
 
     // ✨ 手機版畫布高度優化：根據螢幕寬度動態調整 canvas 實際尺寸
     const isMobile = window.innerWidth <= 767;
@@ -169,24 +170,11 @@ document.addEventListener('DOMContentLoaded', function () {
     // --- 遊戲變數 (✨ 更新) ---
     let gameStarted = false;
     let score = 0;
-    const player = {
-        x: canvas.width / 2 - (GAME_CONFIG.PLAYER.WIDTH * gameScale) / 2,
-        y: canvas.height - GAME_CONFIG.PLAYER.Y_OFFSET * gameScale,
-        width: GAME_CONFIG.PLAYER.WIDTH * gameScale, // ✨ 應用縮放
-        height: GAME_CONFIG.PLAYER.HEIGHT * gameScale, // ✨ 應用縮放
-        speed: GAME_CONFIG.PLAYER.SPEED,
-        image: new Image(),
-        defaultImage: new Image(),
-        winImage: new Image(),
-        loseImage: new Image(),
-        loaded: false,
-        animationTimer: 0,
-        currentFrame: 0,
-        frameCounter: 0,
-        frameRate: GAME_CONFIG.PLAYER.ANIMATION_FRAME_RATE,
-        idleFrames: [],
-    };
-    const keys = { left: false, right: false };
+    
+    // ✨ Player 初始化移至下方資源載入區
+    let player; 
+
+    // const keys = { left: false, right: false }; // ✨ 改用 InputManager
     let timeLeft = GAME_CONFIG.GAME_TIME;
     let gameTimerId = null;
     let isFeverTime = false;
@@ -236,8 +224,10 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // --- 資源載入 ---
-    const idleFrameSources = ['./images/xiao-yuan-bao-idle-1.png', './images/xiao-yuan-bao-idle-2.png', './images/xiao-yuan-bao-idle-3.png', './images/xiao-yuan-bao-idle-4.png', './images/xiao-yuan-bao-idle-5.png', './images/xiao-yuan-bao-idle-6.png'];
-    let assetsToLoad = 3 + GAME_CONFIG.ITEM_TYPES.length + idleFrameSources.length;
+    // const idleFrameSources = ... // ✨ 移至 Player 類別
+    
+    // 計算總資源數：Item Types + Player Assets
+    let assetsToLoad = GAME_CONFIG.ITEM_TYPES.length + Player.getAssetCount();
     let assetsLoaded = 0;
     const loadingStartTime = Date.now();
 
@@ -272,8 +262,7 @@ document.addEventListener('DOMContentLoaded', function () {
         assetsLoaded++;
         updateLoadingProgress();
         if (assetsLoaded === assetsToLoad) {
-            player.image = player.defaultImage;
-            player.loaded = true;
+            // player.loaded = true; // Player handles its own loaded state internally if needed, or just here
             setTimeout(() => {
                 uiManager.hideLoading();
             }, GAME_CONFIG.UI.LOADING_FADE_DELAY);
@@ -285,26 +274,17 @@ document.addEventListener('DOMContentLoaded', function () {
         assetsLoaded++;
         updateLoadingProgress();
         if (assetsLoaded === assetsToLoad) {
-            player.image = player.defaultImage;
-            player.loaded = true;
-            setTimeout(() => {
+             setTimeout(() => {
                 uiManager.hideLoading();
             }, GAME_CONFIG.UI.LOADING_FADE_DELAY);
         }
     }
-    player.defaultImage.src = idleFrameSources[0]; player.defaultImage.onload = onAssetLoad; player.defaultImage.onerror = () => onAssetError('defaultImage');
-    player.winImage.src = './images/xiao-yuan-bao-win.png'; player.winImage.onload = onAssetLoad; player.winImage.onerror = () => onAssetError('winImage');
-    player.loseImage.src = './images/xiao-yuan-bao-lose.png'; player.loseImage.onload = onAssetLoad; player.loseImage.onerror = () => onAssetError('loseImage');
 
+    // 初始化 Player 並開始載入其資源
+    player = new Player(gameScale, canvas.width, canvas.height, onAssetLoad, onAssetError);
+
+    // 載入 Item 資源
     GAME_CONFIG.ITEM_TYPES.forEach(type => { const img = new Image(); img.src = type.src; img.onload = onAssetLoad; img.onerror = () => onAssetError(type.id); itemImages[type.id] = img; });
-    idleFrameSources.forEach((src, index) => { const img = new Image(); img.src = src; img.onload = onAssetLoad; img.onerror = () => onAssetError(`idleFrame-${index}`); player.idleFrames.push(img); });
-
-    // ✨ 新增:震動反饋函式
-    function triggerVibration(duration = 10) {
-        if (navigator.vibrate) {
-            navigator.vibrate(duration);
-        }
-    }
 
     // ✨ 新增:視窗大小變化時重新調整 canvas 尺寸
     function resizeCanvas() {
@@ -324,10 +304,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // 如果尺寸改變了,重新定位玩家並調整大小
         if (wasMobile !== isMobileNow && player) {
-            player.y = canvas.height - GAME_CONFIG.PLAYER.Y_OFFSET * gameScale;
-            player.width = GAME_CONFIG.PLAYER.WIDTH * gameScale;
-            player.height = GAME_CONFIG.PLAYER.HEIGHT * gameScale;
-            player.x = canvas.width / 2 - player.width / 2;
+            player.resize(gameScale, canvas.width, canvas.height);
         }
     }
 
@@ -335,22 +312,7 @@ document.addEventListener('DOMContentLoaded', function () {
     window.addEventListener('resize', resizeCanvas);
 
     // --- 事件監聽 ---
-    document.addEventListener('keydown', (e) => { if (!gameStarted) return; if (e.key === 'ArrowLeft') keys.left = true; if (e.key === 'ArrowRight') keys.right = true; });
-    document.addEventListener('keyup', (e) => { if (e.key === 'ArrowLeft') keys.left = false; if (e.key === 'ArrowRight') keys.right = false; });
-
-    const handleTouchStart = (e) => {
-        e.preventDefault();
-        if (!gameStarted) return;
-        triggerVibration(10); // ✨ 觸發震動
-    };
-
-    moveLeftButton.addEventListener('touchstart', (e) => { handleTouchStart(e); keys.left = true; });
-    moveRightButton.addEventListener('touchstart', (e) => { handleTouchStart(e); keys.right = true; });
-    moveLeftButton.addEventListener('touchend', () => { keys.left = false; });
-    moveRightButton.addEventListener('touchend', () => { keys.right = false; });
-    moveLeftButton.addEventListener('mousedown', () => { keys.left = true; });
-    moveRightButton.addEventListener('mousedown', () => { keys.right = true; });
-    document.addEventListener('mouseup', () => { keys.left = false; keys.right = false; });
+    // ✨ 輸入監聽已移至 InputManager
 
     // --- 遊戲核心函式 ---
     function spawnItem() {
@@ -668,6 +630,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // --- 遊戲狀態函式 (✨ 更新) ---
     function showQuestion() {
         gameStarted = false;
+        inputManager.setActive(false); // ✨ 暫停輸入
         clearGameTimers();
         audioManager.pauseBGM('bgm');
         audioManager.pauseBGM('bgmFever');
@@ -702,18 +665,18 @@ document.addEventListener('DOMContentLoaded', function () {
             let bonusPoints = GAME_CONFIG.SCORING.CORRECT_ANSWER;
             if (isFeverTime) bonusPoints *= GAME_CONFIG.SCORING.FEVER_MULTIPLIER;
             score += bonusPoints;
-            player.image = player.winImage;
+            player.setHappy();
             audioManager.playSound('answerCorrect');
             stats_questions_correct++;
         } else {
             score += GAME_CONFIG.SCORING.INCORRECT_ANSWER;
-            player.image = player.loseImage;
+            player.setSad();
             audioManager.playSound('answerIncorrect');
             stats_questions_wrong++;
         }
 
         uiManager.updateScore(score);
-        player.animationTimer = GAME_CONFIG.PLAYER.WIN_LOSE_ANIMATION_DURATION;
+        // player.animationTimer = GAME_CONFIG.PLAYER.WIN_LOSE_ANIMATION_DURATION; // ✨ 移至 Player 類別內部
 
         let correctButton = null;
         answerButtons.forEach(btn => {
@@ -744,6 +707,7 @@ document.addEventListener('DOMContentLoaded', function () {
         uiManager.hideModalOverlay(); // ✨ 修正：確保背景遮罩也被隱藏
 
         gameStarted = true;
+        inputManager.setActive(true); // ✨ 啟用輸入
         clearGameTimers();
         gameTimerId = setInterval(updateTimer, 1000);
 
@@ -806,6 +770,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     async function endGame() {
         gameStarted = false;
+        inputManager.setActive(false); // ✨ 禁用輸入
         clearGameTimers();
         audioManager.stopBGM('bgm');
         audioManager.stopBGM('bgmFever');
@@ -893,9 +858,7 @@ document.addEventListener('DOMContentLoaded', function () {
         effectManager.resetScoreEffects();
         effectManager.deactivateFeverVisuals();
 
-        player.x = canvas.width / 2 - player.width / 2;
-        player.y = canvas.height - GAME_CONFIG.PLAYER.Y_OFFSET * gameScale;
-        player.image = player.defaultImage;
+        player.reset();
     }
 
     // ✨ FPS Control Variables
@@ -909,6 +872,7 @@ document.addEventListener('DOMContentLoaded', function () {
         uiManager.hideModalOverlay();
 
         gameStarted = true;
+        inputManager.setActive(true); // ✨ 啟用輸入
         audioManager.playSound('gameStart');
         audioManager.playBGM('bgm');
 
@@ -936,49 +900,8 @@ document.addEventListener('DOMContentLoaded', function () {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         // 1. 更新與繪製玩家
-        if (keys.left && player.x > 0) player.x -= player.speed * gameScale;
-        if (keys.right && player.x < canvas.width - player.width) player.x += player.speed * gameScale;
-
-        // 閒置動畫
-        // ✨ 修正：只要是預設圖或閒置動畫圖，都視為閒置狀態
-        const isIdleImage = player.image === player.defaultImage || player.idleFrames.includes(player.image);
-
-        if (!keys.left && !keys.right && isIdleImage) {
-            player.frameCounter++;
-            if (player.frameCounter >= player.frameRate) {
-                player.currentFrame = (player.currentFrame + 1) % player.idleFrames.length;
-                player.image = player.idleFrames[player.currentFrame];
-                player.frameCounter = 0;
-            }
-        } else {
-            // 如果移動中或非閒置狀態，重置閒置動畫
-            // ✨ 修正：只有在非特殊動作（如勝利/失敗）時才重置
-            // 這裡不需要強制重置，因為如果是 idleFrames 中的圖片，上面的 if 會處理
-            // 如果是特殊圖片 (win/lose)，animationTimer 會控制
-            // 只有當它是特殊圖片且時間到了，才需要重置
-            // 實際上，這個 else 區塊在移動時會被觸發，但我們不希望它在移動時重置為 defaultImage，
-            // 而是讓移動時保持 defaultImage。
-            // 這裡的邏輯應該是：如果正在移動，且當前不是 defaultImage，則切換回 defaultImage。
-            // 但這與 idleFrames 的邏輯衝突，所以我們將這部分邏輯移到 animationTimer 結束後處理。
-            // 暫時將此 else 區塊留空或移除其內容，讓 animationTimer 結束後的邏輯來統一處理。
-            // 為了保持原有的結構，我們將其內容清空，因為新的邏輯會處理這些情況。
-        }
-
-        // 狀態恢復
-        if (player.animationTimer > 0) {
-            player.animationTimer--;
-            if (player.animationTimer <= 0) {
-                player.image = player.defaultImage;
-            }
-        } else {
-            // ✨ 修正：如果不是在播放特殊動畫，且沒有移動，且當前圖片不是 idleFrames 之一，則重置為 default
-            // 這確保了從特殊動畫結束後能回到 idle 狀態
-            if (!keys.left && !keys.right && !player.idleFrames.includes(player.image)) {
-                player.image = player.defaultImage;
-            }
-        }
-
-        ctx.drawImage(player.image, player.x, player.y, player.width, player.height);
+        player.update(inputManager);
+        player.draw(ctx);
 
         // ✨ 新增：Fever Time 倒數邏輯
         if (isFeverTime) {
@@ -1035,8 +958,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         stats_items_positive++;
 
                         // ✨ 修正：接到加分物品顯示勝利表情
-                        player.image = player.winImage;
-                        player.animationTimer = GAME_CONFIG.PLAYER.WIN_LOSE_ANIMATION_DURATION;
+                        player.setHappy();
 
                         // Fever 累積
                         if (!isFeverTime) {
@@ -1054,8 +976,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         stats_items_negative++;
 
                         // ✨ 修正：接到扣分物品顯示失敗表情
-                        player.image = player.loseImage;
-                        player.animationTimer = GAME_CONFIG.PLAYER.WIN_LOSE_ANIMATION_DURATION;
+                        player.setSad();
 
                         // Fever 扣除
                         if (!isFeverTime) {
