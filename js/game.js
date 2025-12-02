@@ -594,12 +594,12 @@ document.addEventListener('DOMContentLoaded', function () {
             if (isFeverTime) bonusPoints *= GAME_CONFIG.SCORING.FEVER_MULTIPLIER;
             score += bonusPoints;
             player.image = player.winImage;
-            audioManager.playSound('answerCorrect', false);
+            audioManager.playSound('answerCorrect');
             stats_questions_correct++;
         } else {
             score += GAME_CONFIG.SCORING.INCORRECT_ANSWER;
             player.image = player.loseImage;
-            audioManager.playSound('answerIncorrect', false);
+            audioManager.playSound('answerIncorrect');
             stats_questions_wrong++;
         }
 
@@ -692,7 +692,7 @@ document.addEventListener('DOMContentLoaded', function () {
         clearGameTimers();
         audioManager.stopBGM('bgm');
         audioManager.stopBGM('bgmFever');
-        audioManager.playSound('gameOver', false);
+        audioManager.playSound('gameOver');
 
         // ✨ 修正：關閉 Fever Time 視覺特效
         if (isFeverTime) {
@@ -784,7 +784,7 @@ document.addEventListener('DOMContentLoaded', function () {
         uiManager.hideModalOverlay();
 
         gameStarted = true;
-        audioManager.playSound('gameStart', false);
+        audioManager.playSound('gameStart');
         audioManager.playBGM('bgm');
 
         gameTimerId = setInterval(updateTimer, 1000);
@@ -861,7 +861,7 @@ document.addEventListener('DOMContentLoaded', function () {
             if (checkCollision(player, item)) {
                 // 處理碰撞
                 if (item.type === 'question') {
-                    audioManager.playSound('collectQuestion', true);
+                    audioManager.playSound('collectQuestion');
                     showQuestion();
                 } else {
                     let points = item.score;
@@ -879,7 +879,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     effectManager.addScoreEffect(item.x, item.y, points, points > 0 ? 'positive' : 'negative');
 
                     if (points > 0) {
-                        audioManager.playSound(item.type === 'special' ? 'collectSpecial' : 'collectPositive', true);
+                        audioManager.playSound(item.type === 'special' ? 'collectSpecial' : 'collectPositive');
                         stats_items_positive++;
 
                         // ✨ 修正：接到加分物品顯示勝利表情
@@ -898,7 +898,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             uiManager.updateFeverProgress(Math.floor(feverMeter));
                         }
                     } else {
-                        audioManager.playSound('collectNegative', true);
+                        audioManager.playSound('collectNegative');
                         stats_items_negative++;
 
                         // ✨ 修正：接到扣分物品顯示失敗表情

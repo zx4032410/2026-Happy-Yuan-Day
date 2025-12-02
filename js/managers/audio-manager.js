@@ -11,14 +11,17 @@ class AudioManager {
         this.audio.bgm = new Audio('./audio/bgm.mp3');
         this.audio.bgm.loop = true;
         this.audio.bgm.volume = 0.5;
+        this.audio.bgm.preload = 'auto'; // ✨ 效能優化：預先載入
 
         this.audio.bgmFever = new Audio('./audio/bgm-fever.m4a'); // ✨ 修正副檔名
         this.audio.bgmFever.loop = true;
         this.audio.bgmFever.volume = 0.5;
+        this.audio.bgmFever.preload = 'auto'; // ✨ 效能優化：預先載入
 
         this.audio.birthday = new Audio('./audio/Happy Birthday_8bit.mp3'); // ✨ 修正檔名
         this.audio.birthday.loop = true;
         this.audio.birthday.volume = 0.6;
+        this.audio.birthday.preload = 'auto'; // ✨ 效能優化：預先載入
 
         // SFX Pools
         this.audio.gameStart = new AudioPool('./audio/game-start.mp3', 1);
@@ -59,7 +62,7 @@ class AudioManager {
         }
     }
 
-    playSound(name, allowOverlap = true) {
+    playSound(name) {
         if (this.isMuted) return;
         if (this.audio[name]) {
             if (this.audio[name] instanceof AudioPool) {
