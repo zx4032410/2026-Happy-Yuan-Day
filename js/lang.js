@@ -3,6 +3,11 @@ const i18nStrings = {
         score: "分數",
         time: "時間",
         fever: "應援力量",
+        // ✨ 新增 (設定選單)
+        settingsTitle: "設定",
+        languageSettings: "語言設定",
+        otherOptions: "其他選項",
+        backButton: "返回",
         // 開始彈窗
         modalStartTitle: "小媛寶生日應援！",
         modalStartText: "接住媛媛喜歡的東西，為她累積應援力量吧！",
@@ -94,6 +99,11 @@ const i18nStrings = {
         score: "Score",
         time: "Time",
         fever: "Fever",
+        // ✨ New (Settings Menu)
+        settingsTitle: "Settings",
+        languageSettings: "Language Settings",
+        otherOptions: "Other Options",
+        backButton: "Back",
         // Start Modal
         modalStartTitle: "Yuan's Birthday Support!",
         modalStartText: "Catch items Yuan loves to build up support power!",
@@ -103,7 +113,7 @@ const i18nStrings = {
         modalEndText: "You earned {score} support points for Yuan!",
         modalRestartButton: "Restart",
         modalQuestionTitle: "Support Quiz!",
-        
+
         // Stats
         statsTitle: "Support Results",
         statsPositive: "Items Caught",

@@ -104,41 +104,6 @@
     /* 靜音時變暗 */
 }
 
-/* --- ✨ 語言切換器樣式 --- */
-#lang-switcher-area span {
-    font-size: 1.2em;
-    /* ✨ Smaller icon */
-    margin-right: 3px;
-    /* ✨ Less spacing */
-}
-
-#lang-switcher-area select {
-    background-color: rgba(0, 0, 0, 0.4);
-    /* ✨ Subtle dark background */
-    color: white;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    /* ✨ Lighter border */
-    border-radius: 5px;
-    padding: 3px 8px;
-    /* ✨ Smaller padding */
-    font-size: 0.85em;
-    /* ✨ Smaller font */
-    font-family: 'Noto Sans TC', sans-serif;
-    font-weight: 700;
-    cursor: pointer;
-}
-
-/* 讓 select 也有描邊 */
-#lang-switcher-area select,
-#lang-switcher-area span {
-    text-shadow: -1px -1px 0 #1c2541, 1px -1px 0 #1c2541, -1px 1px 0 #1c2541, 1px 1px 0 #1c2541;
-}
-
-#lang-switcher-area option {
-    color: black;
-    text-shadow: none;
-}
-
 /* --- ✨ 分數變化顯示 --- */
 #score-change {
     position: absolute;
@@ -167,17 +132,90 @@
     color: var(--color-accent-red);
 }
 
-#lang-switcher-area {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    /* ✨ Align to right */
+/* --- ✨ 設定按鈕樣式 --- */
+.settings-button {
     position: absolute;
-    /* ✨ Position in top-right of modal */
     top: 15px;
     right: 15px;
-    gap: 5px;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-size: 1.5em;
+    cursor: pointer;
     z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease, background-color 0.2s;
+    padding: 0;
+    /* Reset padding */
+}
+
+.settings-button:hover {
+    transform: rotate(90deg);
+    background-color: rgba(0, 0, 0, 0.6);
+}
+
+/* Settings specific overrides */
+#settings-modal {
+    z-index: 1100;
+    /* Ensure it's above other modals if needed, or use var(--z-index-modal-high) */
+}
+
+#settings-modal .modal-content {
+    max-width: 300px;
+    /* Keep it small as per original design */
+    padding: 25px;
+}
+
+.settings-content h3 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: var(--color-primary-dark);
+    font-size: 1.5em;
+}
+
+.settings-option-btn {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 10px;
+    border: none;
+    border-radius: 10px;
+    background-color: var(--color-primary);
+    color: white;
+    font-size: 1.1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.1s, background-color 0.2s;
+    box-shadow: 0 4px 0 var(--color-primary-dark);
+}
+
+.settings-option-btn:active {
+    transform: translateY(4px);
+    box-shadow: none;
+}
+
+.settings-close-btn,
+.settings-back-btn {
+    margin-top: 15px;
+    background: none;
+    border: 2px solid #ccc;
+    color: #666;
+    padding: 8px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.2s;
+}
+
+.settings-close-btn:hover,
+.settings-back-btn:hover {
+    background-color: #eee;
+    color: #333;
+    border-color: #bbb;
 }
 
 #user-id-display {

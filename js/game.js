@@ -394,8 +394,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Update UI via UIManager if needed, but direct DOM manipulation for i18n is often simpler or handled by a dedicated i18n manager.
         // For now, we keep the logic but use the element references if we had them, or just querySelectorAll as it's a bulk operation.
-        const langSelect = document.getElementById('lang-select');
-        if (langSelect) langSelect.value = lang;
+
+        // ✨ Update active state in settings menu
+        document.querySelectorAll('.lang-option').forEach(btn => {
+            if (btn.dataset.lang === lang) {
+                btn.style.backgroundColor = 'var(--color-primary-dark)';
+                btn.textContent = (lang === 'zh-TW' ? '✓ 繁體中文' : '✓ English');
+            } else {
+                btn.style.backgroundColor = 'var(--color-primary)';
+                btn.textContent = (btn.dataset.lang === 'zh-TW' ? '繁體中文' : 'English');
+            }
+        });
 
         document.querySelectorAll('[data-i18n-key]').forEach(element => {
             const key = element.dataset.i18nKey;
@@ -410,10 +419,66 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
         document.title = i18nStrings[lang].modalStartTitle;
-        uiManager.showStartScreen();
+
+        // ✨ Refresh UI text if visible
+        if (!gameStarted) {
+            uiManager.showStartScreen();
+        }
     }
 
     function detectLanguage() { let browserLang = navigator.language || navigator.userLanguage; if (browserLang.startsWith('en')) { applyLanguage('en'); } else if (browserLang.startsWith('zh')) { applyLanguage('zh-TW'); } else { applyLanguage('zh-TW'); } }
+
+    // ✨ Settings Menu Logic
+    const settingsButton = document.getElementById('settings-button');
+    const settingsModal = document.getElementById('settings-modal');
+    const settingsMainView = document.getElementById('settings-main-view');
+    const settingsLanguageView = document.getElementById('settings-language-view');
+    const btnLanguageSettings = document.getElementById('btn-language-settings');
+    const btnOtherOptions = document.getElementById('btn-other-options');
+    const btnCloseSettings = document.getElementById('btn-close-settings');
+    const btnBackSettings = document.getElementById('btn-back-settings');
+    const langOptions = document.querySelectorAll('.lang-option');
+
+    if (settingsButton) {
+        settingsButton.addEventListener('click', () => {
+            settingsModal.classList.remove('hidden');
+            settingsMainView.classList.remove('hidden');
+            settingsLanguageView.classList.add('hidden');
+        });
+    }
+
+    if (btnCloseSettings) {
+        btnCloseSettings.addEventListener('click', () => {
+            settingsModal.classList.add('hidden');
+        });
+    }
+
+    if (btnLanguageSettings) {
+        btnLanguageSettings.addEventListener('click', () => {
+            settingsMainView.classList.add('hidden');
+            settingsLanguageView.classList.remove('hidden');
+        });
+    }
+
+    if (btnBackSettings) {
+        btnBackSettings.addEventListener('click', () => {
+            settingsLanguageView.classList.add('hidden');
+            settingsMainView.classList.remove('hidden');
+        });
+    }
+
+    if (btnOtherOptions) {
+        btnOtherOptions.addEventListener('click', () => {
+            alert(currentLang === 'zh-TW' ? "敬請期待！" : "Coming Soon!");
+        });
+    }
+
+    langOptions.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const lang = e.target.dataset.lang;
+            applyLanguage(lang);
+        });
+    });
     function shuffleArray(array) { for (let i = array.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1));[array[i], array[j]] = [array[j], array[i]]; } return array; }
 
     // ========================================================================

@@ -121,12 +121,31 @@
 
             <div id="start-screen-ui">
                 <!-- ✨ Move Language Switcher Here -->
-                <div id="lang-switcher-area">
-                    <span aria-hidden="true">🌍</span>
-                    <select id="lang-select" aria-label="選擇語言">
-                        <option value="zh-TW">繁體中文</option>
-                        <option value="en">English</option>
-                    </select>
+                <!-- ✨ Settings Button (Gear Icon) -->
+                <button id="settings-button" class="settings-button" aria-label="設定">
+                    ⚙️
+                </button>
+
+                <!-- ✨ Settings Modal -->
+                <div id="settings-modal" class="modal-overlay hidden">
+                    <div class="modal-content">
+                        <div id="settings-main-view">
+                            <h2 data-i18n-key="settingsTitle">設定</h2>
+                            <button id="btn-language-settings" class="settings-option-btn"
+                                data-i18n-key="languageSettings">語言設定</button>
+                            <button id="btn-other-options" class="settings-option-btn"
+                                data-i18n-key="otherOptions">其他選項</button>
+                            <button id="btn-close-settings" class="settings-close-btn"
+                                data-i18n-key="closeButton">關閉</button>
+                        </div>
+                        <div id="settings-language-view" class="hidden">
+                            <h2 data-i18n-key="languageSettings">語言設定</h2>
+                            <button class="settings-option-btn lang-option" data-lang="zh-TW">繁體中文</button>
+                            <button class="settings-option-btn lang-option" data-lang="en">English</button>
+                            <button id="btn-back-settings" class="settings-back-btn"
+                                data-i18n-key="backButton">返回</button>
+                        </div>
+                    </div>
                 </div>
                 <h2 id="modal-title" data-i18n-key="modalStartTitle"></h2>
                 <p id="modal-text" data-i18n-key="modalStartText"></p>

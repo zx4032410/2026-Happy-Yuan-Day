@@ -282,6 +282,51 @@
     background-color: var(--color-accent-blue);
 }
 
+/* 設定彈窗的按鈕樣式 */
+.settings-option-btn,
+.settings-close-btn,
+.settings-back-btn {
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    padding: var(--spacing-sm) var(--spacing-lg);
+    font-size: var(--font-size-base);
+    border: none;
+    border-radius: var(--border-radius-md);
+    background-color: var(--color-accent-blue); /* 預設為藍色 */
+    color: var(--color-text-primary);
+    cursor: pointer;
+    margin-top: var(--spacing-sm);
+    display: block;
+    width: 100%; /* 讓按鈕佔滿寬度 */
+    transition: all var(--transition-fast) ease;
+    text-align: center; /* 文字居中 */
+}
+
+.settings-option-btn:hover,
+.settings-close-btn:hover,
+.settings-back-btn:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+.settings-option-btn:active,
+.settings-close-btn:active,
+.settings-back-btn:active {
+    transform: translateY(0) scale(0.98);
+}
+
+/* 關閉按鈕可以有不同的顏色，例如灰色 */
+.settings-close-btn {
+    background-color: var(--color-button-gray);
+    margin-top: var(--spacing-lg); /* 增加與選項按鈕的間距 */
+}
+
+/* 返回按鈕也可以考慮不同的顏色，或保持與選項按鈕一致 */
+.settings-back-btn {
+    background-color: var(--color-button-gray); /* 預設為灰色 */
+    margin-top: var(--spacing-lg); /* 增加與語言選項按鈕的間距 */
+}
+
 /* ✨ 關鍵修改：加上父層選擇器以提高權重 */
 #modal-content #open-milestone-button {
     background-color: var(--color-accent-blue);
