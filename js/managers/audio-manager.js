@@ -29,7 +29,7 @@ class AudioManager {
         this.audio.answerIncorrect = new AudioPool('./audio/answer-incorrect.mp3', 3); // ✨ 修正檔名
         this.audio.collectPositive = new AudioPool('./audio/collect-positive.mp3', 5); // ✨ 修正檔名
         this.audio.collectNegative = new AudioPool('./audio/collect-negative.mp3', 5); // ✨ 修正檔名
-        this.audio.collectSpecial = new AudioPool('./audio/collect-special.mp3', 3); // ✨ 修正檔名
+        this.audio.collectSpecial = new AudioPool('./audio/collect-special.mp3', 2); // ✨ 修正檔名
         this.audio.collectQuestion = new AudioPool('./audio/collect-question.mp3', 2); // ✨ 修正檔名
         this.audio.gameOver = new AudioPool('./audio/game-over.mp3', 1);
     }
