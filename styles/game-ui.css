@@ -255,13 +255,13 @@
 }
 
 .control-button {
-    width: 70px;
-    height: 70px;
+    width: 90px;
+    height: 90px;
     border-radius: var(--border-radius-full);
     border: 3px solid rgba(255, 255, 255, 0.8);
     background-color: rgba(255, 255, 255, 0.3);
     color: var(--color-text-primary);
-    font-size: 2em;
+    font-size: 2.5em;
     font-weight: bold;
     cursor: pointer;
     -webkit-tap-highlight-color: transparent;
@@ -281,6 +281,15 @@
 @media (min-width: 768px) {
     #mobile-controls {
         display: none;
+    }
+}
+
+/* ✨ Fix: 針對 iPad/平板等大螢幕觸控裝置，強制顯示虛擬按鈕 */
+@media (min-width: 768px) and (pointer: coarse) {
+    #mobile-controls {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
     }
 }
 
