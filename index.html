@@ -1,252 +1,420 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
     <title id="page-title">小媛寶生日應援：媛來接力</title>
 
     <!-- SEO Tags -->
-    <meta name="description" content="⼀起為媛媛的⽣日應援！">
-    <meta name="keywords" content="GENBLUE,幻藍小熊,YUAN,許媛媛,⽣⽇應援,女團,K-POP">
-    <meta name="author" content="weand_studio">
+    <meta name="description" content="⼀起為媛媛的⽣日應援！" />
+    <meta
+      name="keywords"
+      content="GENBLUE,幻藍小熊,YUAN,許媛媛,⽣⽇應援,女團,K-POP"
+    />
+    <meta name="author" content="weand_studio" />
 
     <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://zx4032410.github.io/2026-Happy-Yuan-Day/">
-    <meta property="og:title" content="小媛寶生日應援：媛來接力">
-    <meta property="og:description" content="⼀起為媛媛的生日應援！">
-    <meta property="og:image" content="https://zx4032410.github.io/2026-Happy-Yuan-Day/images/sharecard_seo.png">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
-    <meta property="og:image:alt" content="小媛寶生日應援：媛來接力 - 一起為媛媛的生日應援！">
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://2026happyyuanday.com/" />
+    <meta property="og:title" content="小媛寶生日應援：媛來接力" />
+    <meta property="og:description" content="⼀起為媛媛的生日應援！" />
+    <meta
+      property="og:image"
+      content="https://2026happyyuanday.com/images/sharecard_seo.png"
+    />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="小媛寶生日應援：媛來接力 - 一起為媛媛的生日應援！"
+    />
 
     <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://zx4032410.github.io/2026-Happy-Yuan-Day/">
-    <meta property="twitter:title" content="小媛寶生日應援：媛來接力">
-    <meta property="twitter:description" content="⼀起為媛媛的⽣⽇應援！">
-    <meta property="twitter:image" content="https://zx4032410.github.io/2026-Happy-Yuan-Day/images/sharecard_seo.png">
-    <meta property="twitter:image:alt" content="小媛寶生日應援：媛來接力 - 一起為媛媛的生日應援！">
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://2026happyyuanday.com/" />
+    <meta property="twitter:title" content="小媛寶生日應援：媛來接力" />
+    <meta property="twitter:description" content="⼀起為媛媛的⽣⽇應援！" />
+    <meta
+      property="twitter:image"
+      content="https://2026happyyuanday.com/images/sharecard_seo.png"
+    />
+    <meta
+      property="twitter:image:alt"
+      content="小媛寶生日應援：媛來接力 - 一起為媛媛的生日應援！"
+    />
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
 
     <!-- CSS 模組化載入 -->
-    <link rel="stylesheet" href="styles/variables.css">
-    <link rel="stylesheet" href="styles/base.css">
-    <link rel="stylesheet" href="styles/buttons.css">
-    <link rel="stylesheet" href="styles/game-ui.css">
-    <link rel="stylesheet" href="styles/modals.css">
-    <link rel="stylesheet" href="styles/milestones.css">
-    <link rel="stylesheet" href="styles/loading.css">
-    <link rel="stylesheet" href="styles/animations.css">
+    <link rel="stylesheet" href="styles/variables.css" />
+    <link rel="stylesheet" href="styles/base.css" />
+    <link rel="stylesheet" href="styles/buttons.css" />
+    <link rel="stylesheet" href="styles/game-ui.css" />
+    <link rel="stylesheet" href="styles/modals.css" />
+    <link rel="stylesheet" href="styles/milestones.css" />
+    <link rel="stylesheet" href="styles/loading.css" />
+    <link rel="stylesheet" href="styles/animations.css" />
 
     <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon" />
 
     <link rel="icon" href="./favicon.ico" type="image/x-icon" />
-</head>
+  </head>
 
-<body>
+  <body>
     <!-- ✨ 新增：骨架屏 (Skeleton Screen) -->
     <!-- 裝飾性元素，對螢幕閱讀器隱藏 -->
     <div id="skeleton-layer" class="skeleton-layer" aria-hidden="true">
-        <div class="skeleton-header">
-            <div class="skeleton-block skeleton-score"></div>
-            <div class="skeleton-block skeleton-time"></div>
-            <div class="skeleton-block skeleton-fever"></div>
-        </div>
-        <div class="skeleton-block skeleton-canvas"></div>
-        <div class="skeleton-controls">
-            <div class="skeleton-block skeleton-btn"></div>
-            <div class="skeleton-block skeleton-btn"></div>
-        </div>
+      <div class="skeleton-header">
+        <div class="skeleton-block skeleton-score"></div>
+        <div class="skeleton-block skeleton-time"></div>
+        <div class="skeleton-block skeleton-fever"></div>
+      </div>
+      <div class="skeleton-block skeleton-canvas"></div>
+      <div class="skeleton-controls">
+        <div class="skeleton-block skeleton-btn"></div>
+        <div class="skeleton-block skeleton-btn"></div>
+      </div>
     </div>
 
     <!-- ✨ 新增：資源載入進度條 -->
     <!-- 使用 role="alert" 或 aria-live="polite" 讓螢幕閱讀器讀出進度 -->
-    <div id="loading-overlay" class="loading-overlay" role="alert" aria-live="assertive">
-        <div class="loading-content">
-            <h2 data-i18n-key="loadingTitle">載入中...</h2>
-            <div class="loading-progress-container" role="progressbar" aria-valuemin="0" aria-valuemax="100">
-                <div id="loading-progress-bar" class="loading-progress-bar"></div>
-            </div>
-            <p id="loading-text" class="loading-text">0%</p>
-            <!-- ✨ 新增：載入提示與預估時間 -->
-            <p id="loading-hint" class="loading-hint">正在準備應援道具...</p>
-            <p id="loading-time" class="loading-time">預估剩餘時間: 計算中...</p>
+    <div
+      id="loading-overlay"
+      class="loading-overlay"
+      role="alert"
+      aria-live="assertive"
+    >
+      <div class="loading-content">
+        <h2 data-i18n-key="loadingTitle">載入中...</h2>
+        <div
+          class="loading-progress-container"
+          role="progressbar"
+          aria-valuemin="0"
+          aria-valuemax="100"
+        >
+          <div id="loading-progress-bar" class="loading-progress-bar"></div>
         </div>
+        <p id="loading-text" class="loading-text">0%</p>
+        <!-- ✨ 新增：載入提示與預估時間 -->
+        <p id="loading-hint" class="loading-hint">正在準備應援道具...</p>
+        <p id="loading-time" class="loading-time">預估剩餘時間: 計算中...</p>
+      </div>
     </div>
 
     <div id="game-container" role="main">
-        <div id="info-bar" role="region" aria-label="遊戲資訊">
-            <!-- ✨ 新增：Fever Time 倒數計時條 -->
-            <div id="fever-timer-bar"></div>
+      <div id="info-bar" role="region" aria-label="遊戲資訊">
+        <!-- ✨ 新增：Fever Time 倒數計時條 -->
+        <div id="fever-timer-bar"></div>
 
-            <span id="score-info">
-                <span id="score-label" data-i18n-key="score">分數</span>：
-                <span id="score-display">0</span>
-                <span id="score-change"></span>
-            </span>
-            <span class="info-group">
-                <span id="time-label" data-i18n-key="time">時間</span>：<span id="time-display">60s</span>
-            </span>
+        <span id="score-info">
+          <span id="score-label" data-i18n-key="score">分數</span>：
+          <span id="score-display">0</span>
+          <span id="score-change"></span>
+        </span>
+        <span class="info-group">
+          <span id="time-label" data-i18n-key="time">時間</span>：<span
+            id="time-display"
+            >60s</span
+          >
+        </span>
 
-            <span class="info-group">
-                <span id="fever-label" data-i18n-key="fever">應援力量</span>：<span id="milestone-progress">0%</span>
-            </span>
+        <span class="info-group">
+          <span id="fever-label" data-i18n-key="fever">應援力量</span>：<span
+            id="milestone-progress"
+            >0%</span
+          >
+        </span>
 
-            <button id="mute-button" aria-label="切換靜音">🔊</button>
-        </div>
+        <button id="mute-button" aria-label="切換靜音">🔊</button>
+      </div>
 
-        <!-- ✨ 新增：Fever Time 特效層 -->
-        <div id="fever-effect-overlay" class="hidden">
-            <div class="speed-lines"></div>
-            <div class="vignette"></div>
-        </div>
+      <!-- ✨ 新增：Fever Time 特效層 -->
+      <div id="fever-effect-overlay" class="hidden">
+        <div class="speed-lines"></div>
+        <div class="vignette"></div>
+      </div>
 
-        <canvas id="game-canvas" width="800" height="600" role="img" aria-label="遊戲畫面：請使用左右方向鍵或下方按鈕控制角色移動接取物品"></canvas>
+      <canvas
+        id="game-canvas"
+        width="800"
+        height="600"
+        role="img"
+        aria-label="遊戲畫面：請使用左右方向鍵或下方按鈕控制角色移動接取物品"
+      ></canvas>
 
-        <div id="mobile-controls">
-            <button id="move-left" class="control-button" aria-label="向左移動">←</button>
-            <button id="move-right" class="control-button" aria-label="向右移動">→</button>
-        </div>
+      <div id="mobile-controls">
+        <button id="move-left" class="control-button" aria-label="向左移動">
+          ←
+        </button>
+        <button id="move-right" class="control-button" aria-label="向右移動">
+          →
+        </button>
+      </div>
     </div>
 
+    <div
+      id="modal-overlay"
+      class="modal-overlay hidden"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modal-title"
+    >
+      <div id="modal-content" class="modal-content">
+        <div id="start-screen-ui">
+          <!-- ✨ Move Language Switcher Here -->
+          <!-- ✨ Settings Button (Gear Icon) -->
+          <button
+            id="settings-button"
+            class="settings-button"
+            aria-label="設定"
+          >
+            ⚙️
+          </button>
 
-
-    <div id="modal-overlay" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="modal-title">
-        <div id="modal-content" class="modal-content">
-
-            <div id="start-screen-ui">
-                <!-- ✨ Move Language Switcher Here -->
-                <!-- ✨ Settings Button (Gear Icon) -->
-                <button id="settings-button" class="settings-button" aria-label="設定">
-                    ⚙️
+          <!-- ✨ Settings Modal -->
+          <div id="settings-modal" class="modal-overlay hidden">
+            <div class="modal-content">
+              <div id="settings-main-view">
+                <h2 data-i18n-key="settingsTitle">設定</h2>
+                <button
+                  id="btn-language-settings"
+                  class="settings-option-btn"
+                  data-i18n-key="languageSettings"
+                >
+                  語言設定
                 </button>
-
-                <!-- ✨ Settings Modal -->
-                <div id="settings-modal" class="modal-overlay hidden">
-                    <div class="modal-content">
-                        <div id="settings-main-view">
-                            <h2 data-i18n-key="settingsTitle">設定</h2>
-                            <button id="btn-language-settings" class="settings-option-btn"
-                                data-i18n-key="languageSettings">語言設定</button>
-                            <!-- ✨ 修改：將其他選項改為故障排除 -->
-                            <button id="btn-troubleshoot" class="settings-option-btn"
-                                style="background-color: var(--color-accent-orange);"
-                                data-i18n-key="troubleshoot">故障排除</button>
-                            <button id="btn-close-settings" class="settings-close-btn"
-                                data-i18n-key="closeButton">關閉</button>
-                        </div>
-                        <div id="settings-language-view" class="hidden">
-                            <h2 data-i18n-key="languageSettings">語言設定</h2>
-                            <button class="settings-option-btn lang-option" data-lang="zh-TW">繁體中文</button>
-                            <button class="settings-option-btn lang-option" data-lang="en">English</button>
-                            <button id="btn-back-settings-lang" class="settings-back-btn"
-                                data-i18n-key="backButton">返回</button>
-                        </div>
-                        <!-- ✨ 新增：故障排除頁面 -->
-                        <div id="settings-troubleshoot-view" class="hidden">
-                            <h2 data-i18n-key="troubleshoot">故障排除</h2>
-                            <p style="font-size: 0.9em; color: #666; margin-bottom: 15px;" data-i18n-key="troubleshootDesc">
-                                如果遊戲遇到卡頓或顯示異常，請嘗試修復。
-                            </p>
-                            <button id="btn-repair-game" class="settings-option-btn"
-                                style="background-color: var(--color-accent-red);"
-                                data-i18n-key="repairGame">修復遊戲 (清除快取)</button>
-                            <button id="btn-back-settings-trouble" class="settings-back-btn"
-                                data-i18n-key="backButton">返回</button>
-                        </div>
-                    </div>
-                </div>
-                <h2 id="modal-title" data-i18n-key="modalStartTitle"></h2>
-                <p id="modal-text" data-i18n-key="modalStartText"></p>
-                <button id="start-button" data-i18n-key="modalStartButton" class="start-button-style"></button>
-
-                <button id="open-milestone-button" data-i18n-key="milestoneButton" class="start-button-style"></button>
-
-                <button id="open-global-milestone-button" data-i18n-key="globalMilestoneButton"
-                    class="start-button-style"></button>
+                <!-- ✨ 修改：將其他選項改為故障排除 -->
+                <button
+                  id="btn-troubleshoot"
+                  class="settings-option-btn"
+                  style="background-color: var(--color-accent-orange)"
+                  data-i18n-key="troubleshoot"
+                >
+                  故障排除
+                </button>
+                <button
+                  id="btn-close-settings"
+                  class="settings-close-btn"
+                  data-i18n-key="closeButton"
+                >
+                  關閉
+                </button>
+              </div>
+              <div id="settings-language-view" class="hidden">
+                <h2 data-i18n-key="languageSettings">語言設定</h2>
+                <button
+                  class="settings-option-btn lang-option"
+                  data-lang="zh-TW"
+                >
+                  繁體中文
+                </button>
+                <button class="settings-option-btn lang-option" data-lang="en">
+                  English
+                </button>
+                <button
+                  id="btn-back-settings-lang"
+                  class="settings-back-btn"
+                  data-i18n-key="backButton"
+                >
+                  返回
+                </button>
+              </div>
+              <!-- ✨ 新增：故障排除頁面 -->
+              <div id="settings-troubleshoot-view" class="hidden">
+                <h2 data-i18n-key="troubleshoot">故障排除</h2>
+                <p
+                  style="font-size: 0.9em; color: #666; margin-bottom: 15px"
+                  data-i18n-key="troubleshootDesc"
+                >
+                  如果遊戲遇到卡頓或顯示異常，請嘗試修復。
+                </p>
+                <button
+                  id="btn-repair-game"
+                  class="settings-option-btn"
+                  style="background-color: var(--color-accent-red)"
+                  data-i18n-key="repairGame"
+                >
+                  修復遊戲 (清除快取)
+                </button>
+                <button
+                  id="btn-back-settings-trouble"
+                  class="settings-back-btn"
+                  data-i18n-key="backButton"
+                >
+                  返回
+                </button>
+              </div>
             </div>
+          </div>
+          <h2 id="modal-title" data-i18n-key="modalStartTitle"></h2>
+          <p id="modal-text" data-i18n-key="modalStartText"></p>
+          <button
+            id="start-button"
+            data-i18n-key="modalStartButton"
+            class="start-button-style"
+          ></button>
 
-            <div id="endgame-screen-ui" class="hidden">
-                <h2 id="endgame-title" data-i18n-key="modalEndTitle"></h2>
+          <button
+            id="open-milestone-button"
+            data-i18n-key="milestoneButton"
+            class="start-button-style"
+          ></button>
 
-                <!-- 在遊戲結束 modal 中加入 -->
-                <div id="share-section" style="margin-top: 5px; display: none;">
-                    <!-- 圖卡格式選擇器 -->
-                    <div id="share-format-selector" style="margin-bottom: 15px;">
-                        <p style="font-size: 14px; color: #666; margin-bottom: 8px;">選擇分享格式:</p>
-                        <div style="display: flex; gap: 10px; justify-content: center;">
-                            <button id="formatSquareBtn" class="format-btn active" data-format="square"
-                                aria-label="選擇方形圖卡格式">
-                                📱 方形 (1:1)<br>
-                            </button>
-                            <button id="formatStoryBtn" class="format-btn" data-format="story" aria-label="選擇限時動態圖卡格式">
-                                📱 直式 (9:16)<br>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- 圖卡預覽區 -->
-                    <div id="score-card-preview" style="margin-bottom: 15px;">
-                        <canvas id="scoreCardCanvas"
-                            style="max-width: 100%; max-height: 280px; border: 2px solid #ddd; border-radius: 8px;"
-                            role="img" aria-label="成績分享圖卡預覽"></canvas>
-                    </div>
-
-                    <!-- 操作按鈕 -->
-                    <div id="share-actions" style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
-                        <button id="downloadScoreBtn" class="share-btn download-btn">
-                            📥 下載圖片
-                        </button>
-                        <button id="shareScoreBtn" class="share-btn share-btn-primary">
-                            📤 分享到限動
-                        </button>
-                    </div>
-
-
-                </div>
-
-                <button id="endgame-continue-button" data-i18n-key="continueButton"
-                    class="start-button-style">繼續</button>
-            </div>
-
-            <div id="question-area" class="hidden">
-                <p id="question-text"></p>
-                <button class="answer-option"></button>
-                <button class="answer-option"></button>
-                <button class="answer-option"></button>
-            </div>
-
-            <!-- ✨ 新增：IG 抽獎資訊輸入介面 -->
-            <div id="ig-prompt-area" class="hidden">
-                <h2 id="ig-prompt-title" data-i18n-key="igPromptTitle"></h2>
-                <p id="ig-prompt-text" data-i18n-key="igPromptText"></p>
-                <label for="ig-input" class="visually-hidden"
-                    style="position: absolute; width: 1px; height: 1px; overflow: hidden;">IG 帳號</label>
-                <input type="text" id="ig-input" data-i18n-key-placeholder="igPromptPlaceholder" autocomplete="off"
-                    data-lpignore="true" data-1p-ignore data-bwignore aria-label="輸入 IG 帳號">
-                <div class="import-buttons">
-                    <button id="ig-cancel-button" data-i18n-key="igCancelButton" class="start-button-style"></button>
-                    <button id="ig-submit-button" data-i18n-key="igSubmitButton" class="start-button-style"></button>
-                </div>
-            </div>
-
-
+          <button
+            id="open-global-milestone-button"
+            data-i18n-key="globalMilestoneButton"
+            class="start-button-style"
+          ></button>
         </div>
+
+        <div id="endgame-screen-ui" class="hidden">
+          <h2 id="endgame-title" data-i18n-key="modalEndTitle"></h2>
+
+          <!-- 在遊戲結束 modal 中加入 -->
+          <div id="share-section" style="margin-top: 5px; display: none">
+            <!-- 圖卡格式選擇器 -->
+            <div id="share-format-selector" style="margin-bottom: 15px">
+              <p style="font-size: 14px; color: #666; margin-bottom: 8px">
+                選擇分享格式:
+              </p>
+              <div style="display: flex; gap: 10px; justify-content: center">
+                <button
+                  id="formatSquareBtn"
+                  class="format-btn active"
+                  data-format="square"
+                  aria-label="選擇方形圖卡格式"
+                >
+                  📱 方形 (1:1)<br />
+                </button>
+                <button
+                  id="formatStoryBtn"
+                  class="format-btn"
+                  data-format="story"
+                  aria-label="選擇限時動態圖卡格式"
+                >
+                  📱 直式 (9:16)<br />
+                </button>
+              </div>
+            </div>
+
+            <!-- 圖卡預覽區 -->
+            <div id="score-card-preview" style="margin-bottom: 15px">
+              <canvas
+                id="scoreCardCanvas"
+                style="
+                  max-width: 100%;
+                  max-height: 280px;
+                  border: 2px solid #ddd;
+                  border-radius: 8px;
+                "
+                role="img"
+                aria-label="成績分享圖卡預覽"
+              ></canvas>
+            </div>
+
+            <!-- 操作按鈕 -->
+            <div
+              id="share-actions"
+              style="
+                display: flex;
+                gap: 10px;
+                justify-content: center;
+                flex-wrap: wrap;
+              "
+            >
+              <button id="downloadScoreBtn" class="share-btn download-btn">
+                📥 下載圖片
+              </button>
+              <button id="shareScoreBtn" class="share-btn share-btn-primary">
+                📤 分享到限動
+              </button>
+            </div>
+          </div>
+
+          <button
+            id="endgame-continue-button"
+            data-i18n-key="continueButton"
+            class="start-button-style"
+          >
+            繼續
+          </button>
+        </div>
+
+        <div id="question-area" class="hidden">
+          <p id="question-text"></p>
+          <button class="answer-option"></button>
+          <button class="answer-option"></button>
+          <button class="answer-option"></button>
+        </div>
+
+        <!-- ✨ 新增：IG 抽獎資訊輸入介面 -->
+        <div id="ig-prompt-area" class="hidden">
+          <h2 id="ig-prompt-title" data-i18n-key="igPromptTitle"></h2>
+          <p id="ig-prompt-text" data-i18n-key="igPromptText"></p>
+          <label
+            for="ig-input"
+            class="visually-hidden"
+            style="
+              position: absolute;
+              width: 1px;
+              height: 1px;
+              overflow: hidden;
+            "
+            >IG 帳號</label
+          >
+          <input
+            type="text"
+            id="ig-input"
+            data-i18n-key-placeholder="igPromptPlaceholder"
+            autocomplete="off"
+            data-lpignore="true"
+            data-1p-ignore
+            data-bwignore
+            aria-label="輸入 IG 帳號"
+          />
+          <div class="import-buttons">
+            <button
+              id="ig-cancel-button"
+              data-i18n-key="igCancelButton"
+              class="start-button-style"
+            ></button>
+            <button
+              id="ig-submit-button"
+              data-i18n-key="igSubmitButton"
+              class="start-button-style"
+            ></button>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div id="birthday-modal-overlay" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-label="生日祝福">
-        <div id="birthday-modal-content" class="modal-content">
-            <h2 data-i18n-key="birthdayTitle">🎂 Happy Birthday 🎂</h2>
-            <img src="./images/yuan-birthday-art.png" alt="媛媛生日賀圖">
-            <p id="birthday-message" data-i18n-key="birthdayMessage"></p>
-            <button id="birthday-close-button" data-i18n-key="birthdayCloseButton"
-                class="start-button-style">關閉</button>
-        </div>
+    <div
+      id="birthday-modal-overlay"
+      class="modal-overlay hidden"
+      role="dialog"
+      aria-modal="true"
+      aria-label="生日祝福"
+    >
+      <div id="birthday-modal-content" class="modal-content">
+        <h2 data-i18n-key="birthdayTitle">🎂 Happy Birthday 🎂</h2>
+        <img src="./images/yuan-birthday-art.png" alt="媛媛生日賀圖" />
+        <p id="birthday-message" data-i18n-key="birthdayMessage"></p>
+        <button
+          id="birthday-close-button"
+          data-i18n-key="birthdayCloseButton"
+          class="start-button-style"
+        >
+          關閉
+        </button>
+      </div>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -266,85 +434,140 @@
     <script src="js/game.js"></script>
     <script src="js/offline-handler.js"></script>
 
-    <div id="milestone-modal-overlay" class="modal-overlay hidden" role="dialog" aria-modal="true"
-        aria-labelledby="milestone-title-header">
-        <div id="milestone-modal-content" class="modal-content">
-            <h2 id="milestone-title-header" data-i18n-key="milestoneTitle">個人里程碑</h2>
-            <p data-i18n-key="milestoneDesc">達成目標累積積分...</p>
+    <div
+      id="milestone-modal-overlay"
+      class="modal-overlay hidden"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="milestone-title-header"
+    >
+      <div id="milestone-modal-content" class="modal-content">
+        <h2 id="milestone-title-header" data-i18n-key="milestoneTitle">
+          個人里程碑
+        </h2>
+        <p data-i18n-key="milestoneDesc">達成目標累積積分...</p>
 
-            <div class="milestone-score-header">
-                <span data-i18n-key="milestoneYourScore">你的總積分</span>
-                <span id="milestone-current-score">0</span>
-            </div>
-
-            <!-- ✨ 新增：IG 帳號顯示區域 -->
-            <div id="milestone-ig-display" class="milestone-ig-display hidden">
-                <span data-i18n-key="milestoneIgLabel">IG 帳號：</span>
-                <span id="milestone-ig-handle"></span>
-                <button id="milestone-ig-edit-button" data-i18n-key="milestoneIgEditButton"
-                    class="milestone-ig-edit-button" aria-label="修改 IG 帳號">修改</button>
-            </div>
-
-            <div class="milestone-tiers-list">
-                <!-- Tier 1 -->
-                <div class="milestone-tier-row" id="milestone-tier-1">
-                    <div class="milestone-tier-info">
-                        <h3 data-i18n-key="milestoneTier1Title">第一階段：10,000分</h3>
-                        <p data-i18n-key="milestoneTier1Desc">獎勵：數位小卡</p>
-                    </div>
-                    <div class="milestone-tier-action">
-                        <button id="claim-tier1-button" aria-label="領取第一階段獎勵"></button>
-                    </div>
-                </div>
-                <!-- Tier 2 -->
-                <div class="milestone-tier-row" id="milestone-tier-2">
-                    <div class="milestone-tier-info">
-                        <h3 data-i18n-key="milestoneTier2Title">第二階段：25,000分</h3>
-                        <p data-i18n-key="milestoneTier2Desc">獎勵：實體抽獎資格</p>
-                    </div>
-                    <div class="milestone-tier-action">
-                        <button id="claim-tier2-button" aria-label="領取第二階段獎勵"></button>
-                    </div>
-                </div>
-                <!-- Tier 3 -->
-                <div class="milestone-tier-row" id="milestone-tier-3">
-                    <div class="milestone-tier-info">
-                        <h3 data-i18n-key="milestoneTier3Title">第三階段：50,000分</h3>
-                        <p data-i18n-key="milestoneTier3Desc">獎勵：限定月曆卡抽獎</p>
-                    </div>
-                    <div class="milestone-tier-action">
-                        <button id="claim-tier3-button" aria-label="領取第三階段獎勵"></button>
-                    </div>
-                </div>
-            </div>
-
-            <button id="milestone-close-button" data-i18n-key="milestoneConfirmButton"
-                class="start-button-style"></button>
+        <div class="milestone-score-header">
+          <span data-i18n-key="milestoneYourScore">你的總積分</span>
+          <span id="milestone-current-score">0</span>
         </div>
+
+        <!-- ✨ 新增：IG 帳號顯示區域 -->
+        <div id="milestone-ig-display" class="milestone-ig-display hidden">
+          <span data-i18n-key="milestoneIgLabel">IG 帳號：</span>
+          <span id="milestone-ig-handle"></span>
+          <button
+            id="milestone-ig-edit-button"
+            data-i18n-key="milestoneIgEditButton"
+            class="milestone-ig-edit-button"
+            aria-label="修改 IG 帳號"
+          >
+            修改
+          </button>
+        </div>
+
+        <div class="milestone-tiers-list">
+          <!-- Tier 1 -->
+          <div class="milestone-tier-row" id="milestone-tier-1">
+            <div class="milestone-tier-info">
+              <h3 data-i18n-key="milestoneTier1Title">第一階段：10,000分</h3>
+              <p data-i18n-key="milestoneTier1Desc">獎勵：數位小卡</p>
+            </div>
+            <div class="milestone-tier-action">
+              <button
+                id="claim-tier1-button"
+                aria-label="領取第一階段獎勵"
+              ></button>
+            </div>
+          </div>
+          <!-- Tier 2 -->
+          <div class="milestone-tier-row" id="milestone-tier-2">
+            <div class="milestone-tier-info">
+              <h3 data-i18n-key="milestoneTier2Title">第二階段：25,000分</h3>
+              <p data-i18n-key="milestoneTier2Desc">獎勵：實體抽獎資格</p>
+            </div>
+            <div class="milestone-tier-action">
+              <button
+                id="claim-tier2-button"
+                aria-label="領取第二階段獎勵"
+              ></button>
+            </div>
+          </div>
+          <!-- Tier 3 -->
+          <div class="milestone-tier-row" id="milestone-tier-3">
+            <div class="milestone-tier-info">
+              <h3 data-i18n-key="milestoneTier3Title">第三階段：50,000分</h3>
+              <p data-i18n-key="milestoneTier3Desc">獎勵：限定月曆卡抽獎</p>
+            </div>
+            <div class="milestone-tier-action">
+              <button
+                id="claim-tier3-button"
+                aria-label="領取第三階段獎勵"
+              ></button>
+            </div>
+          </div>
+        </div>
+
+        <button
+          id="milestone-close-button"
+          data-i18n-key="milestoneConfirmButton"
+          class="start-button-style"
+        ></button>
+      </div>
     </div>
-    <div id="global-milestone-modal-overlay" class="modal-overlay hidden" role="dialog" aria-modal="true"
-        aria-labelledby="global-milestone-title-header">
-        <div id="global-milestone-modal-content" class="modal-content">
-            <h2 id="global-milestone-title-header" data-i18n-key="globalMilestoneTitle">全體應援里程碑</h2>
-            <p data-i18n-key="globalMilestoneDesc">這是所有玩家共同累積的應援力量！</p>
+    <div
+      id="global-milestone-modal-overlay"
+      class="modal-overlay hidden"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="global-milestone-title-header"
+    >
+      <div id="global-milestone-modal-content" class="modal-content">
+        <h2
+          id="global-milestone-title-header"
+          data-i18n-key="globalMilestoneTitle"
+        >
+          全體應援里程碑
+        </h2>
+        <p data-i18n-key="globalMilestoneDesc">
+          這是所有玩家共同累積的應援力量！
+        </p>
 
-            <div class="milestone-progress-bar-container" role="progressbar" aria-label="全體應援進度">
-                <div id="global-milestone-progress-bar-fill"></div>
-                <div id="global-milestone-current-percent">0%</div>
-            </div>
-
-            <div class="global-milestone-buttons">
-                <button id="global-milestone-close-button" data-i18n-key="closeButton"
-                    class="start-button-style">關閉</button>
-                <button id="global-milestone-restart-button" data-i18n-key="modalRestartButton"
-                    class="hidden start-button-style">重新開始</button>
-                <button id="global-milestone-share-button" data-i18n-key="shareButton"
-                    class="hidden start-button-style">分享成果</button>
-            </div>
+        <div
+          class="milestone-progress-bar-container"
+          role="progressbar"
+          aria-label="全體應援進度"
+        >
+          <div id="global-milestone-progress-bar-fill"></div>
+          <div id="global-milestone-current-percent">0%</div>
         </div>
+
+        <div class="global-milestone-buttons">
+          <button
+            id="global-milestone-close-button"
+            data-i18n-key="closeButton"
+            class="start-button-style"
+          >
+            關閉
+          </button>
+          <button
+            id="global-milestone-restart-button"
+            data-i18n-key="modalRestartButton"
+            class="hidden start-button-style"
+          >
+            重新開始
+          </button>
+          <button
+            id="global-milestone-share-button"
+            data-i18n-key="shareButton"
+            class="hidden start-button-style"
+          >
+            分享成果
+          </button>
+        </div>
+      </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
-</body>
-
+  </body>
 </html>
