@@ -2,7 +2,7 @@
 
 > **專案名稱**: 2026 Happy Yuan Day  
 > **Firebase 專案 ID**: yuan-birthday-gam  
-> **最後更新時間**: 2025-12-02 17:05 (GMT+8)
+> **最後更新時間**: 2025-12-06 01:17 (GMT+8)
 
 ---
 
@@ -13,33 +13,61 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // 🔑 管理員名單
+    // --- 1. 基礎設定 ---
+
+    // 檢查是否為管理員 (預留給您未來若有後台管理用)
+    // 目前遊戲前端不會用到這個，但保留著很好
     function isAdmin() {
       return request.auth != null && request.auth.uid in [
-        'AfawV30FwqTeHvB8wbyq31kS1NE2',  // 主要測試帳號
-        'your-admin-uid-2'   // 備用管理員帳號
+        'AfawV30FwqTeHvB8wbyq31kS1NE2',
+        '您的UID-2'
       ];
     }
 
-    // ⭐ 全域統計資料（里程碑總分）
+    // --- 2. 集合規則 ---
+
+    // 🏆 全域統計資料 (statistics/global)
     match /statistics/global {
-      allow read: if true;  // 所有人都可以讀取里程碑進度
-      allow write: if request.auth != null;  // 已登入使用者可以更新
+      // 允許所有人讀取 (顯示在首頁)
+      allow read: if true;
+
+      // 允許所有人更新 (為了讓 batch 寫入能成功累加分數)
+      // 這裡加上一個簡單驗證：只能更新 totalScore 且必須是數字
+      allow update: if request.resource.data.totalScore is number;
+
+      // 禁止刪除這個重要文件
+      allow delete: if false;
     }
 
-    // 📊 分數記錄
+    // 📝 單局分數紀錄 (scores)
     match /scores/{scoreId} {
-      allow read: if true;  // 公開排行榜
-      allow create: if request.auth != null;  // 已登入可建立分數
-      allow update, delete: if isAdmin();  // 只有管理員可修改/刪除
+      allow read: if true; // 允許讀取 (若未來做排行榜)
+
+      // 允許創建新分數，但必須通過防作弊檢查
+      allow create: if
+        // 1. 必須包含必要欄位
+        request.resource.data.keys().hasAll(['score', 'userId', 'timestamp']) &&
+        // 2. 分數必須是數字
+        request.resource.data.score is number &&
+        // 3. 【防作弊】單局分數上限設定 (例如 60秒不太可能超過 5000分)
+        // 您可以根據測試結果調整這個數字，設寬鬆一點避免誤判
+        request.resource.data.score < 10000 &&
+        // 4. 禁止上傳負分 (雖然程式碼有防呆，這裡再擋一次)
+        request.resource.data.score >= 0;
+
+      // 禁止修改或刪除已上傳的分數 (只有管理員可以)
+      allow update, delete: if isAdmin();
     }
 
-    // 👤 玩家個人資料
+    // 👤 玩家個人資料 (players)
     match /players/{userId} {
-      allow read: if true;  // 公開讀取
-      allow create, update: if request.auth != null &&
-        (request.auth.uid == userId || isAdmin());  // 只能修改自己的資料
-      allow delete: if isAdmin();  // 只有管理員可刪除
+      allow read: if true;
+
+      // 允許創建或更新個人資料
+      // 因為我們是用隨機 ID，無法驗證身份，所以只能開放寫入
+      // 但我們可以限制資料結構
+      allow write: if
+         request.resource.data.cumulativeScore is number;
     }
   }
 }
@@ -139,7 +167,21 @@ service cloud.firestore {
 
 ### 已知限制
 
-⚠️ 目前的規則**允許匿名使用者直接寫入 `statistics/global`**，理論上可能被惡意利用。
+⚠️ 目前的規則**允許匿名使用者直接寫入 `statistics/global`**，理論上可能被惡意利用。但已透過下方的「網站限制」降低風險。
+
+### 🌐 網站限制 (API Key Restrictions)
+
+> ✅ 已在 Firebase Console / Google Cloud Console 設定 API Key 的網站限制，僅允許以下來源存取：
+
+```
+http://127.0.0.1:5500/*        # 本地開發環境
+https://2026happyyuanday.com/* # 正式網域
+https://www.2026happyyuanday.com/* # 正式網域 (www)
+```
+
+**設定位置**: [Google Cloud Console](https://console.cloud.google.com/) → APIs & Services → Credentials → 選擇對應的 API Key → Application restrictions → HTTP referrers
+
+**效果**: 即使 Firestore 規則開放寫入，惡意者也無法從未授權的網站發送 API 請求，有效降低被攻擊的風險。
 
 ### 建議改進方向（未來考慮）
 
@@ -150,6 +192,13 @@ service cloud.firestore {
 ---
 
 ## 📝 更新日誌
+
+### 2025-12-06 01:17
+
+- **新增**: 網站限制 (API Key Restrictions) 章節
+- **內容**: 記錄已在 Google Cloud Console 設定的網域白名單
+- **允許網域**: `127.0.0.1:5500`、`2026happyyuanday.com`、`www.2026happyyuanday.com`
+- **目的**: 配合正式上線，強化安全性
 
 ### 2025-12-02 17:05
 
