@@ -35,6 +35,8 @@ class DatabaseManager {
    * @param {Function} onLoginFailure - Callback when login fails
    */
   handleAuthentication(onLoginSuccess, onLoginFailure) {
+    // 使用預設的 LOCAL 持久化，確保玩家分數能夠累積
+    // Storage 警告可能仍會出現，但不影響功能
     this.auth.onAuthStateChanged(async (user) => {
       if (user) {
         this.currentUserID = user.uid;

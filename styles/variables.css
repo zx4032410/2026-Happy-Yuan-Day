@@ -16,11 +16,14 @@
     --color-accent-cyan: #00b4d8;
     --color-accent-green: #2a9d8f;
     --color-accent-red: #e63946;
+    --color-accent-orange: #ff8c00;
     --color-accent-light-green: #9ef01a;
     --color-accent-light-red: #ff4d6d;
     --color-accent-water-blue: #287fa8;
     --color-button-gray: #888;
     --color-button-gray-text: #ccc;
+    --color-primary: #4361ee;
+    --color-primary-dark: #3451de;
 
     /* 間距系統 */
     --spacing-xs: 5px;

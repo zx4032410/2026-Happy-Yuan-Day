@@ -40,7 +40,14 @@ async function syncOfflineScores() {
         return;
     }
 
-    const offlineScoresJSON = localStorage.getItem(OFFLINE_SCORES_KEY);
+    let offlineScoresJSON;
+    try {
+        offlineScoresJSON = localStorage.getItem(OFFLINE_SCORES_KEY);
+    } catch (e) {
+        console.log('無法讀取本機儲存，跳過離線同步。');
+        return;
+    }
+    
     if (!offlineScoresJSON) {
         console.log('沒有待同步的離線分數。');
         return;
