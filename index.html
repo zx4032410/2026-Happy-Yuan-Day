@@ -568,6 +568,72 @@
       </div>
     </div>
 
+    <!-- ✨ 遊戲說明彈窗 -->
+    <div
+      id="tutorial-modal-overlay"
+      class="modal-overlay hidden"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="tutorial-title"
+    >
+      <div id="tutorial-modal-content" class="modal-content">
+        <h2 id="tutorial-title" data-i18n-key="tutorialTitle">應援指南</h2>
+        <p data-i18n-key="tutorialDesc" style="margin-bottom: 15px; color: #ccc;">
+          左右移動小媛寶，接住想要的東西！
+        </p>
+
+        <div class="tutorial-grid">
+          <!-- 正向物品 -->
+          <div class="tutorial-row">
+            <div class="tut-imgs">
+              <img src="./images/item-white-heart.png" alt="愛心" />
+              <img src="./images/item-bear-cookie.png" alt="小熊餅乾" />
+              <img src="./images/item-guitar.png" alt="吉他" />
+            </div>
+            <span data-i18n-key="tutItemPositive">💖 加分！累積應援力量</span>
+          </div>
+
+          <!-- 特殊物品 -->
+          <div class="tutorial-row">
+            <div class="tut-imgs">
+              <img src="./images/item-lightstick.png" alt="應援棒" class="pulse-anim" />
+            </div>
+            <span data-i18n-key="tutItemSpecial" style="color: #ffca3a;">✨ 超讚！大量增加應援力</span>
+          </div>
+
+          <!-- 問答物品 -->
+          <div class="tutorial-row">
+            <div class="tut-imgs">
+              <img src="./images/question_icon.png" alt="問號" />
+            </div>
+            <span data-i18n-key="tutItemQuestion" style="color: #4cc9f0;">❓ 挑戰！觸發應援問答</span>
+          </div>
+
+          <!-- 負面物品 -->
+          <div class="tutorial-row">
+            <div class="tut-imgs">
+              <img src="./images/item-burnt-cookie.png" alt="燒焦餅乾" />
+              <img src="./images/item-alarm-clock.png" alt="鬧鐘" />
+            </div>
+            <span data-i18n-key="tutItemNegative" style="color: #ff4d6d;">⚠️ 小心！記得要閃開</span>
+          </div>
+        </div>
+
+        <label class="tutorial-checkbox-label">
+          <input type="checkbox" id="tutorial-dont-show" />
+          <span data-i18n-key="tutDontShowAgain">不再顯示此說明</span>
+        </label>
+
+        <button
+          id="tutorial-close-button"
+          data-i18n-key="tutCloseButton"
+          class="start-button-style"
+        >
+          我知道了！
+        </button>
+      </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
   </body>
 </html>

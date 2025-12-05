@@ -93,6 +93,15 @@ const i18nStrings = {
         offlineScoreError: "抱歉，無法暫存您的離線分數，請檢查瀏覽器儲存空間設定。",
         syncError: "同步離線分數時發生錯誤，尚有 {count} 筆紀錄未完成。請保持網路連線，系統將會重試。",
         syncSuccess: "所有離線遊戲紀錄皆已同步成功！",
+        // ✨ 新增 (遊戲說明)
+        tutorialTitle: "應援指南",
+        tutorialDesc: "左右移動小媛寶，接住想要的東西！",
+        tutItemPositive: "💖 加分！累積應援力量",
+        tutItemSpecial: "✨ 超讚！大量增加應援力",
+        tutItemQuestion: "❓ 挑戰！觸發應援問答",
+        tutItemNegative: "⚠️ 小心！記得要閃開",
+        tutCloseButton: "我知道了！",
+        tutDontShowAgain: "不再顯示此說明",
         stillOffline: "網路尚未恢復連線，請稍後再試。",
     },
     'en': {
@@ -193,5 +202,14 @@ const i18nStrings = {
         syncError: "An error occurred while syncing offline scores. {count} records remain unsynced. Please maintain your connection, and the system will retry.",
         syncSuccess: "All offline game records have been successfully synced!",
         stillOffline: "Still offline. Please try again later.",
+        // ✨ New (Tutorial)
+        tutorialTitle: "How to Play",
+        tutorialDesc: "Move left/right to catch items!",
+        tutItemPositive: "💖 Score Up & Build Fever",
+        tutItemSpecial: "✨ Big Bonus & Boost Fever",
+        tutItemQuestion: "❓ Challenge! Trigger Quiz",
+        tutItemNegative: "⚠️ Watch out! Avoid these",
+        tutCloseButton: "Got it!",
+        tutDontShowAgain: "Don't show this again",
     }
 };

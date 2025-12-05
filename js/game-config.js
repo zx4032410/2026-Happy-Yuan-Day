@@ -4,6 +4,7 @@ const GAME_CONFIG = {
     // 一般設定
     VERSION: "v1.0",
     USER_ID_KEY: 'yuan_fan_uid',
+    TUTORIAL_DISMISSED_KEY: 'tutorialDismissed', // ✨ 新增：遊戲說明不再顯示
     FORCE_BIRTHDAY_POPUP: false, // ✨ 開發用：設為 true 可強制觸發生日彩蛋
 
     // 畫布尺寸

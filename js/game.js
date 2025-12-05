@@ -831,7 +831,35 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // 按鈕事件
     const startButton = document.getElementById('start-button');
-    startButton.addEventListener('click', startGame);
+    const tutorialModal = document.getElementById('tutorial-modal-overlay');
+    const tutorialCloseButton = document.getElementById('tutorial-close-button');
+    const tutorialDontShowCheckbox = document.getElementById('tutorial-dont-show');
+
+    // ✨ 修改：點擊開始按鈕時，先檢查是否需要顯示遊戲說明
+    startButton.addEventListener('click', () => {
+        const tutorialDismissed = localStorage.getItem(GAME_CONFIG.TUTORIAL_DISMISSED_KEY);
+        if (tutorialDismissed === 'true') {
+            // 已勾選過「不再顯示」，直接開始遊戲
+            startGame();
+        } else {
+            // 顯示遊戲說明彈窗
+            uiManager.hideAllModalScreens();
+            tutorialModal.classList.remove('hidden');
+        }
+    });
+
+    // ✨ 新增：遊戲說明彈窗關閉事件
+    if (tutorialCloseButton) {
+        tutorialCloseButton.addEventListener('click', () => {
+            // 檢查是否勾選「不再顯示」
+            if (tutorialDontShowCheckbox && tutorialDontShowCheckbox.checked) {
+                localStorage.setItem(GAME_CONFIG.TUTORIAL_DISMISSED_KEY, 'true');
+            }
+            // 關閉說明彈窗並開始遊戲
+            tutorialModal.classList.add('hidden');
+            startGame();
+        });
+    }
 
     const openMilestoneButton = document.getElementById('open-milestone-button');
     openMilestoneButton.addEventListener('click', () => showMilestoneModal(false));

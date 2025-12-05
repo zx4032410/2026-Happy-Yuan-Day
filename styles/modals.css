@@ -4,378 +4,485 @@
 
 /* 共用彈窗 Overlay */
 .modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: var(--color-bg-overlay);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: var(--z-index-modal);
-    padding: var(--spacing-md);
-    box-sizing: border-box;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--color-bg-overlay);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: var(--z-index-modal);
+  padding: var(--spacing-md);
+  box-sizing: border-box;
 }
 
 /* 共用彈窗 Content */
 .modal-content {
-    position: relative;
-    background-color: var(--color-bg-secondary);
-    color: var(--color-text-primary);
-    padding: var(--spacing-xl);
-    border-radius: var(--border-radius-lg);
-    text-align: center;
-    box-shadow: var(--shadow-md);
-    max-width: 500px;
-    width: 100%;
-    max-height: 90vh;
-    overflow-y: auto;
-    box-sizing: border-box;
+  position: relative;
+  background-color: var(--color-bg-secondary);
+  color: var(--color-text-primary);
+  padding: var(--spacing-xl);
+  border-radius: var(--border-radius-lg);
+  text-align: center;
+  box-shadow: var(--shadow-md);
+  max-width: 500px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-sizing: border-box;
 }
 
 .modal-content h2 {
-    margin-top: 0;
-    font-weight: 700;
-    font-size: var(--font-size-xl);
+  margin-top: 0;
+  font-weight: 700;
+  font-size: var(--font-size-xl);
 }
 
 /* 特定彈窗覆蓋樣式 */
 #birthday-modal-overlay {
-    background-color: var(--color-bg-overlay-dark);
-    z-index: var(--z-index-modal-high);
+  background-color: var(--color-bg-overlay-dark);
+  z-index: var(--z-index-modal-high);
 }
 
 #birthday-modal-content {
-    background-color: var(--color-text-primary);
-    color: var(--color-text-secondary);
-    text-shadow: none !important;
+  background-color: var(--color-text-primary);
+  color: var(--color-text-secondary);
+  text-shadow: none !important;
 }
 
 #birthday-modal-content h2 {
-    color: var(--color-accent-water-blue);
-    text-shadow: none !important;
+  color: var(--color-accent-water-blue);
+  text-shadow: none !important;
 }
 
 #birthday-modal-content p {
-    color: var(--color-text-secondary);
-    text-shadow: none !important;
+  color: var(--color-text-secondary);
+  text-shadow: none !important;
 }
 
 #birthday-modal-content button {
-    background-color: var(--color-accent-pink);
-    color: var(--color-text-primary) !important;
-    text-shadow: none !important;
+  background-color: var(--color-accent-pink);
+  color: var(--color-text-primary) !important;
+  text-shadow: none !important;
 }
 
 #birthday-modal-content img {
-    width: 100%;
-    max-width: 400px;
-    border-radius: 10px;
-    margin: 10px 0;
+  width: 100%;
+  max-width: 400px;
+  border-radius: 10px;
+  margin: 10px 0;
 }
 
 #birthday-modal-content p {
-    font-size: 1.1em;
-    line-height: 1.6;
-    white-space: pre-wrap;
+  font-size: 1.1em;
+  line-height: 1.6;
+  white-space: pre-wrap;
 }
 
 #birthday-message {
-    white-space: pre-line;
+  white-space: pre-line;
 }
 
 /* --- ✨ 結算統計區樣式 --- */
 #endgame-stats {
-    width: 90%;
-    margin: var(--spacing-lg) auto;
-    text-align: left;
-    background-color: rgba(0, 0, 0, 0.2);
-    padding: var(--spacing-md);
-    border-radius: var(--border-radius-lg);
+  width: 90%;
+  margin: var(--spacing-lg) auto;
+  text-align: left;
+  background-color: rgba(0, 0, 0, 0.2);
+  padding: var(--spacing-md);
+  border-radius: var(--border-radius-lg);
 }
 
 #endgame-stats h3 {
-    text-align: center;
-    margin-top: 0;
+  text-align: center;
+  margin-top: 0;
 }
 
 #endgame-stats ul {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
 }
 
 #endgame-stats li {
-    display: flex;
-    justify-content: space-between;
-    padding: 5px 0;
-    font-size: 1.1em;
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 0;
+  font-size: 1.1em;
 }
 
 #share-button {
-    background-color: var(--color-accent-cyan);
-    margin-top: var(--spacing-sm);
+  background-color: var(--color-accent-cyan);
+  margin-top: var(--spacing-sm);
 }
 
 #milestone-result {
-    margin-top: var(--spacing-lg);
-    font-size: 1.3em;
-    font-weight: bold;
-    color: var(--color-accent-yellow);
+  margin-top: var(--spacing-lg);
+  font-size: 1.3em;
+  font-weight: bold;
+  color: var(--color-accent-yellow);
 }
 
 /* --- ✨ 結算畫面 --- */
 #endgame-screen-ui {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
 }
 
 #endgame-screen-ui h2 {
-    font-weight: 700;
-    font-size: 1.5em;
+  font-weight: 700;
+  font-size: 1.5em;
 }
 
 #endgame-title {
-    margin-bottom: 0;
+  margin-bottom: 0;
 }
 
 #endgame-screen-ui p {
-    font-size: 1.1em;
-    line-height: 1.5;
+  font-size: 1.1em;
+  line-height: 1.5;
 }
 
 #endgame-continue-button {
-    margin-top: 10px;
+  margin-top: 10px;
 }
 
 /* --- ✨ 問題區域的樣式 --- */
 #question-area {
-    display: block;
-    width: 100%;
+  display: block;
+  width: 100%;
 }
 
 #question-text {
-    font-size: var(--font-size-lg);
-    color: var(--color-text-primary);
-    margin-bottom: var(--spacing-lg);
-    line-height: 1.6;
+  font-size: var(--font-size-lg);
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-lg);
+  line-height: 1.6;
 }
 
 /* --- ✨ 彈窗頂部 UI 樣式 --- */
 .modal-top-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    margin-bottom: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 15px;
 }
 
 /* --- ✨ 匯入進度區樣式 --- */
 #import-area {
-    margin-top: 15px;
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
+  margin-top: 15px;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
 }
 
 #import-input {
-    flex-grow: 1;
-    padding: var(--spacing-sm);
-    border: 2px solid var(--color-accent-blue);
-    background-color: var(--color-text-primary);
-    border-radius: var(--border-radius-sm);
-    margin-right: var(--spacing-sm);
-    font-size: var(--font-size-sm);
+  flex-grow: 1;
+  padding: var(--spacing-sm);
+  border: 2px solid var(--color-accent-blue);
+  background-color: var(--color-text-primary);
+  border-radius: var(--border-radius-sm);
+  margin-right: var(--spacing-sm);
+  font-size: var(--font-size-sm);
 }
 
 #import-button {
-    margin: 0;
-    padding: var(--spacing-sm) var(--spacing-md);
-    font-size: var(--font-size-sm);
-    background-color: var(--color-accent-blue);
-    white-space: nowrap;
+  margin: 0;
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: var(--font-size-sm);
+  background-color: var(--color-accent-blue);
+  white-space: nowrap;
 }
 
 /* --- ✨ 彈窗內部 UI 調整 --- */
 #open-import-button {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    background: none;
-    border: none;
-    font-size: 1.8em;
-    color: white;
-    padding: 5px;
-    cursor: pointer;
-    opacity: 0.7;
-    transition: opacity 0.2s;
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: none;
+  border: none;
+  font-size: 1.8em;
+  color: white;
+  padding: 5px;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: opacity 0.2s;
 }
 
 #open-import-button:hover {
-    opacity: 1;
+  opacity: 1;
 }
 
 /* 匯入 UI 區塊 */
 #import-ui-area {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 #import-input {
-    width: 100%;
-    padding: var(--spacing-sm);
-    border: 2px solid var(--color-accent-blue);
-    background-color: var(--color-text-primary);
-    border-radius: var(--border-radius-sm);
-    margin: var(--spacing-md) 0;
-    font-size: var(--font-size-base);
-    box-sizing: border-box;
-    min-height: 44px;
+  width: 100%;
+  padding: var(--spacing-sm);
+  border: 2px solid var(--color-accent-blue);
+  background-color: var(--color-text-primary);
+  border-radius: var(--border-radius-sm);
+  margin: var(--spacing-md) 0;
+  font-size: var(--font-size-base);
+  box-sizing: border-box;
+  min-height: 44px;
 }
 
 /* ✨ IG 帳號輸入框樣式 */
 #ig-input {
-    width: 100%;
-    padding: var(--spacing-md);
-    border: 2px solid var(--color-accent-blue);
-    background-color: #ffffff;
-    color: #000000;
-    border-radius: var(--border-radius-md);
-    margin: var(--spacing-lg) 0;
-    font-size: var(--font-size-md);
-    box-sizing: border-box;
-    min-height: 50px;
-    font-weight: 500;
-    text-shadow: none;
+  width: 100%;
+  padding: var(--spacing-md);
+  border: 2px solid var(--color-accent-blue);
+  background-color: #ffffff;
+  color: #000000;
+  border-radius: var(--border-radius-md);
+  margin: var(--spacing-lg) 0;
+  font-size: var(--font-size-md);
+  box-sizing: border-box;
+  min-height: 50px;
+  font-weight: 500;
+  text-shadow: none;
 }
 
 #ig-input::placeholder {
-    color: #666666;
-    opacity: 1;
+  color: #666666;
+  opacity: 1;
 }
 
 #ig-input:focus {
-    outline: none;
-    border-color: var(--color-accent-cyan);
-    box-shadow: 0 0 8px rgba(0, 180, 216, 0.3);
+  outline: none;
+  border-color: var(--color-accent-cyan);
+  box-shadow: 0 0 8px rgba(0, 180, 216, 0.3);
 }
 
 .import-buttons {
-    display: flex;
-    justify-content: space-between;
-    gap: 10px;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
 }
 
 .import-buttons button {
-    flex-grow: 1;
-    margin: 0;
+  flex-grow: 1;
+  margin: 0;
 }
 
 #import-cancel-button {
-    background-color: var(--color-button-gray);
+  background-color: var(--color-button-gray);
 }
 
 #import-button {
-    background-color: var(--color-accent-blue);
+  background-color: var(--color-accent-blue);
 }
 
 /* 設定彈窗的按鈕樣式 */
 .settings-option-btn,
 .settings-close-btn,
 .settings-back-btn {
-    font-weight: 700;
-    letter-spacing: 0.05em;
-    padding: var(--spacing-sm) var(--spacing-lg);
-    font-size: var(--font-size-base);
-    border: none;
-    border-radius: var(--border-radius-md);
-    background-color: var(--color-accent-blue); /* 預設為藍色 */
-    color: var(--color-text-primary);
-    cursor: pointer;
-    margin-top: var(--spacing-sm);
-    display: block;
-    width: 100%; /* 讓按鈕佔滿寬度 */
-    transition: all var(--transition-fast) ease;
-    text-align: center; /* 文字居中 */
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  padding: var(--spacing-sm) var(--spacing-lg);
+  font-size: var(--font-size-base);
+  border: none;
+  border-radius: var(--border-radius-md);
+  background-color: var(--color-accent-blue); /* 預設為藍色 */
+  color: var(--color-text-primary);
+  cursor: pointer;
+  margin-top: var(--spacing-sm);
+  display: block;
+  width: 100%; /* 讓按鈕佔滿寬度 */
+  transition: all var(--transition-fast) ease;
+  text-align: center; /* 文字居中 */
 }
 
 .settings-option-btn:hover,
 .settings-close-btn:hover,
 .settings-back-btn:hover {
-    opacity: 0.9;
-    transform: translateY(-1px);
+  opacity: 0.9;
+  transform: translateY(-1px);
 }
 
 .settings-option-btn:active,
 .settings-close-btn:active,
 .settings-back-btn:active {
-    transform: translateY(0) scale(0.98);
+  transform: translateY(0) scale(0.98);
 }
 
 /* 關閉按鈕可以有不同的顏色，例如灰色 */
 .settings-close-btn {
-    background-color: var(--color-button-gray);
-    margin-top: var(--spacing-lg); /* 增加與選項按鈕的間距 */
+  background-color: var(--color-button-gray);
+  margin-top: var(--spacing-lg); /* 增加與選項按鈕的間距 */
 }
 
 /* 返回按鈕也可以考慮不同的顏色，或保持與選項按鈕一致 */
 .settings-back-btn {
-    background-color: var(--color-button-gray); /* 預設為灰色 */
-    margin-top: var(--spacing-lg); /* 增加與語言選項按鈕的間距 */
+  background-color: var(--color-button-gray); /* 預設為灰色 */
+  margin-top: var(--spacing-lg); /* 增加與語言選項按鈕的間距 */
 }
 
 /* ✨ 關鍵修改：加上父層選擇器以提高權重 */
 #modal-content #open-milestone-button {
-    background-color: var(--color-accent-blue);
-    margin-top: var(--spacing-sm);
-    color: var(--color-text-primary);
+  background-color: var(--color-accent-blue);
+  margin-top: var(--spacing-sm);
+  color: var(--color-text-primary);
 }
 
 /* 行動裝置彈窗優化 */
 @media (max-width: 767px) {
-    .modal-overlay {
-        padding: var(--spacing-sm);
-        align-items: center;
-        padding-top: 0;
-    }
+  .modal-overlay {
+    padding: var(--spacing-sm);
+    align-items: center;
+    padding-top: 0;
+  }
 
-    .modal-content {
-        padding: var(--spacing-lg);
-        max-height: 85vh;
-        border-radius: var(--border-radius-md);
-    }
+  .modal-content {
+    padding: var(--spacing-lg);
+    max-height: 85vh;
+    border-radius: var(--border-radius-md);
+  }
 
-    .modal-content h2 {
-        font-size: var(--font-size-lg);
-    }
+  .modal-content h2 {
+    font-size: var(--font-size-lg);
+  }
 
-    #endgame-stats {
-        width: 100%;
-        padding: var(--spacing-sm);
-        font-size: var(--font-size-sm);
-    }
+  #endgame-stats {
+    width: 100%;
+    padding: var(--spacing-sm);
+    font-size: var(--font-size-sm);
+  }
 
-    #endgame-stats li {
-        font-size: var(--font-size-base);
-        padding: var(--spacing-xs) 0;
-    }
+  #endgame-stats li {
+    font-size: var(--font-size-base);
+    padding: var(--spacing-xs) 0;
+  }
 
-    #question-text {
-        font-size: var(--font-size-md);
-        margin-bottom: var(--spacing-md);
-    }
+  #question-text {
+    font-size: var(--font-size-md);
+    margin-bottom: var(--spacing-md);
+  }
 
-    #import-input {
-        font-size: var(--font-size-md);
-        padding: var(--spacing-md);
-    }
+  #import-input {
+    font-size: var(--font-size-md);
+    padding: var(--spacing-md);
+  }
 
-    #ig-input {
-        font-size: var(--font-size-lg);
-        padding: var(--spacing-lg);
-        min-height: 56px;
-    }
+  #ig-input {
+    font-size: var(--font-size-lg);
+    padding: var(--spacing-lg);
+    min-height: 56px;
+  }
+}
+
+/* ========================================================================
+   ✨ 遊戲說明彈窗樣式 (Tutorial Modal)
+   ======================================================================== */
+
+/* 說明列表容器 */
+.tutorial-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 15px 0;
+  text-align: left;
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 15px;
+  border-radius: var(--border-radius-md);
+}
+
+/* 每一列 */
+.tutorial-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+/* 圖片容器 (固定寬度以對齊) */
+.tut-imgs {
+  width: 100px;
+  min-width: 100px;
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-right: 12px;
+  border-right: 2px solid rgba(255, 255, 255, 0.2);
+  padding-right: 10px;
+}
+
+.tut-imgs img {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+}
+
+/* 文字說明 */
+.tutorial-row span {
+  font-size: 0.95em;
+  font-weight: bold;
+  text-shadow: none !important;
+}
+
+/* Checkbox 標籤樣式 */
+.tutorial-checkbox-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 15px 0 5px 0;
+  font-size: 0.9em;
+  color: #aaa;
+  cursor: pointer;
+}
+
+.tutorial-checkbox-label input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--color-accent-cyan);
+  cursor: pointer;
+}
+
+/* 手燈呼吸動畫 */
+.pulse-anim {
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.25);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* 行動裝置優化 */
+@media (max-width: 767px) {
+  .tutorial-grid {
+    padding: 12px;
+    gap: 10px;
+  }
+
+  .tut-imgs {
+    width: 80px;
+    min-width: 80px;
+    margin-right: 10px;
+  }
+
+  .tut-imgs img {
+    width: 24px;
+    height: 24px;
+  }
+
+  .tutorial-row span {
+    font-size: 0.85em;
+  }
 }
