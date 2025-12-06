@@ -57,6 +57,8 @@ class ItemManager {
             this.spawnInterval = Math.floor(this.baseSpawnInterval * this.config.FEVER.SPAWN_INTERVAL_MULTIPLIER);
         } else {
             this.spawnInterval = this.baseSpawnInterval;
+            // ✨ 修正：重置 spawnTimer，避免 Fever Time 結束後掉落物延遲生成
+            this.spawnTimer = Math.min(this.spawnTimer, this.spawnInterval);
         }
     }
 

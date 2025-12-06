@@ -331,12 +331,14 @@ document.addEventListener('DOMContentLoaded', function () {
         uiManager.updateFeverProgress(100);
         stats_feverCount++;
 
-        audioManager.pauseBGM('bgm');
-        audioManager.audio.bgm.currentTime = 0;
-        audioManager.audio.bgmFever.loop = true;
-        audioManager.playBGM('bgmFever');
-
-        effectManager.activateFeverVisuals();
+        // ✨ 效能優化：延遲音效切換和視覺效果，避免觸發瞬間卡頓
+        requestAnimationFrame(() => {
+            audioManager.pauseBGM('bgm');
+            audioManager.audio.bgm.currentTime = 0;
+            audioManager.audio.bgmFever.loop = true;
+            audioManager.playBGM('bgmFever');
+            effectManager.activateFeverVisuals();
+        });
     }
 
     function endFeverTime() {
