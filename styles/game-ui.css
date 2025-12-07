@@ -278,13 +278,13 @@
 /* 小螢幕優化 */
 @media (max-width: 480px) {
     .control-button {
-        width: 60px;
-        height: 60px;
-        font-size: 1.8em;
+        width: 70px;        /* ✨ 按鈕大小 (可調整：60~100px) */
+        height: 70px;       /* ✨ 按鈕大小 (可調整：60~100px) */
+        font-size: 2.3em;   /* ✨ 箭頭圖示大小 (可調整：1.8~2.5em) */
     }
 
     #mobile-controls {
-        bottom: var(--spacing-md);
-        padding: 0 var(--spacing-md);
+        bottom: 15px;       /* ✨ 距離螢幕底部的距離 (可調整：16~40px) */
+        padding: 0 25px;    /* ✨ 左右邊距，讓按鈕離邊緣更遠 (可調整：16~40px) */
     }
 }

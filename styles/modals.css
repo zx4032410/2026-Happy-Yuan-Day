@@ -16,6 +16,11 @@
   z-index: var(--z-index-modal);
   padding: var(--spacing-md);
   box-sizing: border-box;
+
+  /* ✨ 防止長按觸發選單或文字選取 */
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
 }
 
 /* 共用彈窗 Content */
@@ -337,19 +342,30 @@
 /* 行動裝置彈窗優化 */
 @media (max-width: 767px) {
   .modal-overlay {
-    padding: var(--spacing-sm);
+    padding: 24px; /* ✨ 增加左右邊距，讓按鈕離螢幕邊緣更遠 */
     align-items: center;
     padding-top: 0;
   }
 
   .modal-content {
-    padding: var(--spacing-lg);
+    padding: 28px 24px; /* ✨ 增加內邊距 (上下 28px, 左右 24px) */
     max-height: 85vh;
     border-radius: var(--border-radius-md);
   }
 
   .modal-content h2 {
     font-size: var(--font-size-lg);
+  }
+
+  /* ✨ 主選單按鈕優化 */
+  .modal-content .btn,
+  .modal-content .start-button-style,
+  .settings-option-btn,
+  .settings-close-btn {
+    min-height: 56px; /* ✨ 增加按鈕高度 (可調整：48~64px) */
+    padding: 16px 24px; /* ✨ 增加按鈕內邊距 (可調整) */
+    font-size: 1.1rem; /* ✨ 增加字體大小 (可調整：1rem~1.2rem) */
+    margin-top: 12px; /* ✨ 按鈕間距 (可調整：8~16px) */
   }
 
   #endgame-stats {

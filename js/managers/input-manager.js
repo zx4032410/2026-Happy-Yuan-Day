@@ -28,7 +28,7 @@ class InputManager {
     }
 
     initListeners() {
-        // 鍵盤監聽
+        // 鍵盤監聯
         document.addEventListener('keydown', (e) => {
             if (!this.isActive) return;
             if (e.key === 'ArrowLeft') this.keys.left = true;

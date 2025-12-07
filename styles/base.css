@@ -39,6 +39,12 @@ body {
     /* ✨ Fix: Respect Home Indicator */
     box-sizing: border-box;
     /* Ensure padding is included in height */
+
+    /* ✨ 防止長按觸發選單或文字選取 */
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+    touch-action: manipulation;
 }
 
 /* 2. ✨ 核心描邊效果 (模擬深咖啡色描邊) */
