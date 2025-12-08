@@ -1,0 +1,16 @@
+{
+  "name": "小媛寶生日應援",
+  "short_name": "媛氣加分",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#252540",
+  "theme_color": "#f72585",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "images/sharecard.png",
+      "sizes": "192x192 512x512",
+      "type": "image/png"
+    }
+  ]
+}

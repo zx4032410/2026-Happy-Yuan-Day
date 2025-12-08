@@ -4,9 +4,20 @@
     <meta charset="UTF-8" />
     <meta
       name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
     />
     <title id="page-title">小媛寶生日應援：媛氣加分</title>
+
+    <!-- PWA Settings -->
+    <link rel="manifest" href="manifest.json" />
+    <meta name="theme-color" content="#f72585" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <meta name="apple-mobile-web-app-title" content="媛氣加分" />
+    <link rel="apple-touch-icon" href="images/sharecard.png" />
 
     <!-- SEO Tags -->
     <meta name="description" content="⼀起為媛媛的⽣日應援！" />
@@ -434,6 +445,25 @@
     <script src="js/game.js"></script>
     <script src="js/offline-handler.js"></script>
 
+    <!-- PWA Service Worker Registration -->
+    <script>
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker
+            .register("./sw.js")
+            .then((registration) => {
+              console.log(
+                "ServiceWorker registration successful with scope: ",
+                registration.scope
+              );
+            })
+            .catch((err) => {
+              console.log("ServiceWorker registration failed: ", err);
+            });
+        });
+      }
+    </script>
+
     <div
       id="milestone-modal-overlay"
       class="modal-overlay hidden"
@@ -578,7 +608,10 @@
     >
       <div id="tutorial-modal-content" class="modal-content">
         <h2 id="tutorial-title" data-i18n-key="tutorialTitle">應援指南</h2>
-        <p data-i18n-key="tutorialDesc" style="margin-bottom: 15px; color: #ccc;">
+        <p
+          data-i18n-key="tutorialDesc"
+          style="margin-bottom: 15px; color: #ccc"
+        >
           左右移動小媛寶，接住想要的東西！
         </p>
 
@@ -596,9 +629,15 @@
           <!-- 特殊物品 -->
           <div class="tutorial-row">
             <div class="tut-imgs">
-              <img src="./images/item-lightstick.png" alt="應援棒" class="pulse-anim" />
+              <img
+                src="./images/item-lightstick.png"
+                alt="應援棒"
+                class="pulse-anim"
+              />
             </div>
-            <span data-i18n-key="tutItemSpecial" style="color: #ffca3a;">✨ 超讚！大量增加應援力</span>
+            <span data-i18n-key="tutItemSpecial" style="color: #ffca3a"
+              >✨ 超讚！大量增加應援力</span
+            >
           </div>
 
           <!-- 問答物品 -->
@@ -606,7 +645,9 @@
             <div class="tut-imgs">
               <img src="./images/question_icon.png" alt="問號" />
             </div>
-            <span data-i18n-key="tutItemQuestion" style="color: #4cc9f0;">❓ 挑戰！觸發應援問答</span>
+            <span data-i18n-key="tutItemQuestion" style="color: #4cc9f0"
+              >❓ 挑戰！觸發應援問答</span
+            >
           </div>
 
           <!-- 負面物品 -->
@@ -615,7 +656,9 @@
               <img src="./images/item-burnt-cookie.png" alt="燒焦餅乾" />
               <img src="./images/item-alarm-clock.png" alt="鬧鐘" />
             </div>
-            <span data-i18n-key="tutItemNegative" style="color: #ff4d6d;">⚠️ 小心！記得要閃開</span>
+            <span data-i18n-key="tutItemNegative" style="color: #ff4d6d"
+              >⚠️ 小心！記得要閃開</span
+            >
           </div>
         </div>
 

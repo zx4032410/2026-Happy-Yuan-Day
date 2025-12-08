@@ -1,0 +1,107 @@
+const CACHE_NAME = 'yuan-day-v1';
+
+// 指定要快取的檔案
+// 包含 CSS, JS, 圖片與 HTML
+// 注意：firebase-app.js 等外部 CDN 腳本通常建議讓瀏覽器自行快取，或使用 runtime caching
+const URLS_TO_CACHE = [
+  './',
+  './index.html',
+  './manifest.json',
+  './styles/variables.css',
+  './styles/base.css',
+  './styles/buttons.css',
+  './styles/game-ui.css',
+  './styles/modals.css',
+  './styles/milestones.css',
+  './styles/loading.css',
+  './styles/animations.css',
+  './js/lang.js',
+  './js/questions.js',
+  './js/game-config.js',
+  './js/managers/share-manager.js',
+  './js/managers/database-manager.js',
+  './js/managers/audio-manager.js',
+  './js/managers/ui-manager.js',
+  './js/managers/effect-manager.js',
+  './js/managers/input-manager.js',
+  './js/managers/item-manager.js',
+  './js/player.js',
+  './js/game.js',
+  './js/offline-handler.js',
+  './images/sharecard.png',
+  './images/xiao-yuan-bao-idle-1.png',
+  './favicon.ico'
+];
+
+// 安裝 Service Worker
+self.addEventListener('install', (event) => {
+  event.waitUntil(
+    caches.open(CACHE_NAME)
+      .then((cache) => {
+        console.log('Opened cache');
+        return cache.addAll(URLS_TO_CACHE);
+      })
+  );
+  // 強制立即啟用新的 Service Worker
+  self.skipWaiting();
+});
+
+// 啟動 Service Worker
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames.map((cacheName) => {
+          if (cacheName !== CACHE_NAME) {
+            console.log('Deleting old cache:', cacheName);
+            return caches.delete(cacheName);
+          }
+        })
+      );
+    })
+  );
+  // 讓 Service Worker 立即接管頁面
+  return self.clients.claim();
+});
+
+// 攔截請求
+self.addEventListener('fetch', (event) => {
+  // 對於跨網域請求 (如 Firebase)，直接回傳，不使用這個 Cache 策略，
+  // 或者可以實作 Network First。這裡採用簡單的 Stale-While-Revalidate 或是 Cache First。
+  // 為了確保遊戲更新，我們使用 Stale-While-Revalidate (優先使用快取，背景更新)
+  
+  // 排除非 GET 請求
+  if (event.request.method !== 'GET') return;
+
+  event.respondWith(
+    caches.match(event.request)
+      .then((cachedResponse) => {
+        // 如果快取有，先回傳快取
+        const fetchPromise = fetch(event.request).then(
+          (networkResponse) => {
+            // 檢查回應是否有效
+            if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
+              return networkResponse;
+            }
+
+            // 更新快取
+            const responseToCache = networkResponse.clone();
+            caches.open(CACHE_NAME)
+              .then((cache) => {
+                cache.put(event.request, responseToCache);
+              });
+
+            return networkResponse;
+          }
+        );
+
+        // 如果有快取，回傳快取，但同時觸發 fetch (Stale-while-revalidate)
+        // 注意：標準 SWR 實作較複雜，這裡簡化為 "Cache First, falling back to network"
+        // 若要真正做到 SWR 需要配合 Client 端更新通知，為避免複雜，
+        // 這裡改用 Cache First 策略 (若快取有就用，沒有才去抓)
+        // 但為了要能更新遊戲，我們可以在 install 階段就全抓新的。
+        
+        return cachedResponse || fetchPromise;
+      })
+  );
+});
