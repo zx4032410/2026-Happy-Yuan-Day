@@ -1,4 +1,4 @@
-const CACHE_NAME = 'yuan-day-v1';
+const CACHE_NAME = 'yuan-day-v2';
 
 // 指定要快取的檔案
 // 包含 CSS, JS, 圖片與 HTML
@@ -28,7 +28,7 @@ const URLS_TO_CACHE = [
   './js/player.js',
   './js/game.js',
   './js/offline-handler.js',
-  './images/sharecard.png',
+  './images/sharecard-icon.png',
   './images/xiao-yuan-bao-idle-1.png',
   './favicon.ico'
 ];

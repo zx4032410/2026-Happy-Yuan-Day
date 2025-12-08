@@ -34,7 +34,7 @@ root/
 - **Name**: `小媛寶生日應援`
 - **Short Name**: `媛氣加分` (顯示在主畫面)
 - **Display**: `standalone` (隱藏瀏覽器網址列，類原生體驗)
-- **Icons**: 使用 `images/sharecard.png` (注意：建議後續補上標準正方形圖示以獲得最佳顯示效果)
+- **Icons**: 使用 `images/sharecard-icon.png` (已裁剪為正方形以符合 PWA 規範)
 - **Theme Color**: `#f72585` (配合品牌色)
 
 ### 2. `sw.js` (Service Worker)
@@ -86,7 +86,7 @@ self.addEventListener("fetch", (event) => {
   name="apple-mobile-web-app-status-bar-style"
   content="black-translucent"
 />
-<link rel="apple-touch-icon" href="images/sharecard.png" />
+<link rel="apple-touch-icon" href="images/sharecard-icon.png" />
 ```
 
 **註冊腳本**:
