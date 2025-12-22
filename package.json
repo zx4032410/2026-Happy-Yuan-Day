@@ -1,0 +1,30 @@
+{
+  "name": "2026-happy-yuan-day",
+  "version": "1.0.0",
+  "description": "這是一款由 weand_studio 製作的網頁遊戲，用來慶祝幻藍小熊成員 許媛媛的生日。",
+  "main": "sw.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zx4032410/2026-Happy-Yuan-Day.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "scripts": {
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
+  },
+  "bugs": {
+    "url": "https://github.com/zx4032410/2026-Happy-Yuan-Day/issues"
+  },
+  "homepage": "https://github.com/zx4032410/2026-Happy-Yuan-Day#readme",
+  "devDependencies": {
+    "jest": "^30.2.0"
+  }
+}

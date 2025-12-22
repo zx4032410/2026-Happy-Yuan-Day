@@ -1,4 +1,4 @@
-class InputManager {
+export default class InputManager {
     constructor() {
         this.keys = { left: false, right: false };
         this.isActive = false;

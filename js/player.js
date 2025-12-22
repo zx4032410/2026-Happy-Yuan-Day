@@ -1,4 +1,6 @@
-class Player {
+import { GAME_CONFIG } from './game-config.js';
+
+export default class Player {
     constructor(gameScale, canvasWidth, canvasHeight, onLoadCallback, onErrorCallback) {
         this.gameScale = gameScale;
         this.canvasWidth = canvasWidth;

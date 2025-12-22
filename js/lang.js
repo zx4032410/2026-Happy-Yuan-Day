@@ -1,4 +1,4 @@
-const i18nStrings = {
+export const i18nStrings = {
     'zh-TW': {
         score: "分數",
         time: "時間",

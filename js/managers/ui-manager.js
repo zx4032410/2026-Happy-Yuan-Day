@@ -1,4 +1,4 @@
-class UIManager {
+export default class UIManager {
     constructor() {
         this.cacheElements();
     }

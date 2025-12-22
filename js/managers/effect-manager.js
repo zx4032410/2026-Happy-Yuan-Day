@@ -1,4 +1,4 @@
-class EffectManager {
+export default class EffectManager {
     constructor(gameScale = 1) {
         this.scoreEffectSystem = new ScoreEffectSystem(gameScale);
         this.gameScale = gameScale;

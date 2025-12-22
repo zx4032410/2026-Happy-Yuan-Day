@@ -1,4 +1,6 @@
-class DatabaseManager {
+import { GAME_CONFIG } from '../game-config.js';
+
+export default class DatabaseManager {
   constructor() {
     // Initialize Firebase
     const firebaseConfig = {

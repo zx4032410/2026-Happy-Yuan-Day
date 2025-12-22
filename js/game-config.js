@@ -1,6 +1,6 @@
 // game-config.js
 
-const GAME_CONFIG = {
+export const GAME_CONFIG = {
     // 一般設定
     VERSION: "v1.0",
     USER_ID_KEY: 'yuan_fan_uid',

@@ -1,7 +1,7 @@
 // /questions.js
 // 重構為多國語言題庫
 
-const QUESTION_BANK = [
+export const QUESTION_BANK = [
     {
         id: 'q1', // 題目ID
         'zh-TW': { // 繁中

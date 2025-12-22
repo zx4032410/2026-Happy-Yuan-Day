@@ -1,4 +1,4 @@
-class AudioManager {
+export default class AudioManager {
     constructor() {
         this.audio = {};
         this.isMuted = false;

@@ -1,4 +1,4 @@
-class ShareManager {
+export default class ShareManager {
     constructor() {
         this.currentShareFormat = 'square'; // 'square' or 'story'
         this.scoreCardCache = {

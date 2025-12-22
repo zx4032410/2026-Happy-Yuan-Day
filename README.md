@@ -89,8 +89,10 @@
 │   │   ├── audio-manager.js      # 音效與音樂管理
 │   │   ├── database-manager.js   # Firebase 資料庫操作
 │   │   ├── effect-manager.js     # 視覺特效系統
+│   │   ├── game-state-manager.js # 遊戲狀態控制
 │   │   ├── input-manager.js      # 輸入管理 (鍵盤與觸控)
 │   │   ├── item-manager.js       # 掉落物品管理
+│   │   ├── score-manager.js      # 分數與計分邏輯
 │   │   ├── share-manager.js      # 分享卡片生成
 │   │   └── ui-manager.js         # UI 介面管理
 │   ├── game.js             # 主遊戲邏輯
@@ -98,7 +100,7 @@
 │   ├── lang.js             # 多語系字串
 │   ├── player.js           # 玩家角色邏輯
 │   ├── questions.js        # 測驗題庫
-│   └── offline-handler.js  # 離線狀態處理
+│   └── offline-handler.js  # 離線狀態處理 (OfflineManager)
 │
 ├── styles/                 # CSS 模組化樣式
 │   ├── variables.css       # CSS 變數定義
@@ -122,10 +124,13 @@
 - **AudioManager**: 統一管理所有音效與背景音樂，包含音效池（AudioPool）機制防止音效重疊
 - **DatabaseManager**: 封裝 Firebase 操作，處理玩家資料、分數上傳和里程碑系統
 - **EffectManager**: 處理 Canvas 視覺特效，包含分數飄字動畫和 Fever Time 特效
+- **GameStateManager**: 專責管理遊戲狀態（開始、暫停、結束）與時間倒數邏輯，與 UI 解耦。
 - **InputManager**: 統一處理鍵盤與觸控輸入，管理玩家移動狀態。
 - **ItemManager**: 管理遊戲中所有掉落物品的生成、移動、碰撞偵測與銷毀。
+- **ScoreManager**: 集中管理計分規則、Fever Time 進度計算與統計數據，確保邏輯統一。
 - **ShareManager**: 負責生成分享卡片、QR Code 和社群分享功能
 - **UIManager**: 集中管理所有 UI 元素更新、畫面切換和使用者互動
+- **OfflineManager**: 處理離線狀態下的分數暫存與網路恢復後的自動同步。
 - **Player**: 封裝玩家角色（小媛寶）的狀態、行為邏輯與繪製。
 
 > 💡 **技術細節**：模組化架構讓每個功能職責單一、易於測試和維護。詳細的架構說明可參考 `docs/` 目錄中的技術文檔。
@@ -142,4 +147,4 @@
 
 ---
 
-**版本**: 2.2 | **最後更新**: 2025-12-03
+**版本**: 2.3 | **最後更新**: 2025-12-22

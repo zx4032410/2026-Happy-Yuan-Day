@@ -1,3 +1,21 @@
+import { GAME_CONFIG } from './game-config.js';
+import { i18nStrings } from './lang.js';
+import { QUESTION_BANK } from './questions.js';
+import AudioManager from './managers/audio-manager.js';
+import DatabaseManager from './managers/database-manager.js';
+import EffectManager from './managers/effect-manager.js';
+import InputManager from './managers/input-manager.js';
+import ItemManager from './managers/item-manager.js';
+import ShareManager from './managers/share-manager.js';
+import UIManager from './managers/ui-manager.js';
+import Player from './player.js';
+import OfflineManager from './offline-handler.js';
+import ScoreManager from './managers/score-manager.js';
+import GameStateManager from './managers/game-state-manager.js';
+
+// ✨ Compatibility: Expose i18nStrings globally if needed for other legacy scripts
+window.i18nStrings = i18nStrings;
+
 // ✨ 新增：Canvas roundRect 相容性處理
 if (!CanvasRenderingContext2D.prototype.roundRect) {
     CanvasRenderingContext2D.prototype.roundRect = function (x, y, width, height, radius) {
@@ -37,22 +55,7 @@ function isBirthdayToday() {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
-    // ✨ 修正：添加全局錯誤處理器來忽略瀏覽器擴充功能產生的錯誤
-    window.addEventListener('error', function (event) {
-        // 忽略來自 content_script.js 的擴充功能錯誤
-        if (event.filename && event.filename.includes('content_script.js')) {
-            event.preventDefault();
-            return true;
-        }
-    }, true);
-
-    // 忽略未捕獲的 Promise 錯誤（擴充功能可能產生的）
-    window.addEventListener('unhandledrejection', function (event) {
-        if (event.reason && event.reason.stack && event.reason.stack.includes('content_script.js')) {
-            event.preventDefault();
-            return true;
-        }
-    });
+    // ... (Error listeners)
 
     // --- 初始化 Managers ---
     const databaseManager = new DatabaseManager();
@@ -60,6 +63,12 @@ document.addEventListener('DOMContentLoaded', function () {
     const audioManager = new AudioManager();
     const uiManager = new UIManager();
     const inputManager = new InputManager();
+    const offlineManager = new OfflineManager(databaseManager);
+    const scoreManager = new ScoreManager();
+    const gameStateManager = new GameStateManager({
+        onTimeUp: () => endGame(),
+        onTimeUpdate: (time) => uiManager.updateTime(time)
+    });
     let itemManager;
     let effectManager;
 
@@ -83,14 +92,10 @@ document.addEventListener('DOMContentLoaded', function () {
     effectManager = new EffectManager(gameScale);
 
     // --- 遊戲變數 ---
-    let gameStarted = false;
-    let score = 0;
     let player; 
-    let timeLeft = GAME_CONFIG.GAME_TIME;
-    let gameTimerId = null;
-    let isFeverTime = false;
-    let feverMeter = 0;
-    let feverDurationTimer = 0;
+    // let timeLeft = GAME_CONFIG.GAME_TIME; // Managed by GameStateManager
+    // let gameTimerId = null; // Managed by GameStateManager
+    // let gameStarted = false; // Managed by GameStateManager
     let currentLang = 'zh-TW';
     
     let playerProfile = {
@@ -191,6 +196,7 @@ document.addEventListener('DOMContentLoaded', function () {
             lang = 'zh-TW';
         }
         currentLang = lang;
+        window.currentLang = lang;
 
         document.querySelectorAll('.lang-option').forEach(btn => {
             if (btn.dataset.lang === lang) {
@@ -216,7 +222,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
         document.title = i18nStrings[lang].modalStartTitle;
 
-        if (!gameStarted) {
+        if (!gameStateManager.isPlaying()) {
             uiManager.showStartScreen();
         }
     }
@@ -240,12 +246,9 @@ document.addEventListener('DOMContentLoaded', function () {
         return array; 
     }
 
-    function clearGameTimers() {
-        if (gameTimerId) { clearInterval(gameTimerId); gameTimerId = null; }
-    }
-
     // Copy Share Text
     function copyShareText() {
+        const score = scoreManager.getScore();
         const text = `我剛剛在《2026 Happy Yuan Day》應援遊戲中獲得了 ${score} 分！\n快來一起幫小媛寶應援吧！\n#HappyYuanDay #應援遊戲`;
         navigator.clipboard.writeText(text).then(() => {
             alert("分享文字已複製！");
@@ -276,40 +279,27 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        let points = item.score;
-        if (item.type === 'negative') {
-            points = -points;
-        }
+        const result = scoreManager.handleItemScore(item);
+        
+        uiManager.updateScore(result.score);
+        effectManager.addScoreEffect(item.x, item.y, result.points, result.points > 0 ? 'positive' : 'negative');
 
-        if (isFever && points > 0) points *= GAME_CONFIG.SCORING.FEVER_MULTIPLIER;
-        score += points;
-
-        uiManager.updateScore(score);
-        effectManager.addScoreEffect(item.x, item.y, points, points > 0 ? 'positive' : 'negative');
-
-        if (points > 0) {
+        if (result.points > 0) {
             audioManager.playSound(item.type === 'special' ? 'collectSpecial' : 'collectPositive');
-            stats_items_positive++;
             player.setHappy();
 
-            if (!isFever) {
-                const charge = GAME_CONFIG.FEVER.CHARGE_PER_ITEM || 10;
-                feverMeter += charge;
-                if (feverMeter >= 100) {
-                    feverMeter = 100;
+            if (!scoreManager.isFeverTime) {
+                if (result.shouldActivateFever) {
                     activateFeverTime();
                 }
-                uiManager.updateFeverProgress(Math.floor(feverMeter));
+                uiManager.updateFeverProgress(Math.floor(result.feverMeter));
             }
         } else {
             audioManager.playSound('collectNegative');
-            stats_items_negative++;
             player.setSad();
 
-            if (!isFever) {
-                const penalty = GAME_CONFIG.FEVER.PENALTY_PER_MISTAKE || 20;
-                feverMeter = Math.max(0, feverMeter - penalty);
-                uiManager.updateFeverProgress(Math.floor(feverMeter));
+            if (!scoreManager.isFeverTime) {
+                uiManager.updateFeverProgress(Math.floor(result.feverMeter));
             }
         }
     };
@@ -323,13 +313,11 @@ document.addEventListener('DOMContentLoaded', function () {
     // --- 遊戲核心函式 (其他需要依賴順序的) ---
     
     function activateFeverTime() {
-        if (isFeverTime) return;
-        isFeverTime = true;
-        feverDurationTimer = GAME_CONFIG.FEVER.DURATION;
+        if (scoreManager.isFeverTime) return;
+        scoreManager.activateFever();
         itemManager.setFeverMode(true);
 
         uiManager.updateFeverProgress(100);
-        stats_feverCount++;
 
         // ✨ 效能優化：延遲音效切換和視覺效果，避免觸發瞬間卡頓
         requestAnimationFrame(() => {
@@ -342,10 +330,8 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function endFeverTime() {
-        if (!isFeverTime) return;
-        isFeverTime = false;
-        feverMeter = 0;
-        feverDurationTimer = 0;
+        if (!scoreManager.isFeverTime) return;
+        scoreManager.deactivateFever();
         itemManager.setFeverMode(false);
 
         uiManager.updateFeverProgress(0);
@@ -358,37 +344,31 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     async function endGame() {
-        gameStarted = false;
+        gameStateManager.stopGame();
         inputManager.setActive(false);
-        clearGameTimers();
+        // clearGameTimers(); // No longer needed
         audioManager.stopBGM('bgm');
         audioManager.stopBGM('bgmFever');
         audioManager.playSound('gameOver');
 
+        const score = scoreManager.getScore();
+        const stats = scoreManager.getStats();
         currentStats = {
-            score: score,
-            positiveItems: stats_items_positive,
-            negativeItems: stats_items_negative,
-            questionsCorrect: stats_questions_correct,
-            questionsWrong: stats_questions_wrong,
-            feverCount: stats_feverCount,
-            maxFeverTime: stats_feverTime,
+            ...stats,
             timestamp: new Date()
         };
 
-        if (isFeverTime) {
+        if (scoreManager.isFeverTime) {
             effectManager.deactivateFeverVisuals();
         }
-        isFeverTime = false;
-        feverMeter = 0;
-        feverDurationTimer = 0;
+        scoreManager.deactivateFever();
         uiManager.updateFeverProgress(0);
 
         const shareStats = {
             score: score,
-            itemsCaught: stats_items_positive + stats_items_negative,
-            correctAnswers: stats_questions_correct,
-            wrongAnswers: stats_questions_wrong
+            itemsCaught: stats.itemsPositive + stats.itemsNegative,
+            correctAnswers: stats.questionsCorrect,
+            wrongAnswers: stats.questionsWrong
         };
         lastGameStats = shareStats;
 
@@ -406,26 +386,30 @@ document.addEventListener('DOMContentLoaded', function () {
         }).catch(err => console.warn("Share card generation failed:", err));
 
         if (currentUserID) {
-            databaseManager.saveScore(currentUserID, currentStats).catch(err => {
-                console.warn("Score upload failed:", err);
-            });
+            if (navigator.onLine) {
+                databaseManager.saveScore(currentUserID, currentStats).catch(err => {
+                    console.warn("Score upload failed, attempting offline save:", err);
+                    offlineManager.saveScoreOffline({
+                        userId: currentUserID,
+                        ...currentStats
+                    });
+                });
+            } else {
+                offlineManager.saveScoreOffline({
+                    userId: currentUserID,
+                    ...currentStats
+                });
+            }
         }
     }
 
     function resetGame() {
-        score = 0;
-        timeLeft = GAME_CONFIG.GAME_TIME;
-        feverMeter = 0;
-        isFeverTime = false;
+        scoreManager.reset();
+        // timeLeft = GAME_CONFIG.GAME_TIME; // Reset in startGame
         itemManager.reset();
         
-        // Reset Stats
-        stats_positive = 0; stats_negative = 0; stats_correct = 0; stats_wrong = 0;
-        totalGameTime = 0; stats_feverCount = 0; stats_feverTime = 0;
-        stats_items_positive = 0; stats_items_negative = 0; stats_questions_correct = 0; stats_questions_wrong = 0;
-
-        uiManager.updateScore(score);
-        uiManager.updateTime(timeLeft);
+        uiManager.updateScore(0);
+        uiManager.updateTime(GAME_CONFIG.GAME_TIME);
         uiManager.updateFeverProgress(0);
         
         effectManager.resetScoreEffects();
@@ -438,16 +422,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const FPS_LIMIT = 60;
     const FRAME_INTERVAL = 1000 / FPS_LIMIT;
 
-    function updateTimer() {
-        timeLeft--;
-        uiManager.updateTime(timeLeft);
-        if (timeLeft <= 0) {
-            endGame();
-        }
-    }
-
     function gameLoop(timestamp) {
-        if (!gameStarted) return;
+        if (!gameStateManager.isPlaying()) return;
 
         if (!timestamp) timestamp = performance.now();
         const deltaTime = timestamp - lastTime;
@@ -464,19 +440,17 @@ document.addEventListener('DOMContentLoaded', function () {
         player.update(inputManager);
         player.draw(ctx);
 
-        if (isFeverTime) {
-            feverDurationTimer--;
-            stats_feverTime++;
-            
-            const percent = Math.max(0, Math.floor((feverDurationTimer / GAME_CONFIG.FEVER.DURATION) * 100));
-            uiManager.updateFeverProgress(percent);
-
-            if (feverDurationTimer <= 0) {
-                endFeverTime();
+        if (scoreManager.isFeverTime) {
+            const percent = scoreManager.updateFeverTimer();
+            if (percent !== null) {
+                uiManager.updateFeverProgress(percent);
+                if (percent === 0) {
+                    endFeverTime();
+                }
             }
         }
 
-        itemManager.update(player, isFeverTime);
+        itemManager.update(player, scoreManager.isFeverTime);
         itemManager.draw(ctx);
 
         effectManager.updateAndDrawScoreEffects(ctx);
@@ -494,13 +468,13 @@ document.addEventListener('DOMContentLoaded', function () {
         uiManager.hideAllModalScreens();
         uiManager.hideModalOverlay();
 
-        gameStarted = true;
+        gameStateManager.resumeGame();
         inputManager.setActive(true);
-        clearGameTimers();
-        gameTimerId = setInterval(updateTimer, 1000);
+        // clearGameTimers(); // Not needed
+        // gameTimerId = setInterval(updateTimer, 1000); // Handled by resumeGame
 
         if (audioManager.isMuted) return;
-        if (isFeverTime) {
+        if (scoreManager.isFeverTime) {
             audioManager.playBGM('bgmFever');
         } else {
             audioManager.playBGM('bgm');
@@ -516,21 +490,17 @@ document.addEventListener('DOMContentLoaded', function () {
         const answerButtons = document.querySelectorAll('.answer-option');
         answerButtons.forEach(btn => btn.disabled = true);
 
+        const result = scoreManager.handleQuestionScore(isCorrect);
+
         if (isCorrect) {
-            let bonusPoints = GAME_CONFIG.SCORING.CORRECT_ANSWER;
-            if (isFeverTime) bonusPoints *= GAME_CONFIG.SCORING.FEVER_MULTIPLIER;
-            score += bonusPoints;
             player.setHappy();
             audioManager.playSound('answerCorrect');
-            stats_questions_correct++;
         } else {
-            score += GAME_CONFIG.SCORING.INCORRECT_ANSWER;
             player.setSad();
             audioManager.playSound('answerIncorrect');
-            stats_questions_wrong++;
         }
 
-        uiManager.updateScore(score);
+        uiManager.updateScore(result.score);
 
         let correctButton = null;
         answerButtons.forEach(btn => {
@@ -551,9 +521,9 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function showQuestion() {
-        gameStarted = false;
+        gameStateManager.pauseGame();
         inputManager.setActive(false);
-        clearGameTimers();
+        // clearGameTimers(); // Handled by pauseGame
         audioManager.pauseBGM('bgm');
         audioManager.pauseBGM('bgmFever');
 
@@ -579,12 +549,11 @@ document.addEventListener('DOMContentLoaded', function () {
         uiManager.hideAllModalScreens();
         uiManager.hideModalOverlay();
 
-        gameStarted = true;
+        gameStateManager.startGame();
         inputManager.setActive(true);
         audioManager.playSound('gameStart');
         audioManager.playBGM('bgm');
 
-        gameTimerId = setInterval(updateTimer, 1000);
         lastTime = performance.now();
         gameLoop(lastTime);
     }

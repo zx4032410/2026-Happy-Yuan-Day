@@ -1,4 +1,4 @@
-class ItemManager {
+export default class ItemManager {
     constructor(gameScale, canvasWidth, canvasHeight, config, onScoreCallback) {
         this.gameScale = gameScale;
         this.canvasWidth = canvasWidth;
