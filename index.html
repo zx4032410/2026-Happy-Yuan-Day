@@ -34,7 +34,7 @@
     <meta property="og:description" content="⼀起為媛媛的生日應援！" />
     <meta
       property="og:image"
-      content="https://2026happyyuanday.com/images/sharecard_seo.png"
+      content="https://2026happyyuanday.com/images/sharecard_seo.jpg"
     />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
@@ -50,7 +50,7 @@
     <meta property="twitter:description" content="⼀起為媛媛的⽣⽇應援！" />
     <meta
       property="twitter:image"
-      content="https://2026happyyuanday.com/images/sharecard_seo.png"
+      content="https://2026happyyuanday.com/images/sharecard_seo.jpg"
     />
     <meta
       property="twitter:image:alt"
@@ -416,7 +416,7 @@
     >
       <div id="birthday-modal-content" class="modal-content">
         <h2 data-i18n-key="birthdayTitle">🎂 Happy Birthday 🎂</h2>
-        <img src="./images/yuan-birthday-art.png" alt="媛媛生日賀圖" />
+        <img data-src="./images/yuan-birthday-art.png" alt="媛媛生日賀圖" class="lazy-load" />
         <p id="birthday-message" data-i18n-key="birthdayMessage"></p>
         <button
           id="birthday-close-button"
@@ -428,22 +428,22 @@
       </div>
     </div>
 
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-    <script src="js/lang.js"></script>
-    <script src="js/questions.js"></script>
-    <script src="js/game-config.js"></script>
-    <script src="js/managers/share-manager.js"></script>
-    <script src="js/managers/database-manager.js"></script>
-    <script src="js/managers/audio-manager.js"></script>
-    <script src="js/managers/ui-manager.js"></script>
-    <script src="js/managers/effect-manager.js"></script>
-    <script src="js/managers/input-manager.js"></script>
-    <script src="js/managers/item-manager.js"></script>
-    <script src="js/player.js"></script>
-    <script src="js/game.js"></script>
-    <script src="js/offline-handler.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script defer src="js/lang.js"></script>
+    <script defer src="js/questions.js"></script>
+    <script defer src="js/game-config.js"></script>
+    <script defer src="js/managers/share-manager.js"></script>
+    <script defer src="js/managers/database-manager.js"></script>
+    <script defer src="js/managers/audio-manager.js"></script>
+    <script defer src="js/managers/ui-manager.js"></script>
+    <script defer src="js/managers/effect-manager.js"></script>
+    <script defer src="js/managers/input-manager.js"></script>
+    <script defer src="js/managers/item-manager.js"></script>
+    <script defer src="js/player.js"></script>
+    <script defer src="js/game.js"></script>
+    <script defer src="js/offline-handler.js"></script>
 
     <!-- PWA Service Worker Registration -->
     <script>
@@ -677,6 +677,6 @@
       </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
   </body>
 </html>

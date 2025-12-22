@@ -1,4 +1,4 @@
-const CACHE_NAME = 'yuan-day-v2';
+const CACHE_NAME = 'yuan-day-v3';
 
 // 指定要快取的檔案
 // 包含 CSS, JS, 圖片與 HTML
@@ -28,9 +28,36 @@ const URLS_TO_CACHE = [
   './js/player.js',
   './js/game.js',
   './js/offline-handler.js',
+  // Images
   './images/sharecard-icon.png',
+  './images/favicon.ico',
+  './images/item-alarm-clock.png',
+  './images/item-bear-cookie.png',
+  './images/item-burnt-cookie.png',
+  './images/item-guitar.png',
+  './images/item-lightstick.png',
+  './images/item-white-heart.png',
+  './images/question_icon.png',
   './images/xiao-yuan-bao-idle-1.png',
-  './favicon.ico'
+  './images/xiao-yuan-bao-idle-2.png',
+  './images/xiao-yuan-bao-idle-3.png',
+  './images/xiao-yuan-bao-idle-4.png',
+  './images/xiao-yuan-bao-idle-5.png',
+  './images/xiao-yuan-bao-idle-6.png',
+  './images/xiao-yuan-bao-lose.png',
+  './images/xiao-yuan-bao-win.png',
+  // Audio
+  './audio/answer-correct.mp3',
+  './audio/answer-incorrect.mp3',
+  './audio/bgm.mp3',
+  './audio/bgm-fever.m4a',
+  './audio/collect-negative.mp3',
+  './audio/collect-positive.mp3',
+  './audio/collect-question.mp3',
+  './audio/collect-special.mp3',
+  './audio/game-over.mp3',
+  './audio/game-start.mp3',
+  './audio/Happy Birthday_8bit.mp3'
 ];
 
 // 安裝 Service Worker
