@@ -284,7 +284,7 @@
     }
 
     #mobile-controls {
-        bottom: 15px;       /* ✨ 距離螢幕底部的距離 (可調整：16~40px) */
+        bottom: calc(15px + env(safe-area-inset-bottom));  /* ✨ 距離螢幕底部的距離 + 安全區域 */
         padding: 0 25px;    /* ✨ 左右邊距，讓按鈕離邊緣更遠 (可調整：16~40px) */
     }
 }
