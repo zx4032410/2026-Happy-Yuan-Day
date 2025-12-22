@@ -69,6 +69,29 @@ service cloud.firestore {
       allow write: if
          request.resource.data.cumulativeScore is number;
     }
+
+    // 🎂 生日祝福 (wishes) - 2025-12-22 新增
+    match /wishes/{docId} {
+      // 允許所有人讀取 (用於生日視窗與祝福牆)
+      allow read: if true;
+
+      // 允許創建/更新祝福
+      // 使用 userId 作為文檔 ID，確保每人只能有一則祝福
+      allow create, update: if
+        // 1. 必須包含必要欄位
+        request.resource.data.keys().hasAll(['userId', 'nickname', 'message', 'createdAt']) &&
+        // 2. 暱稱必須是字串且長度在 1-15 字
+        request.resource.data.nickname is string &&
+        request.resource.data.nickname.size() >= 1 &&
+        request.resource.data.nickname.size() <= 15 &&
+        // 3. 祝福訊息必須是字串且長度在 1-50 字
+        request.resource.data.message is string &&
+        request.resource.data.message.size() >= 1 &&
+        request.resource.data.message.size() <= 50;
+
+      // 禁止玩家刪除祝福 (管理員可到 Console 手動刪除)
+      allow delete: if false;
+    }
   }
 }
 ```
@@ -155,6 +178,35 @@ service cloud.firestore {
 ```
 
 ---
+
+### 4️⃣ `wishes` 集合 (2025-12-22 新增)
+
+**用途**: 儲存粉絲生日祝福
+
+**對應程式碼**: `js/managers/database-manager.js`
+
+| 操作          | 位置               | 說明                                           |
+| ------------- | ------------------ | ---------------------------------------------- |
+| **建立/更新** | `submitWish()`     | 提交或更新祝福（每人一則，以 userId 為 docId） |
+| **讀取**      | `checkUserWish()`  | 檢查用戶是否已提交祝福                         |
+| **讀取**      | `getWishes(limit)` | 取得祝福列表（生日視窗展示用）                 |
+| **讀取**      | `getAllWishes()`   | 取得所有祝福（祝福牆頁面用）                   |
+
+**資料結構**:
+
+```javascript
+{
+  userId: string,           // 玩家 UID（也作為文檔 ID）
+  nickname: string,         // 暱稱（1-15 字，必填）
+  message: string,          // 祝福內容（1-50 字，必填）
+  createdAt: timestamp      // 建立時間
+}
+```
+
+**前端顯示位置**:
+
+- `index.html` 生日彩蛋視窗（浮動祝福動畫）
+- `wishes.html` 祝福牆頁面
 
 ## 🛡️ 安全性說明
 

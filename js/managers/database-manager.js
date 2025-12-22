@@ -262,4 +262,113 @@ export default class DatabaseManager {
     });
     this.playerProfile.tier3Qualified = true;
   }
+
+  // ========== 🎂 生日祝福相關方法 ==========
+
+  /**
+   * 提交生日祝福（每人一則，新的蓋舊的）
+   * @param {string} nickname - 暱稱（必填，1-15 字）
+   * @param {string} message - 祝福內容（必填，1-50 字）
+   * @returns {Promise<boolean>} 是否成功
+   */
+  async submitWish(nickname, message) {
+    if (!this.currentUserID || !this.db) {
+      console.error("無法提交祝福：未登入或資料庫未初始化");
+      return false;
+    }
+
+    // 使用 userId 作為文檔 ID，確保每人只有一則祝福
+    const wishRef = this.db.collection("wishes").doc(this.currentUserID);
+    
+    try {
+      await wishRef.set({
+        userId: this.currentUserID,
+        nickname: nickname.trim(),
+        message: message.trim(),
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      });
+      console.log("祝福提交成功");
+      return true;
+    } catch (error) {
+      console.error("祝福提交失敗:", error);
+      return false;
+    }
+  }
+
+  /**
+   * 檢查當前用戶是否已提交過祝福
+   * @returns {Promise<Object|null>} 已提交的祝福資料或 null
+   */
+  async checkUserWish() {
+    if (!this.currentUserID || !this.db) return null;
+
+    const wishRef = this.db.collection("wishes").doc(this.currentUserID);
+    
+    try {
+      const doc = await wishRef.get();
+      if (doc.exists) {
+        return doc.data();
+      }
+      return null;
+    } catch (error) {
+      console.error("檢查祝福失敗:", error);
+      return null;
+    }
+  }
+
+  /**
+   * 取得祝福列表（用於生日視窗展示）
+   * @param {number} limit - 返回數量上限
+   * @returns {Promise<Array>} 祝福陣列
+   */
+  async getWishes(limit = 20) {
+    if (!this.db) return [];
+
+    try {
+      const snapshot = await this.db
+        .collection("wishes")
+        .orderBy("createdAt", "desc")
+        .limit(limit)
+        .get();
+
+      const wishes = [];
+      snapshot.forEach((doc) => {
+        wishes.push({
+          id: doc.id,
+          ...doc.data(),
+        });
+      });
+      return wishes;
+    } catch (error) {
+      console.error("讀取祝福失敗:", error);
+      return [];
+    }
+  }
+
+  /**
+   * 取得所有祝福（用於祝福牆頁面）
+   * @returns {Promise<Array>} 所有祝福陣列
+   */
+  async getAllWishes() {
+    if (!this.db) return [];
+
+    try {
+      const snapshot = await this.db
+        .collection("wishes")
+        .orderBy("createdAt", "desc")
+        .get();
+
+      const wishes = [];
+      snapshot.forEach((doc) => {
+        wishes.push({
+          id: doc.id,
+          ...doc.data(),
+        });
+      });
+      return wishes;
+    } catch (error) {
+      console.error("讀取所有祝福失敗:", error);
+      return [];
+    }
+  }
 }

@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>🎂 粉絲祝福牆 - 2026 Happy Yuan Day</title>
+
+    <!-- SEO Tags -->
+    <meta name="description" content="所有粉絲對媛媛的生日祝福" />
+    <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="styles/variables.css" />
+    <link rel="stylesheet" href="styles/base.css" />
+    <style>
+      body {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px;
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      }
+
+      .wishes-container {
+        max-width: 800px;
+        width: 100%;
+        margin: 0 auto;
+      }
+
+      .wishes-header {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+
+      .wishes-header h1 {
+        font-size: 2rem;
+        margin-bottom: 10px;
+        color: #ffffff;
+        text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+      }
+
+      .wishes-header p {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 1rem;
+      }
+
+      .wishes-count {
+        text-align: center;
+        margin-bottom: 20px;
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 0.9rem;
+      }
+
+      .wishes-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 16px;
+      }
+
+      .wish-card {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        padding: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        backdrop-filter: blur(10px);
+        transition: transform 0.2s, box-shadow 0.2s;
+      }
+
+      .wish-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 30px rgba(255, 255, 255, 0.15);
+        border-color: rgba(255, 255, 255, 0.4);
+      }
+
+      .wish-nickname {
+        font-weight: 700;
+        color: #ffffff;
+        font-size: 1rem;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+      }
+
+      .wish-nickname::before {
+        content: "🤍";
+      }
+
+      .wish-message {
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 0.95rem;
+        line-height: 1.6;
+        word-break: break-word;
+      }
+
+      .wish-time {
+        margin-top: 12px;
+        font-size: 0.75rem;
+        color: rgba(255, 255, 255, 0.4);
+        text-align: right;
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: rgba(255, 255, 255, 0.6);
+      }
+
+      .empty-state .icon {
+        font-size: 3rem;
+        margin-bottom: 16px;
+      }
+
+      .back-link {
+        display: inline-block;
+        margin-top: 30px;
+        padding: 12px 24px;
+        background: rgba(255, 255, 255, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: white;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.2s;
+        backdrop-filter: blur(5px);
+      }
+
+      .back-link:hover {
+        background: rgba(255, 255, 255, 0.25);
+        border-color: rgba(255, 255, 255, 0.5);
+        transform: scale(1.05);
+      }
+
+      .loading {
+        text-align: center;
+        padding: 40px;
+        color: rgba(255, 255, 255, 0.6);
+      }
+
+      @media (max-width: 767px) {
+        .wishes-header h1 {
+          font-size: 1.5rem;
+        }
+
+        .wishes-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .wish-card {
+          padding: 16px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="wishes-container">
+      <div class="wishes-header">
+        <h1>🎂 粉絲祝福牆</h1>
+        <p>來自所有粉絲的生日祝福</p>
+      </div>
+
+      <div id="wishes-count" class="wishes-count"></div>
+
+      <div id="wishes-grid" class="wishes-grid">
+        <div class="loading">載入中...</div>
+      </div>
+
+      <div style="text-align: center;">
+        <a href="https://2026happyyuanday.com/" class="back-link">← 返回遊戲</a>
+      </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script>
+      // Firebase 設定
+      const firebaseConfig = {
+        apiKey: "AIzaSyA5vu1AzlUPRbszYzjM0WTxpxZmJhbUR74",
+        authDomain: "yuan-birthday-gam.firebaseapp.com",
+        projectId: "yuan-birthday-gam",
+        storageBucket: "yuan-birthday-gam.firebasestorage.app",
+        messagingSenderId: "891333323583",
+        appId: "1:891333323583:web:2bdf6e420db3ba9f5b018a",
+      };
+
+      firebase.initializeApp(firebaseConfig);
+      const db = firebase.firestore();
+
+      // 格式化時間
+      function formatTime(timestamp) {
+        if (!timestamp) return '';
+        const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+        const month = date.getMonth() + 1;
+        const day = date.getDate();
+        const hour = date.getHours().toString().padStart(2, '0');
+        const minute = date.getMinutes().toString().padStart(2, '0');
+        return `${month}/${day} ${hour}:${minute}`;
+      }
+
+      // 載入祝福
+      async function loadWishes() {
+        const grid = document.getElementById('wishes-grid');
+        const countEl = document.getElementById('wishes-count');
+
+        try {
+          const snapshot = await db
+            .collection('wishes')
+            .orderBy('createdAt', 'desc')
+            .get();
+
+          if (snapshot.empty) {
+            grid.innerHTML = `
+              <div class="empty-state" style="grid-column: 1 / -1;">
+                <div class="icon">💌</div>
+                <p>還沒有祝福，成為第一個送上祝福的人吧！</p>
+              </div>
+            `;
+            countEl.textContent = '';
+            return;
+          }
+
+          countEl.textContent = `共 ${snapshot.size} 則祝福`;
+
+          let html = '';
+          snapshot.forEach((doc) => {
+            const wish = doc.data();
+            html += `
+              <div class="wish-card">
+                <div class="wish-nickname">${escapeHtml(wish.nickname)}</div>
+                <div class="wish-message">${escapeHtml(wish.message)}</div>
+                <div class="wish-time">${formatTime(wish.createdAt)}</div>
+              </div>
+            `;
+          });
+
+          grid.innerHTML = html;
+        } catch (error) {
+          console.error('載入祝福失敗:', error);
+          grid.innerHTML = `
+            <div class="empty-state" style="grid-column: 1 / -1;">
+              <div class="icon">😢</div>
+              <p>載入失敗，請稍後再試</p>
+            </div>
+          `;
+        }
+      }
+
+      // 防止 XSS
+      function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+      }
+
+      // 初始載入
+      loadWishes();
+    </script>
+  </body>
+</html>

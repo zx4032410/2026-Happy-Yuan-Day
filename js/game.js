@@ -926,4 +926,210 @@ document.addEventListener('DOMContentLoaded', function () {
     const globalMilestoneShareButton = document.getElementById('global-milestone-share-button');
     const globalMilestoneCloseButton = document.getElementById('global-milestone-close-button');
     const milestoneCloseButton = document.getElementById('milestone-close-button');
+
+    // ========================================================================
+    // --- 🎂 生日祝福相關邏輯 🎂 ---
+    // ========================================================================
+
+    const openWishButton = document.getElementById('open-wish-button');
+    const wishModalOverlay = document.getElementById('wish-modal-overlay');
+    const wishNicknameInput = document.getElementById('wish-nickname-input');
+    const wishMessageInput = document.getElementById('wish-message-input');
+    const wishCharCount = document.getElementById('wish-char-count');
+    const wishCancelButton = document.getElementById('wish-cancel-button');
+    const wishSubmitButton = document.getElementById('wish-submit-button');
+
+    // 更新字數統計
+    if (wishMessageInput && wishCharCount) {
+        wishMessageInput.addEventListener('input', () => {
+            const current = wishMessageInput.value.length;
+            const max = wishMessageInput.maxLength;
+            wishCharCount.textContent = `${current} / ${max}`;
+        });
+    }
+
+    // 開啟祝福輸入彈窗
+    async function openWishModal() {
+        // 檢查用戶是否已提交過祝福
+        const existingWish = await databaseManager.checkUserWish();
+        
+        if (existingWish) {
+            // 已有祝福，預填內容讓用戶修改
+            wishNicknameInput.value = existingWish.nickname || '';
+            wishMessageInput.value = existingWish.message || '';
+        } else {
+            wishNicknameInput.value = '';
+            wishMessageInput.value = '';
+        }
+
+        // 更新字數統計
+        const current = wishMessageInput.value.length;
+        const max = wishMessageInput.maxLength;
+        wishCharCount.textContent = `${current} / ${max}`;
+        
+        wishModalOverlay.classList.remove('hidden');
+    }
+
+    // 關閉祝福輸入彈窗
+    function closeWishModal() {
+        wishModalOverlay.classList.add('hidden');
+    }
+
+    // 提交祝福
+    async function submitWish() {
+        const nickname = wishNicknameInput.value.trim();
+        const message = wishMessageInput.value.trim();
+
+        // 驗證暱稱（必填）
+        if (!nickname) {
+            alert(i18nStrings[currentLang].wishNicknameRequired);
+            wishNicknameInput.focus();
+            return;
+        }
+
+        // 驗證訊息（必填）
+        if (!message) {
+            alert(i18nStrings[currentLang].wishMessageRequired);
+            wishMessageInput.focus();
+            return;
+        }
+
+        // 禁用按鈕防止重複提交
+        wishSubmitButton.disabled = true;
+        wishSubmitButton.textContent = '...';
+
+        try {
+            const existingWish = await databaseManager.checkUserWish();
+            const success = await databaseManager.submitWish(nickname, message);
+            
+            if (success) {
+                alert(existingWish ? 
+                    i18nStrings[currentLang].wishUpdateSuccess : 
+                    i18nStrings[currentLang].wishSubmitSuccess
+                );
+                closeWishModal();
+            } else {
+                alert('提交失敗，請稍後再試');
+            }
+        } catch (error) {
+            console.error('提交祝福失敗:', error);
+            alert('提交失敗，請稍後再試');
+        } finally {
+            wishSubmitButton.disabled = false;
+            wishSubmitButton.textContent = i18nStrings[currentLang].wishSubmitButton;
+        }
+    }
+
+    // 事件綁定
+    if (openWishButton) {
+        openWishButton.addEventListener('click', openWishModal);
+    }
+
+    if (wishCancelButton) {
+        wishCancelButton.addEventListener('click', closeWishModal);
+    }
+
+    if (wishSubmitButton) {
+        wishSubmitButton.addEventListener('click', submitWish);
+    }
+
+    // --- 生日視窗浮動祝福動畫 ---
+    let wishAnimationInterval = null;
+
+    async function startBirthdayWishesAnimation() {
+        const backdrop = document.getElementById('birthday-wishes-backdrop');
+        if (!backdrop) return;
+
+        // 清空現有祝福
+        backdrop.innerHTML = '';
+
+        // 取得祝福列表
+        const wishes = await databaseManager.getWishes(30);
+        if (wishes.length === 0) return;
+
+        // 創建多排跑馬燈
+        const rowCount = 4; // 4 排
+        const rowHeight = window.innerHeight / (rowCount + 1);
+        
+        for (let row = 0; row < rowCount; row++) {
+            const marqueeRow = document.createElement('div');
+            marqueeRow.className = 'wish-marquee-row';
+            marqueeRow.style.top = `${(row + 0.5) * rowHeight}px`;
+            
+            // 調整速度讓每排不一樣
+            const speed = 18 + (row * 4); // 18s, 22s, 26s, 30s
+            marqueeRow.style.animationDuration = `${speed}s`;
+            
+            // 將祝福分配到這一排（重複顯示以形成無縫滾動）
+            const wishesForRow = [];
+            for (let i = 0; i < 2; i++) { // 重複兩次形成無縫
+                wishes.forEach((wish, idx) => {
+                    if ((idx % rowCount) === row) {
+                        wishesForRow.push(wish);
+                    }
+                });
+            }
+            
+            // 創建祝福元素
+            wishesForRow.forEach((wish) => {
+                const div = document.createElement('div');
+                div.className = 'floating-wish';
+                div.textContent = `${wish.nickname}: ${wish.message}`;
+                marqueeRow.appendChild(div);
+            });
+            
+            // 如果這排有內容才加入
+            if (wishesForRow.length > 0) {
+                backdrop.appendChild(marqueeRow);
+            }
+        }
+    }
+
+    function stopBirthdayWishesAnimation() {
+        if (wishAnimationInterval) {
+            clearInterval(wishAnimationInterval);
+            wishAnimationInterval = null;
+        }
+        const backdrop = document.getElementById('birthday-wishes-backdrop');
+        if (backdrop) {
+            backdrop.innerHTML = '';
+        }
+    }
+
+    // 修改 closeSettlementAndCheckBirthday 中的生日視窗開啟邏輯
+    const originalCloseSettlement = closeSettlementAndCheckBirthday;
+    closeSettlementAndCheckBirthday = function() {
+        const globalMilestoneModal = document.getElementById('global-milestone-modal-overlay');
+        globalMilestoneModal.classList.add('hidden');
+        uiManager.hideModalOverlay();
+
+        if (isBirthdayToday()) {
+            const birthdayModal = document.getElementById('birthday-modal-overlay');
+            birthdayModal.classList.remove('hidden');
+            uiManager.showModalOverlay();
+            audioManager.audio.birthday.play().catch(e => console.log("Birthday song autoplay blocked"));
+            
+            // 🎂 啟動祝福浮動動畫
+            startBirthdayWishesAnimation();
+        } else {
+            uiManager.showStartScreen();
+        }
+    };
+
+    // 更新生日視窗關閉事件，停止動畫
+    const originalBirthdayClose = birthdayCloseButton.onclick;
+    birthdayCloseButton.onclick = null;
+    birthdayCloseButton.addEventListener('click', () => {
+        const birthdayModal = document.getElementById('birthday-modal-overlay');
+        birthdayModal.classList.add('hidden');
+        uiManager.hideModalOverlay();
+        audioManager.audio.birthday.pause();
+        audioManager.audio.birthday.currentTime = 0;
+        
+        // 🎂 停止祝福浮動動畫
+        stopBirthdayWishesAnimation();
+        
+        uiManager.showStartScreen();
+    });
+
 });

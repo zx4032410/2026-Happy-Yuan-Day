@@ -502,3 +502,194 @@
     font-size: 0.85em;
   }
 }
+
+/* ========================================================================
+   🎂 祝福輸入彈窗樣式 (Wish Modal)
+   ======================================================================== */
+
+#wish-modal-content {
+  max-width: 420px;
+}
+
+#wish-modal-content h2 {
+  margin-bottom: var(--spacing-md);
+}
+
+.wish-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+#wish-nickname-input {
+  width: 100%;
+  padding: var(--spacing-md);
+  border: 2px solid var(--color-accent-pink);
+  background-color: #ffffff;
+  color: #000000;
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-md);
+  box-sizing: border-box;
+  min-height: 48px;
+  font-weight: 500;
+  text-shadow: none;
+}
+
+#wish-message-input {
+  width: 100%;
+  padding: var(--spacing-md);
+  border: 2px solid var(--color-accent-pink);
+  background-color: #ffffff;
+  color: #000000;
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-md);
+  box-sizing: border-box;
+  min-height: 100px;
+  font-weight: 500;
+  text-shadow: none;
+  resize: none;
+  font-family: inherit;
+  line-height: 1.5;
+}
+
+#wish-nickname-input::placeholder,
+#wish-message-input::placeholder {
+  color: #888888;
+  opacity: 1;
+}
+
+#wish-nickname-input:focus,
+#wish-message-input:focus {
+  outline: none;
+  border-color: var(--color-accent-cyan);
+  box-shadow: 0 0 10px rgba(247, 37, 133, 0.3);
+}
+
+.wish-char-count {
+  text-align: right;
+  font-size: var(--font-size-sm);
+  color: #888888;
+  margin: 0;
+}
+
+.wish-buttons {
+  display: flex;
+  gap: var(--spacing-md);
+  justify-content: center;
+}
+
+.wish-cancel-btn {
+  background-color: var(--color-button-gray) !important;
+  flex: 1;
+}
+
+.wish-submit-btn {
+  background-color: var(--color-accent-pink) !important;
+  flex: 1;
+}
+
+/* 獻上祝福按鈕特別樣式 */
+.wish-button-style {
+  background: linear-gradient(135deg, var(--color-accent-pink), var(--color-accent-purple)) !important;
+  animation: wishButtonGlow 2s infinite ease-in-out;
+}
+
+@keyframes wishButtonGlow {
+  0%, 100% {
+    box-shadow: 0 0 10px rgba(247, 37, 133, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(247, 37, 133, 0.8), 0 0 30px rgba(247, 37, 133, 0.4);
+  }
+}
+
+/* ========================================================================
+   🎂 生日視窗祝福浮動效果 (Birthday Wishes Backdrop)
+   ======================================================================== */
+
+/* 祝福背景層 - 在 modal 外面顯示 */
+#birthday-wishes-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 1001; /* 在 modal-overlay 上面，但在 modal-content 下面 */
+}
+
+#birthday-modal-content {
+  position: relative;
+  z-index: 1002; /* 確保內容在祝福上面 */
+  overflow: visible;
+}
+
+/* 祝福跑馬燈容器 */
+.wish-marquee-row {
+  position: absolute;
+  width: 200%;
+  white-space: nowrap;
+  display: flex;
+  gap: 60px;
+  animation: marqueeScroll 20s linear infinite;
+}
+
+.wish-marquee-row:nth-child(odd) {
+  animation-direction: normal;
+}
+
+.wish-marquee-row:nth-child(even) {
+  animation-direction: reverse;
+}
+
+@keyframes marqueeScroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+/* 單一祝福樣式 */
+.floating-wish {
+  display: inline-block;
+  font-size: 18px;
+  color: rgba(255, 255, 255, 0.85);
+  white-space: nowrap;
+  padding: 8px 20px;
+  background: linear-gradient(135deg, rgba(247, 37, 133, 0.7), rgba(114, 9, 183, 0.7));
+  border-radius: 20px;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+  font-weight: 600;
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* 行動裝置優化 */
+@media (max-width: 767px) {
+  #wish-modal-content {
+    padding: 20px;
+  }
+
+  .wish-form {
+    gap: var(--spacing-sm);
+  }
+
+  #wish-nickname-input,
+  #wish-message-input {
+    font-size: var(--font-size-base);
+  }
+
+  .floating-wish {
+    font-size: 14px;
+    padding: 6px 14px;
+  }
+
+  .wish-marquee-row {
+    gap: 40px;
+  }
+}
+

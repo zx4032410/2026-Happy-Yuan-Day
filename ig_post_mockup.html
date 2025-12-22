@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Birthday IG Post Mockup - Gameboy Style</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* 顏色變數 */
+            --color-bg-primary: #252540;
+            --color-text-primary: #ffffff;
+            --color-accent-pink: #f72585;
+            --color-accent-blue: #4361ee;
+            --color-accent-yellow: #ffca3a;
+            --color-accent-cyan: #00b4d8;
+            --color-shadow: rgba(0,0,0,0.5);
+            
+            /* Gameboy Colors (Customized for Yuan Day) */
+            --gb-body: #e0e0e0; /* Classic Grey or change to #252540 for dark mode */
+            --gb-screen-bezel: #555;
+            --gb-screen-bg: #8b9c0f; /* Classic green tint or transparent for photo */
+            --gb-btn-a: #f72585;
+            --gb-btn-b: #f72585;
+            --gb-dpad: #333;
+            --gb-select: #999;
+            
+            /* IG Interface */
+            --ig-bg: #000000;
+            --ig-text: #F5F5F5;
+            --ig-secondary-text: #A8A8A8;
+            --ig-border: #262626;
+            --ig-cta-blue: #0095F6;
+        }
+
+        body {
+            background-color: #121212;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        /* 模擬手機容器 */
+        .phone-mockup {
+            width: 375px;
+            background-color: var(--ig-bg);
+            border: 1px solid #333;
+            border-radius: 30px;
+            overflow: hidden;
+            box-shadow: 0 0 50px rgba(0,0,0,0.5);
+            position: relative;
+        }
+
+        /* IG Header */
+        .ig-header {
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 0.5px solid var(--ig-border);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .avatar {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(45deg, var(--color-accent-pink), var(--color-accent-yellow));
+            border-radius: 50%;
+            padding: 2px;
+        }
+
+        .avatar-inner {
+            width: 100%;
+            height: 100%;
+            background-color: #333;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        .username {
+            color: var(--ig-text);
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .username span {
+            display: block;
+            font-size: 12px;
+            font-weight: 400;
+            opacity: 0.8;
+        }
+
+        .more-options {
+            color: var(--ig-text);
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        /* IG Post Content Area */
+        .post-content {
+            width: 100%;
+            aspect-ratio: 4/5;
+            background-color: var(--color-bg-primary);
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            /* Background Gradient */
+            background-image: 
+                radial-gradient(circle at 0% 0%, rgba(247, 37, 133, 0.4) 0%, transparent 50%),
+                radial-gradient(circle at 100% 100%, rgba(67, 97, 238, 0.4) 0%, transparent 50%);
+        }
+
+        /* ====================
+           GAMEBOY CSS ART
+           ==================== */
+        .gameboy {
+            width: 260px;
+            height: 400px; /* Slight scaling to fit 4:5 */
+            background-color: #D3D3D3; /* Classic Grey Body */
+            border-radius: 10px 10px 40px 10px;
+            box-shadow: 
+                -5px 5px 15px rgba(0,0,0,0.4),
+                inset 2px 2px 5px rgba(255,255,255,0.8),
+                inset -2px -2px 5px rgba(0,0,0,0.2);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 20px;
+            margin-top: 20px;
+        }
+
+        /* Add the ridge on top */
+        .gameboy::before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            width: 90%;
+            height: 2px;
+            background: rgba(0,0,0,0.1);
+            border-radius: 2px;
+        }
+        .gameboy::after {
+            content: '';
+            position: absolute;
+            top: 15px;
+            width: 90%;
+            height: 2px;
+            background: rgba(0,0,0,0.1);
+            border-radius: 2px;
+        }
+
+        /* Screen Area (Grey Bezel) */
+        .screen-area {
+            width: 220px;
+            height: 180px;
+            background-color: #555;
+            border-radius: 10px 10px 30px 10px;
+            padding: 20px 25px;
+            box-sizing: border-box;
+            position: relative;
+            box-shadow: inset 2px 2px 5px rgba(0,0,0,0.5);
+        }
+
+        .screen-headline {
+            color: #b0b0b0;
+            font-family: 'Noto Sans TC', sans-serif;
+            font-size: 8px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            border-top: 2px solid #332fa3; /* Classic blue line */
+            border-bottom: 2px solid #332fa3;
+            padding: 3px 0;
+        }
+        
+        .battery-led {
+            position: absolute;
+            top: 40%;
+            left: 10px;
+            width: 8px;
+            height: 8px;
+            background-color: #f72585; /* Pink LED instead of Red */
+            border-radius: 50%;
+            box-shadow: 0 0 5px #f72585;
+        }
+        
+        .battery-text {
+            position: absolute;
+            top: 40%;
+            left: 22px;
+            font-size: 6px;
+            color: #b0b0b0;
+            font-family: sans-serif;
+            transform: translateY(-2px);
+        }
+
+        /* The LCD Screen (Where photo goes) */
+        .lcd-screen {
+            width: 100%;
+            height: 120px;
+            background-color: #000; /* Black off screen */
+            box-shadow: inset 2px 2px 5px rgba(0,0,0,0.8);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .lcd-content {
+            width: 100%;
+            height: 100%;
+            /* Photo Placeholder */
+            background-image: url('https://placehold.co/300x300/252540/ffffff?text=Yuan%27s+Photo');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.9;
+            filter: contrast(1.1) brightness(1.1);
+        }
+
+        /* Scanlines Effect for authenticity */
+        .lcd-screen::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0.1),
+                rgba(0, 0, 0, 0.1) 1px,
+                transparent 1px,
+                transparent 2px
+            );
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .brand-logo {
+            margin-top: 5px;
+            color: #332fa3; /* Classic Nintendo Blue */
+            font-family: sans-serif; /* Use a font close to logo */
+            font-weight: 800;
+            font-style: italic;
+            font-size: 14px;
+            text-shadow: 1px 1px 0 rgba(255,255,255,0.2);
+            margin-left: 10px;
+        }
+
+        /* Controls */
+        .controls-area {
+            width: 100%;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-sizing: border-box;
+        }
+
+        /* D-Pad */
+        .dpad {
+            position: relative;
+            width: 80px;
+            height: 80px;
+        }
+        .dpad div {
+            background-color: #333;
+            position: absolute;
+            border-radius: 3px;
+            box-shadow: 2px 2px 2px rgba(0,0,0,0.3);
+        }
+        .dpad-h {
+            width: 70px;
+            height: 22px;
+            top: 29px;
+            left: 5px;
+        }
+        .dpad-v {
+            width: 22px;
+            height: 70px;
+            left: 29px;
+            top: 5px;
+        }
+        .dpad-center {
+            width: 22px;
+            height: 22px;
+            top: 29px;
+            left: 29px;
+            background: radial-gradient(circle at 30% 30%, #444, #333);
+            z-index: 2;
+        }
+
+        /* A B Buttons */
+        .ab-buttons-container {
+            position: relative;
+            width: 90px;
+            height: 80px;
+            transform: rotate(-25deg);
+            margin-top: 10px;
+        }
+        
+        .btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: var(--color-accent-pink);
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.4);
+            position: absolute;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: rgba(0,0,0,0.3);
+            font-weight: bold;
+            font-family: sans-serif;
+            font-size: 12px;
+        }
+        .btn-a {
+            right: 0;
+            top: 10px;
+        }
+        .btn-b {
+            left: 10px;
+            top: 25px; 
+        }
+
+        /* Select Start */
+        .start-select-container {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            transform: rotate(-25deg);
+        }
+        .capsule-btn {
+            width: 40px;
+            height: 10px;
+            background-color: #999;
+            border-radius: 10px;
+            border: 1px solid rgba(0,0,0,0.1);
+            box-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+            position: relative;
+        }
+        .capsule-label {
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 8px;
+            color: #332fa3;
+            font-weight: bold;
+            font-family: sans-serif;
+            letter-spacing: 0.5px;
+        }
+
+        .speaker-grille {
+            position: absolute;
+            bottom: 25px;
+            right: 25px;
+            transform: rotate(-25deg);
+        }
+        .speaker-slot {
+            width: 50px;
+            height: 3px;
+            background-color: rgba(0,0,0,0.1);
+            margin-bottom: 4px;
+            border-radius: 2px;
+            box-shadow: inset 1px 1px 1px rgba(0,0,0,0.2);
+        }
+
+        /* Floating decorations */
+        .float-text {
+            position: absolute;
+            top: 20px;
+            width: 100%;
+            text-align: center;
+            font-family: 'Press Start 2P', cursive;
+            color: var(--color-accent-yellow);
+            font-size: 1.2rem;
+            text-shadow: 3px 3px 0 var(--color-bg-primary);
+            z-index: 10;
+        }
+
+        /* IG Footer Styles (Same as before) */
+        .action-bar { padding: 12px 15px; display: flex; justify-content: space-between; }
+        .action-left { display: flex; gap: 15px; }
+        .icon { width: 24px; height: 24px; stroke: var(--ig-text); stroke-width: 2; fill: none; transition: transform 0.2s; }
+        .post-footer { padding: 0 15px 15px 15px; }
+        .likes { font-weight: 600; font-size: 14px; color: var(--ig-text); margin-bottom: 8px; }
+        .caption { font-size: 14px; color: var(--ig-text); line-height: 1.4; }
+        .caption-username { font-weight: 600; margin-right: 5px; }
+        .hashtags { color: var(--ig-cta-blue); }
+        .time-ago { font-size: 10px; color: var(--ig-secondary-text); margin-top: 8px; text-transform: uppercase; }
+        .game-cartridge {
+             background: #ffca3a;
+             border-radius: 5px 5px 0 0;
+             width: 150px;
+             height: 20px;
+             position: absolute;
+             top: -20px;
+             z-index: -1;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="phone-mockup">
+        <!-- Status Bar -->
+        <div style="height: 20px; width: 100%; display: flex; justify-content: space-between; padding: 0 20px; box-sizing: border-box; font-size: 12px; font-weight: bold; color: white; align-items: center; margin-top: 10px;">
+            <span>20:26</span><span>5G</span>
+        </div>
+
+        <div class="ig-header">
+            <div class="user-info">
+                <div class="avatar"><div class="avatar-inner">Y</div></div>
+                <div class="username">2026_happy_yuan_day<span>原始音訊</span></div>
+            </div>
+            <div class="more-options">•••</div>
+        </div>
+
+        <!-- 貼文內容 -->
+        <div class="post-content">
+            
+            <div class="float-text">LEVEL UP!</div>
+
+            <!-- Gameboy 本體 -->
+            <div class="gameboy">
+                <div class="game-cartridge"></div> <!-- 模擬插卡 -->
+                
+                <!-- 螢幕區 -->
+                <div class="screen-area">
+                    <div class="screen-headline">
+                        <span>DOT MATRIX WITH STEREO SOUND</span>
+                        <div style="display:flex; gap:5px; align-items:center;">
+                            <div class="battery-led"></div>
+                            <span style="font-size:6px; color:#b0b0b0;">BATTERY</span>
+                        </div>
+                    </div>
+                    
+                    <div class="lcd-screen">
+                        <!-- 这里的 background-image URL 換成小媛的照片 -->
+                        <div class="lcd-content"></div>
+                        <!-- 可以在照片上疊一點文字 -->
+                        <div style="position: absolute; bottom: 5px; right: 5px; color: white; font-size: 8px; font-family: 'Press Start 2P'; text-shadow: 1px 1px 0 #000;">
+                            LV.2026
+                        </div>
+                    </div>
+
+                    <div class="brand-logo">GENBLUE <span style="font-size: 18px">YUAN</span></div>
+                </div>
+
+                <!-- 控制區 -->
+                <div class="controls-area">
+                    <div class="dpad">
+                        <div class="dpad-h"></div>
+                        <div class="dpad-v"></div>
+                        <div class="dpad-center"></div>
+                    </div>
+                    <div class="ab-buttons-container">
+                        <div class="btn btn-a">A</div>
+                        <div class="btn btn-b">B</div>
+                    </div>
+                </div>
+
+                <div class="start-select-container">
+                    <div class="capsule-btn">
+                        <span class="capsule-label">SELECT</span>
+                    </div>
+                    <div class="capsule-btn">
+                        <span class="capsule-label">START</span>
+                    </div>
+                </div>
+
+                <div class="speaker-grille">
+                    <div class="speaker-slot"></div>
+                    <div class="speaker-slot"></div>
+                    <div class="speaker-slot"></div>
+                    <div class="speaker-slot"></div>
+                    <div class="speaker-slot"></div>
+                    <div class="speaker-slot"></div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="action-bar">
+            <div class="action-left">
+                <svg class="icon" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                <svg class="icon" viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+                <svg class="icon" viewBox="0 0 24 24" style="transform: rotate(-30deg) translateY(-2px)"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+            </div>
+            <svg class="icon" viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
+        </div>
+
+        <div class="post-footer">
+            <div class="likes">Liked by genblue_fans and 2,026 others</div>
+            <div class="caption">
+                <span class="caption-username">2026_happy_yuan_day</span>
+                按下 START 鍵，一起進入 Yuan 的生日冒險！🎮<br>
+                最棒的生日禮物就是你的參與，快點選 Link in Bio 挑戰高分！<br><br>
+                <span class="hashtags">#HappyYuanDay #GameBoy #RetroStyle #GENBLUE</span>
+            </div>
+        </div>
+        <div style="width: 130px; height: 5px; background: white; border-radius: 10px; margin: 20px auto 10px; opacity: 0.5;"></div>
+    </div>
+</body>
+</html>

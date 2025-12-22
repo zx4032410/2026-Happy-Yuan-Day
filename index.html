@@ -284,6 +284,12 @@
             data-i18n-key="globalMilestoneButton"
             class="start-button-style"
           ></button>
+
+          <button
+            id="open-wish-button"
+            data-i18n-key="wishButton"
+            class="start-button-style wish-button-style"
+          ></button>
         </div>
 
         <div id="endgame-screen-ui" class="hidden">
@@ -415,8 +421,10 @@
       aria-label="生日祝福"
     >
       <div id="birthday-modal-content" class="modal-content">
+        <!-- 🎂 祝福浮動背景層 -->
+        <div id="birthday-wishes-backdrop"></div>
         <h2 data-i18n-key="birthdayTitle">🎂 Happy Birthday 🎂</h2>
-        <img data-src="./images/yuan-birthday-art.png" alt="媛媛生日賀圖" class="lazy-load" />
+        <img src="./images/yuan-birthday-art.png" alt="媛媛生日賀圖" />
         <p id="birthday-message" data-i18n-key="birthdayMessage"></p>
         <button
           id="birthday-close-button"
@@ -581,6 +589,53 @@
             class="hidden start-button-style"
           >
             分享成果
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 🎂 祝福輸入彈窗 -->
+    <div
+      id="wish-modal-overlay"
+      class="modal-overlay hidden"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="wish-modal-title"
+    >
+      <div id="wish-modal-content" class="modal-content">
+        <h2 id="wish-modal-title" data-i18n-key="wishModalTitle">🎂 寫下你的祝福</h2>
+        <div class="wish-form">
+          <input
+            type="text"
+            id="wish-nickname-input"
+            data-i18n-key-placeholder="wishNicknamePlaceholder"
+            placeholder="你的暱稱"
+            maxlength="15"
+            autocomplete="off"
+          />
+          <textarea
+            id="wish-message-input"
+            data-i18n-key-placeholder="wishMessagePlaceholder"
+            placeholder="寫下對媛媛的生日祝福..."
+            maxlength="50"
+            rows="3"
+          ></textarea>
+          <p id="wish-char-count" class="wish-char-count">0 / 50</p>
+        </div>
+        <div class="wish-buttons">
+          <button
+            id="wish-cancel-button"
+            data-i18n-key="wishCancelButton"
+            class="start-button-style wish-cancel-btn"
+          >
+            取消
+          </button>
+          <button
+            id="wish-submit-button"
+            data-i18n-key="wishSubmitButton"
+            class="start-button-style wish-submit-btn"
+          >
+            送出祝福 💕
           </button>
         </div>
       </div>
