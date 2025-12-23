@@ -4,105 +4,104 @@
 
 /* 1. ✨ 全域套用字體和基本的描邊 */
 body {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 100dvh;
-    /* ✨ Fix: Use dynamic viewport height for mobile browsers */
-    background-color: #252540;
-    /* Fallback color */
-    background-image: url('../images/badassbackground.webp');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    /* ✨ 讓背景固定,滾動時不會移動 */
-    color: #ffffff;
-    overflow: hidden;
-    font-family: 'Noto Sans TC', sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100dvh;
+  /* ✨ Fix: Use dynamic viewport height for mobile browsers */
+  background-color: #252540;
+  /* Fallback color */
+  background-image: url("../images/badassbackground.webp");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  /* ✨ 讓背景固定,滾動時不會移動 */
+  color: #ffffff;
+  overflow: hidden;
+  font-family: "Noto Sans TC", sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 #game-container {
-    position: relative;
-    width: 100%;
-    max-width: 800px;
-    height: 100dvh;
-    /* ✨ Fix: Use dynamic viewport height */
-    background-color: transparent;
-    /* ✨ Fix: Make transparent to show body background */
-    overflow: hidden;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-    padding-bottom: env(safe-area-inset-bottom);
-    /* ✨ Fix: Respect Home Indicator */
-    box-sizing: border-box;
-    /* Ensure padding is included in height */
+  position: relative;
+  width: 100%;
+  max-width: 800px;
+  height: 100dvh;
+  /* ✨ Fix: Use dynamic viewport height */
+  background-color: transparent;
+  /* ✨ Fix: Make transparent to show body background */
+  overflow: hidden;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+  padding-top: env(safe-area-inset-top); /* ✨ Fix: Respect Dynamic Island */
+  padding-bottom: env(safe-area-inset-bottom);
+  /* ✨ Fix: Respect Home Indicator */
+  box-sizing: border-box;
+  /* Ensure padding is included in height */
 
-    /* ✨ 防止長按觸發選單或文字選取 */
-    -webkit-user-select: none;
-    user-select: none;
-    -webkit-touch-callout: none;
-    touch-action: manipulation;
+  /* ✨ 防止長按觸發選單或文字選取 */
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  touch-action: manipulation;
 }
 
 /* 2. ✨ 核心描邊效果 (模擬深咖啡色描邊) */
 /* 這個選擇器可以涵蓋大部分彈窗、標題和資訊列的文字 */
 #game-container,
 .modal-overlay * {
-    text-shadow:
-        -1px -1px 0 var(--color-text-shadow),
-        1px -1px 0 var(--color-text-shadow),
-        -1px 1px 0 var(--color-text-shadow),
-        1px 1px 0 var(--color-text-shadow);
-    -webkit-font-smoothing: antialiased;
+  text-shadow: -1px -1px 0 var(--color-text-shadow),
+    1px -1px 0 var(--color-text-shadow), -1px 1px 0 var(--color-text-shadow),
+    1px 1px 0 var(--color-text-shadow);
+  -webkit-font-smoothing: antialiased;
 }
 
 /* 3. ✨ 標題和重點文字加粗 */
 .modal-title,
 .modal-content h2,
 #endgame-stats h3 {
-    font-weight: 700;
-    font-size: var(--font-size-xl);
+  font-weight: 700;
+  font-size: var(--font-size-xl);
 }
 
 /* 讓 info-bar 的文字加粗，但不放大 */
 #info-bar span {
-    font-weight: 700;
-    /* ✨ 只保留加粗 (Bold) */
-    /* ✨ 移除 font-size: 1.5em; 避免過大 */
+  font-weight: 700;
+  /* ✨ 只保留加粗 (Bold) */
+  /* ✨ 移除 font-size: 1.5em; 避免過大 */
 }
 
 #score-info {
-    position: relative;
-    /* Make it a positioning context for #score-change */
-    display: inline-block;
-    /* Ensure it behaves like a block for positioning */
+  position: relative;
+  /* Make it a positioning context for #score-change */
+  display: inline-block;
+  /* Ensure it behaves like a block for positioning */
 }
 
 /* 4. ✨ 按鈕基礎樣式 */
 button {
-    font-weight: 700;
-    letter-spacing: 0.05em;
-    border: none;
-    cursor: pointer;
-    transition: all var(--transition-fast) ease;
-    -webkit-tap-highlight-color: transparent;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-fast) ease;
+  -webkit-tap-highlight-color: transparent;
 }
 
 button:active {
-    transform: scale(0.98);
+  transform: scale(0.98);
 }
 
 /* 5. ✨ 微調彈窗內的行距與字距 */
 .modal-content p,
 #endgame-stats li {
-    line-height: 1.5;
-    letter-spacing: 0.02em;
+  line-height: 1.5;
+  letter-spacing: 0.02em;
 }
 
 /* 共用樣式 */
 .hidden {
-    display: none !important;
+  display: none !important;
 }
