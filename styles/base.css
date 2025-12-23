@@ -35,11 +35,19 @@ body {
   /* ✨ Fix: Make transparent to show body background */
   overflow: hidden;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-  padding-top: env(safe-area-inset-top); /* ✨ Fix: Respect Dynamic Island */
-  padding-bottom: env(safe-area-inset-bottom);
-  /* ✨ Fix: Respect Home Indicator */
+  
+  /* ✨ Fix: Safe Area for Dynamic Island & Home Indicator */
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+  
   box-sizing: border-box;
   /* Ensure padding is included in height */
+  
+  /* ✨ Fix: Use flex layout for proper content distribution */
+  display: flex;
+  flex-direction: column;
 
   /* ✨ 防止長按觸發選單或文字選取 */
   -webkit-user-select: none;

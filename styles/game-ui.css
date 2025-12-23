@@ -76,11 +76,13 @@
 /* --- 遊戲畫布 --- */
 #game-canvas {
     width: 100%;
-    height: auto;
+    flex-grow: 1;    /* ✨ Fix: 填滿剩餘空間 */
+    min-height: 0;   /* ✨ Fix: 允許縮小以適應 flex 容器 */
     background-color: rgba(0, 0, 0, 0.6);
     /* 60% 透明度的黑色遮罩 */
     border-radius: 0 0 10px 10px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    object-fit: contain;  /* ✨ 保持比例 */
 }
 
 /* --- ✨ 靜音按鈕樣式 --- */

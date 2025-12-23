@@ -1,4 +1,4 @@
-const CACHE_NAME = 'yuan-day-v4';
+const CACHE_NAME = 'yuan-day-v5';  // ✨ 升級版本以修復 safe-area 問題
 
 // 指定要快取的檔案
 // 包含 CSS, JS, 圖片與 HTML
