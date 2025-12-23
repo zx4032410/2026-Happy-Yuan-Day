@@ -68,6 +68,10 @@ self.addEventListener('install', (event) => {
         console.log('Opened cache');
         return cache.addAll(URLS_TO_CACHE);
       })
+      .catch((err) => {
+        // 記錄錯誤，避免變成未捕捉的 rejected promise
+        console.error('Cache addAll failed:', err);
+      })
   );
   // 強制立即啟用新的 Service Worker
   self.skipWaiting();
@@ -100,6 +104,12 @@ self.addEventListener('fetch', (event) => {
   // 排除非 GET 請求
   if (event.request.method !== 'GET') return;
 
+  // 過濾掉不支援快取的協議 (chrome-extension://, moz-extension:// 等)
+  const url = new URL(event.request.url);
+  if (url.protocol === 'chrome-extension:' || url.protocol === 'moz-extension:') {
+    return; // 直接略過，不快取、不攔截
+  }
+
   event.respondWith(
     caches.match(event.request)
       .then((cachedResponse) => {
@@ -116,6 +126,10 @@ self.addEventListener('fetch', (event) => {
             caches.open(CACHE_NAME)
               .then((cache) => {
                 cache.put(event.request, responseToCache);
+              })
+              .catch((e) => {
+                // 快取失敗時記錄警告，避免 unhandled rejection
+                console.warn('Cache put failed:', e);
               });
 
             return networkResponse;
