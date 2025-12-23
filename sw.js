@@ -1,4 +1,4 @@
-const CACHE_NAME = 'yuan-day-v3';
+const CACHE_NAME = 'yuan-day-v4';
 
 // 指定要快取的檔案
 // 包含 CSS, JS, 圖片與 HTML
@@ -66,11 +66,23 @@ self.addEventListener('install', (event) => {
     caches.open(CACHE_NAME)
       .then((cache) => {
         console.log('Opened cache');
-        return cache.addAll(URLS_TO_CACHE);
+        // 使用 Promise.allSettled 逐一快取，避免單一檔案失敗導致全部失敗
+        return Promise.allSettled(
+          URLS_TO_CACHE.map((url) =>
+            cache.add(url).catch((err) => {
+              console.warn(`Failed to cache: ${url}`, err);
+            })
+          )
+        ).then((results) => {
+          const failed = results.filter((r) => r.status === 'rejected');
+          if (failed.length > 0) {
+            console.warn(`${failed.length} files failed to cache`);
+          }
+          console.log(`Cached ${results.length - failed.length}/${results.length} files`);
+        });
       })
       .catch((err) => {
-        // 記錄錯誤，避免變成未捕捉的 rejected promise
-        console.error('Cache addAll failed:', err);
+        console.error('Cache open failed:', err);
       })
   );
   // 強制立即啟用新的 Service Worker
