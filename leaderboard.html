@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>🏆 應援英雄榜 - 2026 Happy Yuan Day</title>
+
+    <!-- SEO Tags -->
+    <meta name="description" content="媛媛生日應援遊戲英雄榜" />
+    <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="styles/variables.css" />
+    <link rel="stylesheet" href="styles/base.css" />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      html {
+        overflow-x: hidden;
+      }
+
+      body {
+        min-height: 100vh;
+        height: auto !important;
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+        display: block !important;
+        padding: 0;
+        margin: 0;
+        max-width: 100vw;
+        background-color: #a8d8ea;
+        background-image: linear-gradient(
+            rgba(168, 216, 234, 0.8),
+            rgba(168, 216, 234, 0.8)
+          ),
+          url("./images/yuan-birthday-art.png");
+        background-size: cover;
+        background-position: center top;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+      }
+
+      .leaderboard-container {
+        max-width: 420px;
+        width: 100%;
+        min-height: 100vh;
+        margin: 0 auto;
+        padding: 20px 16px;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .leaderboard-header {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      .leaderboard-header h1 {
+        font-size: 1.8rem;
+        margin-bottom: 8px;
+        color: #ffffff;
+        font-weight: 700;
+        text-shadow: 3px 3px 0 #4a90c2, -1px -1px 0 #4a90c2, 1px -1px 0 #4a90c2,
+          -1px 1px 0 #4a90c2, 1px 1px 0 #4a90c2,
+          0 0 20px rgba(74, 144, 194, 0.5);
+      }
+
+      .leaderboard-header p {
+        color: #4a90c2;
+        font-size: 0.95rem;
+        font-weight: 600;
+        text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
+      }
+
+      /* Tab 導航 */
+      .tab-nav {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 20px;
+        overflow-x: auto;
+        padding-bottom: 5px;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+      }
+
+      .tab-nav::-webkit-scrollbar {
+        display: none;
+      }
+
+      .tab-btn {
+        flex: 1;
+        min-width: 70px;
+        padding: 10px 8px;
+        border: 2px solid rgba(91, 155, 213, 0.3);
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.6);
+        color: #5b9bd5;
+        font-size: 0.75rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        font-family: inherit;
+        backdrop-filter: blur(5px);
+      }
+
+      .tab-btn .tab-icon {
+        font-size: 1.3rem;
+      }
+
+      .tab-btn.active {
+        background: rgba(255, 255, 255, 0.9);
+        color: #4a90c2;
+        border: 2px solid #5b9bd5;
+        box-shadow: 0 4px 15px rgba(91, 155, 213, 0.3);
+      }
+
+      .tab-btn:hover:not(.active) {
+        background: rgba(255, 255, 255, 0.8);
+        border-color: rgba(91, 155, 213, 0.5);
+      }
+
+      /* Tab 內容 */
+      .tab-content {
+        display: none;
+        flex: 1;
+      }
+
+      .tab-content.active {
+        display: block;
+      }
+
+      .category-section {
+        background: rgba(255, 255, 255, 0.85);
+        border-radius: 16px;
+        padding: 20px;
+        border: 2px solid rgba(91, 155, 213, 0.4);
+        backdrop-filter: blur(10px);
+        box-shadow: 0 4px 15px rgba(91, 155, 213, 0.2);
+      }
+
+      .category-title {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        font-size: 1.4rem;
+        color: #4a90c2;
+        margin-bottom: 20px;
+        text-align: center;
+      }
+
+      .category-icon {
+        font-size: 1.6rem;
+      }
+
+      .category-subtitle {
+        text-align: center;
+        color: #5b9bd5;
+        font-size: 0.85rem;
+        margin-top: -15px;
+        margin-bottom: 20px;
+      }
+
+      .rank-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .rank-item {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 14px 16px;
+        background: rgba(255, 255, 255, 0.7);
+        border-radius: 12px;
+        border: 1px solid rgba(91, 155, 213, 0.2);
+        transition: transform 0.2s, box-shadow 0.2s;
+      }
+
+      .rank-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(91, 155, 213, 0.25);
+      }
+
+      .rank-item.gold {
+        background: linear-gradient(135deg, rgba(255, 215, 0, 0.25) 0%, rgba(255, 223, 100, 0.15) 100%);
+        border: 2px solid rgba(255, 215, 0, 0.5);
+      }
+
+      .rank-item.silver {
+        background: linear-gradient(135deg, rgba(192, 192, 192, 0.3) 0%, rgba(220, 220, 220, 0.2) 100%);
+        border: 2px solid rgba(192, 192, 192, 0.5);
+      }
+
+      .rank-item.bronze {
+        background: linear-gradient(135deg, rgba(205, 127, 50, 0.25) 0%, rgba(220, 160, 100, 0.15) 100%);
+        border: 2px solid rgba(205, 127, 50, 0.5);
+      }
+
+      .rank-number {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 1.2rem;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+
+      .rank-item.gold .rank-number {
+        background: linear-gradient(135deg, #ffd700 0%, #ffed4a 100%);
+        color: #8b6914;
+        box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+      }
+
+      .rank-item.silver .rank-number {
+        background: linear-gradient(135deg, #c0c0c0 0%, #e8e8e8 100%);
+        color: #666;
+        box-shadow: 0 0 10px rgba(192, 192, 192, 0.4);
+      }
+
+      .rank-item.bronze .rank-number {
+        background: linear-gradient(135deg, #cd7f32 0%, #e8a862 100%);
+        color: #6b4423;
+        box-shadow: 0 0 10px rgba(205, 127, 50, 0.4);
+      }
+
+      .rank-item:not(.gold):not(.silver):not(.bronze) .rank-number {
+        background: rgba(91, 155, 213, 0.2);
+        color: #5b9bd5;
+      }
+
+      .player-info {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .player-name {
+        font-weight: 700;
+        color: #4a90c2;
+        font-size: 1.05rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .player-id {
+        font-size: 0.7rem;
+        color: rgba(91, 155, 213, 0.6);
+        font-family: monospace;
+        margin-top: 2px;
+      }
+
+      .player-score {
+        font-weight: 700;
+        font-size: 1.15rem;
+        color: #e67e22;
+        text-align: right;
+        white-space: nowrap;
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: 40px 20px;
+        color: #5b9bd5;
+      }
+
+      .loading {
+        text-align: center;
+        padding: 40px;
+        color: #5b9bd5;
+      }
+
+      /* 統計總覽分頁 */
+      .stats-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-bottom: 20px;
+      }
+
+      .stat-card {
+        background: rgba(255, 255, 255, 0.7);
+        border-radius: 12px;
+        padding: 20px 15px;
+        text-align: center;
+        border: 1px solid rgba(91, 155, 213, 0.3);
+      }
+
+      .stat-card.full-width {
+        grid-column: 1 / -1;
+      }
+
+      .stat-icon {
+        font-size: 2rem;
+        margin-bottom: 8px;
+      }
+
+      .stat-value {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #e67e22;
+      }
+
+      .stat-label {
+        font-size: 0.85rem;
+        color: #5b9bd5;
+        margin-top: 5px;
+        font-weight: 600;
+      }
+
+      /* 頁尾 */
+      .footer {
+        text-align: center;
+        margin-top: 20px;
+        padding-top: 15px;
+      }
+
+      .footer-text {
+        color: rgba(74, 144, 194, 0.7);
+        font-size: 0.75rem;
+        margin-bottom: 10px;
+      }
+
+      .refresh-btn {
+        background: rgba(255, 255, 255, 0.9);
+        border: 2px solid #5b9bd5;
+        color: #4a90c2;
+        padding: 10px 20px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        font-weight: 600;
+        transition: all 0.2s;
+        font-family: inherit;
+      }
+
+      .refresh-btn:hover {
+        background: #5b9bd5;
+        color: white;
+        transform: scale(1.05);
+      }
+
+      /* 品牌標記 */
+      .brand-tag {
+        position: fixed;
+        bottom: 15px;
+        right: 15px;
+        background: rgba(255, 255, 255, 0.9);
+        color: #4a90c2;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        border: 1px solid rgba(91, 155, 213, 0.4);
+        box-shadow: 0 2px 10px rgba(91, 155, 213, 0.2);
+      }
+
+      @media (max-width: 768px) {
+        body {
+          background-image: linear-gradient(
+              rgba(168, 216, 234, 0.85),
+              rgba(168, 216, 234, 0.85)
+            ),
+            url("./images/yuan-birthday-art.png");
+          background-position: center 20%;
+          background-attachment: scroll;
+        }
+      }
+
+      @media (max-width: 380px) {
+        .leaderboard-container {
+          padding: 15px 12px;
+        }
+
+        .leaderboard-header h1 {
+          font-size: 1.5rem;
+        }
+
+        .tab-btn {
+          min-width: 60px;
+          padding: 8px 6px;
+          font-size: 0.7rem;
+        }
+
+        .tab-btn .tab-icon {
+          font-size: 1.1rem;
+        }
+
+        .category-title {
+          font-size: 1.2rem;
+        }
+
+        .rank-item {
+          padding: 12px;
+          gap: 12px;
+        }
+
+        .rank-number {
+          width: 35px;
+          height: 35px;
+          font-size: 1rem;
+        }
+
+        .player-name {
+          font-size: 0.95rem;
+        }
+
+        .player-score {
+          font-size: 1rem;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="leaderboard-container">
+      <div class="leaderboard-header">
+        <h1>🏆 應援英雄榜</h1>
+        <p>2026 Happy Yuan Day</p>
+      </div>
+
+      <!-- Tab 導航 -->
+      <div class="tab-nav">
+        <button class="tab-btn active" data-tab="stats">
+          <span class="tab-icon">📊</span>
+          <span>總覽</span>
+        </button>
+        <button class="tab-btn" data-tab="games">
+          <span class="tab-icon">🔥</span>
+          <span>狂熱者</span>
+        </button>
+        <button class="tab-btn" data-tab="score">
+          <span class="tab-icon">⭐</span>
+          <span>應援王</span>
+        </button>
+        <button class="tab-btn" data-tab="quiz">
+          <span class="tab-icon">🧠</span>
+          <span>問答王</span>
+        </button>
+        <button class="tab-btn" data-tab="single">
+          <span class="tab-icon">🎯</span>
+          <span>高手</span>
+        </button>
+      </div>
+
+      <!-- 📊 總覽 -->
+      <div class="tab-content active" id="tab-stats">
+        <div class="category-section">
+          <div class="category-title">
+            <span class="category-icon">📊</span>
+            <span>應援總覽</span>
+          </div>
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon">👥</div>
+              <div class="stat-value" id="total-players">-</div>
+              <div class="stat-label">總玩家數</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">🎮</div>
+              <div class="stat-value" id="total-games">-</div>
+              <div class="stat-label">總遊戲次數</div>
+            </div>
+            <div class="stat-card full-width">
+              <div class="stat-icon">✨</div>
+              <div class="stat-value" id="total-score">-</div>
+              <div class="stat-label">全球總應援分數</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 🔥 應援狂熱者 -->
+      <div class="tab-content" id="tab-games">
+        <div class="category-section">
+          <div class="category-title">
+            <span class="category-icon">🔥</span>
+            <span>應援狂熱者</span>
+          </div>
+          <div class="category-subtitle">玩最多次的玩家</div>
+          <div id="most-games-list" class="rank-list">
+            <div class="loading">載入中...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ⭐ 總應援王 -->
+      <div class="tab-content" id="tab-score">
+        <div class="category-section">
+          <div class="category-title">
+            <span class="category-icon">⭐</span>
+            <span>總應援王</span>
+          </div>
+          <div class="category-subtitle">累積分數最高的玩家</div>
+          <div id="highest-score-list" class="rank-list">
+            <div class="loading">載入中...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 🧠 問答達人 -->
+      <div class="tab-content" id="tab-quiz">
+        <div class="category-section">
+          <div class="category-title">
+            <span class="category-icon">🧠</span>
+            <span>問答達人</span>
+          </div>
+          <div class="category-subtitle">答對最多題的玩家</div>
+          <div id="most-correct-list" class="rank-list">
+            <div class="loading">載入中...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 🎯 單局高手 -->
+      <div class="tab-content" id="tab-single">
+        <div class="category-section">
+          <div class="category-title">
+            <span class="category-icon">🎯</span>
+            <span>單局高手</span>
+          </div>
+          <div class="category-subtitle">單次遊戲最高分</div>
+          <div id="best-single-list" class="rank-list">
+            <div class="loading">載入中...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 頁尾 -->
+      <div class="footer">
+        <div class="footer-text" id="update-time">載入中...</div>
+        <button class="refresh-btn" onclick="loadAllData()">🔄 重新整理</button>
+      </div>
+    </div>
+
+    <!-- 品牌標記 -->
+    <div class="brand-tag">💙 2026happyyuanday.com</div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script>
+      // Firebase 設定
+      const firebaseConfig = {
+        apiKey: "AIzaSyA5vu1AzlUPRbszYzjM0WTxpxZmJhbUR74",
+        authDomain: "yuan-birthday-gam.firebaseapp.com",
+        projectId: "yuan-birthday-gam",
+        storageBucket: "yuan-birthday-gam.firebasestorage.app",
+        messagingSenderId: "891333323583",
+        appId: "1:891333323583:web:2bdf6e420db3ba9f5b018a",
+      };
+
+      firebase.initializeApp(firebaseConfig);
+      const db = firebase.firestore();
+
+      // Tab 切換
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+          document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+          btn.classList.add('active');
+          document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+        });
+      });
+
+      // 遮蔽 ID
+      function maskId(id) {
+        if (!id || id.length < 8) return id || '匿名';
+        return id.substring(0, 4) + '***' + id.substring(id.length - 4);
+      }
+
+      // 格式化數字
+      function formatNumber(num) {
+        return new Intl.NumberFormat().format(num);
+      }
+
+      // 獲取排名樣式
+      function getRankClass(index) {
+        if (index === 0) return 'gold';
+        if (index === 1) return 'silver';
+        if (index === 2) return 'bronze';
+        return '';
+      }
+
+      // 渲染排行榜
+      function renderRankList(containerId, data, valueLabel) {
+        const container = document.getElementById(containerId);
+        
+        if (!data || data.length === 0) {
+          container.innerHTML = '<div class="empty-state">暫無數據</div>';
+          return;
+        }
+
+        container.innerHTML = data.map((item, index) => `
+          <div class="rank-item ${getRankClass(index)}">
+            <div class="rank-number">${index + 1}</div>
+            <div class="player-info">
+              <div class="player-name">${item.displayName}</div>
+              <div class="player-id">${item.maskedId}</div>
+            </div>
+            <div class="player-score">${formatNumber(item.value)} ${valueLabel}</div>
+          </div>
+        `).join('');
+      }
+
+      // 載入玩家資料
+      async function loadPlayerMap() {
+        const playerMap = {};
+        try {
+          const snapshot = await db.collection('players').get();
+          snapshot.forEach(doc => {
+            const data = doc.data();
+            playerMap[doc.id] = {
+              instagramHandle: data.instagramHandle,
+              cumulativeScore: data.cumulativeScore || 0
+            };
+          });
+        } catch (error) {
+          console.error('載入玩家資料失敗:', error);
+        }
+        return playerMap;
+      }
+
+      // 🔥 載入玩最多次的玩家
+      async function loadMostGames(playerMap) {
+        try {
+          const snapshot = await db.collection('scores').get();
+          
+          const gameCounts = {};
+          snapshot.forEach(doc => {
+            const data = doc.data();
+            const id = data.userId;
+            if (!gameCounts[id]) gameCounts[id] = 0;
+            gameCounts[id]++;
+          });
+
+          const sorted = Object.entries(gameCounts)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 5)
+            .map(([id, count]) => ({
+              displayName: playerMap[id]?.instagramHandle || '匿名玩家',
+              maskedId: maskId(id),
+              value: count
+            }));
+
+          renderRankList('most-games-list', sorted, '次');
+        } catch (error) {
+          console.error('載入遊戲次數排行失敗:', error);
+          document.getElementById('most-games-list').innerHTML = '<div class="empty-state">載入失敗</div>';
+        }
+      }
+
+      // ⭐ 載入累積分數最高的玩家
+      async function loadHighestScore(playerMap) {
+        try {
+          const snapshot = await db.collection('players')
+            .orderBy('cumulativeScore', 'desc')
+            .limit(5)
+            .get();
+
+          const data = [];
+          snapshot.forEach(doc => {
+            const playerData = doc.data();
+            data.push({
+              displayName: playerData.instagramHandle || '匿名玩家',
+              maskedId: maskId(doc.id),
+              value: playerData.cumulativeScore || 0
+            });
+          });
+
+          renderRankList('highest-score-list', data, '分');
+        } catch (error) {
+          console.error('載入累積分數排行失敗:', error);
+          document.getElementById('highest-score-list').innerHTML = '<div class="empty-state">載入失敗</div>';
+        }
+      }
+
+      // 🧠 載入答對最多題的玩家
+      async function loadMostCorrect(playerMap) {
+        try {
+          const snapshot = await db.collection('scores').get();
+          
+          const correctCounts = {};
+          snapshot.forEach(doc => {
+            const data = doc.data();
+            const id = data.userId;
+            const correct = data.stats?.questionsCorrect || 0;
+            if (!correctCounts[id]) correctCounts[id] = 0;
+            correctCounts[id] += correct;
+          });
+
+          const sorted = Object.entries(correctCounts)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 5)
+            .map(([id, count]) => ({
+              displayName: playerMap[id]?.instagramHandle || '匿名玩家',
+              maskedId: maskId(id),
+              value: count
+            }));
+
+          renderRankList('most-correct-list', sorted, '題');
+        } catch (error) {
+          console.error('載入答對題數排行失敗:', error);
+          document.getElementById('most-correct-list').innerHTML = '<div class="empty-state">載入失敗</div>';
+        }
+      }
+
+      // 🎯 載入單次遊戲最高分
+      async function loadBestSingle(playerMap) {
+        try {
+          const snapshot = await db.collection('scores')
+            .orderBy('score', 'desc')
+            .limit(5)
+            .get();
+
+          const data = [];
+          snapshot.forEach(doc => {
+            const scoreData = doc.data();
+            const id = scoreData.userId;
+            data.push({
+              displayName: playerMap[id]?.instagramHandle || '匿名玩家',
+              maskedId: maskId(id),
+              value: scoreData.score || 0
+            });
+          });
+
+          renderRankList('best-single-list', data, '分');
+        } catch (error) {
+          console.error('載入單局最高分排行失敗:', error);
+          document.getElementById('best-single-list').innerHTML = '<div class="empty-state">載入失敗</div>';
+        }
+      }
+
+      // 載入統計總覽
+      async function loadSummary() {
+        try {
+          const playersSnapshot = await db.collection('players').get();
+          document.getElementById('total-players').textContent = formatNumber(playersSnapshot.size);
+
+          const scoresSnapshot = await db.collection('scores').get();
+          document.getElementById('total-games').textContent = formatNumber(scoresSnapshot.size);
+
+          const globalStats = await db.collection('statistics').doc('global').get();
+          if (globalStats.exists) {
+            document.getElementById('total-score').textContent = formatNumber(globalStats.data().totalScore || 0);
+          }
+        } catch (error) {
+          console.error('載入統計失敗:', error);
+        }
+      }
+
+      // 載入所有資料
+      async function loadAllData() {
+        document.getElementById('update-time').textContent = '載入中...';
+        
+        const playerMap = await loadPlayerMap();
+        
+        await Promise.all([
+          loadMostGames(playerMap),
+          loadHighestScore(playerMap),
+          loadMostCorrect(playerMap),
+          loadBestSingle(playerMap),
+          loadSummary()
+        ]);
+
+        const now = new Date();
+        document.getElementById('update-time').textContent = 
+          `最後更新：${now.getMonth()+1}/${now.getDate()} ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
+      }
+
+      // 初始載入
+      loadAllData();
+    </script>
+  </body>
+</html>

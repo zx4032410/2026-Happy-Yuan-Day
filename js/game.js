@@ -931,6 +931,12 @@ document.addEventListener('DOMContentLoaded', function () {
     // --- 🎂 生日祝福相關邏輯 🎂 ---
     // ========================================================================
 
+    // 🎂 判斷祝福活動是否已結束（2026/1/6 00:00 之後）
+    function isWishingPeriodEnded() {
+        const endDate = new Date('2026-01-06T00:00:00+08:00'); // 台灣時區
+        return new Date() >= endDate;
+    }
+
     const openWishButton = document.getElementById('open-wish-button');
     const wishModalOverlay = document.getElementById('wish-modal-overlay');
     const wishNicknameInput = document.getElementById('wish-nickname-input');
@@ -938,6 +944,19 @@ document.addEventListener('DOMContentLoaded', function () {
     const wishCharCount = document.getElementById('wish-char-count');
     const wishCancelButton = document.getElementById('wish-cancel-button');
     const wishSubmitButton = document.getElementById('wish-submit-button');
+
+    // 🎂 初始化祝福按鈕狀態（根據日期決定文字和行為）
+    function initWishButton() {
+        if (!openWishButton) return;
+        
+        if (isWishingPeriodEnded()) {
+            // 生日結束後：顯示「檢視祝福」
+            openWishButton.textContent = i18nStrings[currentLang].viewWishesButton;
+        } else {
+            // 活動期間：顯示「獻上祝福」
+            openWishButton.textContent = i18nStrings[currentLang].wishButton;
+        }
+    }
 
     // 更新字數統計
     if (wishMessageInput && wishCharCount) {
@@ -1022,7 +1041,18 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // 事件綁定
     if (openWishButton) {
-        openWishButton.addEventListener('click', openWishModal);
+        openWishButton.addEventListener('click', () => {
+            if (isWishingPeriodEnded()) {
+                // 生日結束後：導向祝福牆
+                window.location.href = 'wishes.html';
+            } else {
+                // 活動期間：打開祝福輸入彈窗
+                openWishModal();
+            }
+        });
+        
+        // 初始化按鈕狀態
+        initWishButton();
     }
 
     if (wishCancelButton) {

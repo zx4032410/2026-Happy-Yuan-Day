@@ -105,6 +105,7 @@ export const i18nStrings = {
         stillOffline: "網路尚未恢復連線，請稍後再試。",
         // 🎂 生日祝福
         wishButton: "🎂 獻上祝福",
+        viewWishesButton: "🎂 檢視祝福",
         wishModalTitle: "🎂 寫下你的祝福",
         wishNicknamePlaceholder: "你的暱稱",
         wishMessagePlaceholder: "寫下對媛媛的生日祝福...",
@@ -229,6 +230,7 @@ export const i18nStrings = {
         tutDontShowAgain: "Don't show this again",
         // 🎂 Birthday Wishes
         wishButton: "🎂 Send Wishes",
+        viewWishesButton: "🎂 View Wishes",
         wishModalTitle: "🎂 Write Your Wishes",
         wishNicknamePlaceholder: "Your Nickname",
         wishMessagePlaceholder: "Write your birthday wishes for Yuan...",
