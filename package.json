@@ -7,7 +7,7 @@
     "doc": "docs"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
   },
   "repository": {
     "type": "git",
@@ -17,14 +17,14 @@
   "author": "",
   "license": "ISC",
   "type": "module",
-  "scripts": {
-    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
-  },
   "bugs": {
     "url": "https://github.com/zx4032410/2026-Happy-Yuan-Day/issues"
   },
   "homepage": "https://github.com/zx4032410/2026-Happy-Yuan-Day#readme",
   "devDependencies": {
     "jest": "^30.2.0"
+  },
+  "dependencies": {
+    "firebase-admin": "^13.6.0"
   }
 }

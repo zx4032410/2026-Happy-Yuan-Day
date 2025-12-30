@@ -549,7 +549,7 @@
       <!-- 頁尾 -->
       <div class="footer">
         <div class="footer-text" id="update-time">載入中...</div>
-        <button class="refresh-btn" onclick="loadAllData()">🔄 重新整理</button>
+        <a href="index.html" class="refresh-btn">🎮 回到遊戲</a>
       </div>
     </div>
 
@@ -581,12 +581,6 @@
           document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
         });
       });
-
-      // 遮蔽 ID
-      function maskId(id) {
-        if (!id || id.length < 8) return id || '匿名';
-        return id.substring(0, 4) + '***' + id.substring(id.length - 4);
-      }
 
       // 格式化數字
       function formatNumber(num) {
@@ -622,173 +616,61 @@
         `).join('');
       }
 
-      // 載入玩家資料
-      async function loadPlayerMap() {
-        const playerMap = {};
-        try {
-          const snapshot = await db.collection('players').get();
-          snapshot.forEach(doc => {
-            const data = doc.data();
-            playerMap[doc.id] = {
-              instagramHandle: data.instagramHandle,
-              cumulativeScore: data.cumulativeScore || 0
-            };
-          });
-        } catch (error) {
-          console.error('載入玩家資料失敗:', error);
-        }
-        return playerMap;
+      // 格式化時間戳
+      function formatTimestamp(timestamp) {
+        if (!timestamp) return '未知';
+        const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+        return `${date.getMonth()+1}/${date.getDate()} ${date.getHours().toString().padStart(2,'0')}:${date.getMinutes().toString().padStart(2,'0')}`;
       }
 
-      // 🔥 載入玩最多次的玩家
-      async function loadMostGames(playerMap) {
-        try {
-          const snapshot = await db.collection('scores').get();
-          
-          const gameCounts = {};
-          snapshot.forEach(doc => {
-            const data = doc.data();
-            const id = data.userId;
-            if (!gameCounts[id]) gameCounts[id] = 0;
-            gameCounts[id]++;
-          });
-
-          const sorted = Object.entries(gameCounts)
-            .sort((a, b) => b[1] - a[1])
-            .slice(0, 5)
-            .map(([id, count]) => ({
-              displayName: playerMap[id]?.instagramHandle || '匿名玩家',
-              maskedId: maskId(id),
-              value: count
-            }));
-
-          renderRankList('most-games-list', sorted, '次');
-        } catch (error) {
-          console.error('載入遊戲次數排行失敗:', error);
-          document.getElementById('most-games-list').innerHTML = '<div class="empty-state">載入失敗</div>';
-        }
-      }
-
-      // ⭐ 載入累積分數最高的玩家
-      async function loadHighestScore(playerMap) {
-        try {
-          const snapshot = await db.collection('players')
-            .orderBy('cumulativeScore', 'desc')
-            .limit(5)
-            .get();
-
-          const data = [];
-          snapshot.forEach(doc => {
-            const playerData = doc.data();
-            data.push({
-              displayName: playerData.instagramHandle || '匿名玩家',
-              maskedId: maskId(doc.id),
-              value: playerData.cumulativeScore || 0
-            });
-          });
-
-          renderRankList('highest-score-list', data, '分');
-        } catch (error) {
-          console.error('載入累積分數排行失敗:', error);
-          document.getElementById('highest-score-list').innerHTML = '<div class="empty-state">載入失敗</div>';
-        }
-      }
-
-      // 🧠 載入答對最多題的玩家
-      async function loadMostCorrect(playerMap) {
-        try {
-          const snapshot = await db.collection('scores').get();
-          
-          const correctCounts = {};
-          snapshot.forEach(doc => {
-            const data = doc.data();
-            const id = data.userId;
-            const correct = data.stats?.questionsCorrect || 0;
-            if (!correctCounts[id]) correctCounts[id] = 0;
-            correctCounts[id] += correct;
-          });
-
-          const sorted = Object.entries(correctCounts)
-            .sort((a, b) => b[1] - a[1])
-            .slice(0, 5)
-            .map(([id, count]) => ({
-              displayName: playerMap[id]?.instagramHandle || '匿名玩家',
-              maskedId: maskId(id),
-              value: count
-            }));
-
-          renderRankList('most-correct-list', sorted, '題');
-        } catch (error) {
-          console.error('載入答對題數排行失敗:', error);
-          document.getElementById('most-correct-list').innerHTML = '<div class="empty-state">載入失敗</div>';
-        }
-      }
-
-      // 🎯 載入單次遊戲最高分
-      async function loadBestSingle(playerMap) {
-        try {
-          const snapshot = await db.collection('scores')
-            .orderBy('score', 'desc')
-            .limit(5)
-            .get();
-
-          const data = [];
-          snapshot.forEach(doc => {
-            const scoreData = doc.data();
-            const id = scoreData.userId;
-            data.push({
-              displayName: playerMap[id]?.instagramHandle || '匿名玩家',
-              maskedId: maskId(id),
-              value: scoreData.score || 0
-            });
-          });
-
-          renderRankList('best-single-list', data, '分');
-        } catch (error) {
-          console.error('載入單局最高分排行失敗:', error);
-          document.getElementById('best-single-list').innerHTML = '<div class="empty-state">載入失敗</div>';
-        }
-      }
-
-      // 載入統計總覽
-      async function loadSummary() {
-        try {
-          const playersSnapshot = await db.collection('players').get();
-          document.getElementById('total-players').textContent = formatNumber(playersSnapshot.size);
-
-          const scoresSnapshot = await db.collection('scores').get();
-          document.getElementById('total-games').textContent = formatNumber(scoresSnapshot.size);
-
-          const globalStats = await db.collection('statistics').doc('global').get();
-          if (globalStats.exists) {
-            document.getElementById('total-score').textContent = formatNumber(globalStats.data().totalScore || 0);
-          }
-        } catch (error) {
-          console.error('載入統計失敗:', error);
-        }
-      }
-
-      // 載入所有資料
-      async function loadAllData() {
+      // 🚀 從快取載入排行榜資料（只需 1 次 Firestore 讀取！）
+      async function loadLeaderboardFromCache() {
         document.getElementById('update-time').textContent = '載入中...';
         
-        const playerMap = await loadPlayerMap();
-        
-        await Promise.all([
-          loadMostGames(playerMap),
-          loadHighestScore(playerMap),
-          loadMostCorrect(playerMap),
-          loadBestSingle(playerMap),
-          loadSummary()
-        ]);
+        try {
+          const cacheDoc = await db.collection('leaderboardCache').doc('data').get();
+          
+          if (!cacheDoc.exists) {
+            // 快取不存在，顯示提示
+            document.getElementById('update-time').textContent = '⚠️ 排行榜資料尚未建立';
+            ['most-games-list', 'highest-score-list', 'most-correct-list', 'best-single-list'].forEach(id => {
+              document.getElementById(id).innerHTML = '<div class="empty-state">排行榜資料準備中...</div>';
+            });
+            return;
+          }
 
-        const now = new Date();
-        document.getElementById('update-time').textContent = 
-          `最後更新：${now.getMonth()+1}/${now.getDate()} ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
+          const cache = cacheDoc.data();
+
+          // 更新統計總覽
+          if (cache.stats) {
+            document.getElementById('total-players').textContent = formatNumber(cache.stats.totalPlayers || 0);
+            document.getElementById('total-games').textContent = formatNumber(cache.stats.totalGames || 0);
+            document.getElementById('total-score').textContent = formatNumber(cache.stats.totalScore || 0);
+          }
+
+          // 更新各排行榜
+          renderRankList('most-games-list', cache.mostGames || [], '次');
+          renderRankList('highest-score-list', cache.highestScore || [], '分');
+          renderRankList('most-correct-list', cache.mostCorrect || [], '題');
+          renderRankList('best-single-list', cache.bestSingle || [], '分');
+
+          // 顯示快取更新時間
+          const updateTime = formatTimestamp(cache.updatedAt);
+          document.getElementById('update-time').textContent = `資料更新時間：${updateTime}`;
+
+        } catch (error) {
+          console.error('載入排行榜快取失敗:', error);
+          document.getElementById('update-time').textContent = '⚠️ 載入失敗，請稍後再試';
+          
+          // 顯示錯誤訊息
+          ['most-games-list', 'highest-score-list', 'most-correct-list', 'best-single-list'].forEach(id => {
+            document.getElementById(id).innerHTML = '<div class="empty-state">載入失敗</div>';
+          });
+        }
       }
 
       // 初始載入
-      loadAllData();
+      loadLeaderboardFromCache();
     </script>
   </body>
 </html>
