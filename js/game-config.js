@@ -62,7 +62,7 @@ export const GAME_CONFIG = {
             TIER_2_SCORE: 25000,
             TIER_3_SCORE: 50000,
         },
-        GLOBAL_TARGET: 5800000,
+        GLOBAL_TARGET: 4100000,
         REWARDS: {
             TIER_1_URL: "https://drive.google.com/drive/folders/1jBF9NAr7vN8Qn_OpwHz5vTpuYwKyUmJT?usp=drive_link",
             TIER_2_MESSAGE: "恭喜您達成 Tier 2！您已獲得實體獎品抽獎資格，請等待活動結束後的官方公告。",
