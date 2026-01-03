@@ -436,9 +436,18 @@
       </div>
     </div>
 
-    <script defer src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script defer src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-    <script defer src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script
+      defer
+      src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"
+    ></script>
+    <script
+      defer
+      src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"
+    ></script>
+    <script
+      defer
+      src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"
+    ></script>
     <script type="module" src="js/game.js"></script>
 
     <!-- PWA Service Worker Registration -->
@@ -549,23 +558,49 @@
       aria-labelledby="global-milestone-title-header"
     >
       <div id="global-milestone-modal-content" class="modal-content">
-        <h2
-          id="global-milestone-title-header"
-          data-i18n-key="globalMilestoneTitle"
-        >
-          全體應援里程碑
-        </h2>
-        <p data-i18n-key="globalMilestoneDesc">
-          這是所有玩家共同累積的應援力量！
-        </p>
+        <!-- 🎯 進行中狀態（未達成時顯示） -->
+        <div id="global-milestone-progress-view">
+          <h2
+            id="global-milestone-title-header"
+            data-i18n-key="globalMilestoneTitle"
+          >
+            全體應援里程碑
+          </h2>
+          <p data-i18n-key="globalMilestoneDesc">
+            這是所有玩家共同累積的應援力量！
+          </p>
 
-        <div
-          class="milestone-progress-bar-container"
-          role="progressbar"
-          aria-label="全體應援進度"
-        >
-          <div id="global-milestone-progress-bar-fill"></div>
-          <div id="global-milestone-current-percent">0%</div>
+          <div
+            class="milestone-progress-bar-container"
+            role="progressbar"
+            aria-label="全體應援進度"
+          >
+            <div id="global-milestone-progress-bar-fill"></div>
+            <div id="global-milestone-current-percent">0%</div>
+          </div>
+        </div>
+
+        <!-- 🎉 達成狀態（1/5 00:00 後顯示） -->
+        <div id="global-milestone-complete-view" class="hidden">
+          <h2 data-i18n-key="globalMilestoneCompleteTitle">
+            🎉 全體應援達成！
+          </h2>
+          <p
+            class="global-milestone-complete-message"
+            data-i18n-key="globalMilestoneCompleteDesc"
+          >
+            感謝每一位的遊戲應援支持！<br />
+            我們已以媛媛的名義向<strong>紅心字會</strong>進行捐款，<br />
+            這是大家用小小的力量累積出的美好結果 ❤️<br />
+            願這份溫暖傳遞給更多需要的人。
+          </p>
+          <div class="donation-receipt-container">
+            <img
+              src="./images/donation-receipt.webp"
+              alt="公益捐款收據"
+              class="donation-receipt-image"
+            />
+          </div>
         </div>
 
         <div class="global-milestone-buttons">
@@ -603,7 +638,9 @@
       aria-labelledby="wish-modal-title"
     >
       <div id="wish-modal-content" class="modal-content">
-        <h2 id="wish-modal-title" data-i18n-key="wishModalTitle">🎂 寫下你的祝福</h2>
+        <h2 id="wish-modal-title" data-i18n-key="wishModalTitle">
+          🎂 寫下你的祝福
+        </h2>
         <div class="wish-form">
           <input
             type="text"
@@ -720,6 +757,9 @@
       </div>
     </div>
 
-    <script defer src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"
+    ></script>
   </body>
 </html>

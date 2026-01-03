@@ -54,6 +54,16 @@ function isBirthdayToday() {
     return (today.getMonth() === 0 && today.getDate() === 5);
 }
 
+// ✨ 新增：檢查全體里程碑是否已達成（1/5 00:00 之後）
+function isGlobalMilestoneCompleted() {
+    // 開發用：強制觸發（與生日彩蛋共用開關）
+    if (GAME_CONFIG.FORCE_BIRTHDAY_POPUP) {
+        return true;
+    }
+    const completionDate = new Date('2026-01-05T00:00:00+08:00'); // 台灣時區
+    return new Date() >= completionDate;
+}
+
 document.addEventListener('DOMContentLoaded', function () {
     // ... (Error listeners)
 
@@ -657,13 +667,28 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     async function showGlobalMilestoneModal(isEndGameFlow = false) {
-        const progressPercent = await databaseManager.loadTotalMilestoneScore();
+        const globalMilestoneModal = document.getElementById('global-milestone-modal-overlay');
+        const progressView = document.getElementById('global-milestone-progress-view');
+        const completeView = document.getElementById('global-milestone-complete-view');
         const globalMilestoneProgressBarFill = document.getElementById('global-milestone-progress-bar-fill');
         const globalMilestoneCurrentPercent = document.getElementById('global-milestone-current-percent');
-        const globalMilestoneModal = document.getElementById('global-milestone-modal-overlay');
 
-        globalMilestoneProgressBarFill.style.width = progressPercent;
-        globalMilestoneCurrentPercent.textContent = progressPercent;
+        // ✨ 根據日期判斷顯示哪個視圖
+        if (isGlobalMilestoneCompleted()) {
+            // 達成狀態：隱藏進度視圖，顯示達成視圖
+            progressView.classList.add('hidden');
+            completeView.classList.remove('hidden');
+            // 進度條還是要更新成 100%（視覺上保持一致）
+            globalMilestoneProgressBarFill.style.width = '100%';
+            globalMilestoneCurrentPercent.textContent = '100%';
+        } else {
+            // 進行中狀態：顯示進度視圖，隱藏達成視圖
+            progressView.classList.remove('hidden');
+            completeView.classList.add('hidden');
+            const progressPercent = await databaseManager.loadTotalMilestoneScore();
+            globalMilestoneProgressBarFill.style.width = progressPercent;
+            globalMilestoneCurrentPercent.textContent = progressPercent;
+        }
 
         if (isEndGameFlow) {
             globalMilestoneCloseButton.classList.add('hidden');
