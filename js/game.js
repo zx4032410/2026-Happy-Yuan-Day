@@ -1074,7 +1074,7 @@ document.addEventListener('DOMContentLoaded', function () {
         backdrop.innerHTML = '';
 
         // 取得祝福列表
-        const wishes = await databaseManager.getWishes(30);
+        const wishes = await databaseManager.getWishes(100);
         if (wishes.length === 0) return;
 
         // 創建多排跑馬燈
@@ -1087,7 +1087,7 @@ document.addEventListener('DOMContentLoaded', function () {
             marqueeRow.style.top = `${(row + 0.5) * rowHeight}px`;
             
             // 調整速度讓每排不一樣
-            const speed = 18 + (row * 4); // 18s, 22s, 26s, 30s
+            const speed = 25 + (row * 7); // 25s, 32s, 39s, 46s（減慢速度讓祝福更容易閱讀）
             marqueeRow.style.animationDuration = `${speed}s`;
             
             // 將祝福分配到這一排（重複顯示以形成無縫滾動）
