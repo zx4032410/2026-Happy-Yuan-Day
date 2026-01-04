@@ -90,6 +90,22 @@
   white-space: pre-line;
 }
 
+/* 生日彈窗按鈕容器 */
+.birthday-buttons {
+  display: flex;
+  gap: var(--spacing-md);
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: var(--spacing-md);
+}
+
+.birthday-buttons a.start-button-style {
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
 /* --- ✨ 結算統計區樣式 --- */
 #endgame-stats {
   width: 90%;

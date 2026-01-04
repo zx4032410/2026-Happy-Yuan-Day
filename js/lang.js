@@ -31,6 +31,7 @@ export const i18nStrings = {
         birthdayTitle: "🎂 Happy Birthday 🎂",
         birthdayMessage: "今天是 1 月 5 日，是媛媛的生日！\n感謝你今天也來為她應援，祝你有個美好的一天！",
         birthdayCloseButton: "關閉",
+        birthdayViewWishesButton: "🎂 觀看慶祝",
         // ✨ 新增 (進度ID轉移)
         transferTitle: "進度 ID",
         copyButton: "複製",
@@ -157,6 +158,7 @@ export const i18nStrings = {
         birthdayTitle: "🎂 Happy Birthday 🎂",
         birthdayMessage: "Today is January 5th, Yuan's Birthday!\nThank you for supporting her today. Have a wonderful day!",
         birthdayCloseButton: "Close",
+        birthdayViewWishesButton: "🎂 View Celebration",
 
         // ID Transfer
         transferTitle: "Progress ID",
