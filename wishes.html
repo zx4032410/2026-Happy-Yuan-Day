@@ -135,12 +135,6 @@
         word-break: break-word;
       }
 
-      .wish-time {
-        margin-top: 12px;
-        font-size: 0.75rem;
-        color: rgba(91, 155, 213, 0.7);
-        text-align: right;
-      }
 
       .empty-state {
         text-align: center;
@@ -263,18 +257,6 @@
       firebase.initializeApp(firebaseConfig);
       const db = firebase.firestore();
 
-      // 格式化時間
-      function formatTime(timestamp) {
-        if (!timestamp) return "";
-        const date = timestamp.toDate
-          ? timestamp.toDate()
-          : new Date(timestamp);
-        const month = date.getMonth() + 1;
-        const day = date.getDate();
-        const hour = date.getHours().toString().padStart(2, "0");
-        const minute = date.getMinutes().toString().padStart(2, "0");
-        return `${month}/${day} ${hour}:${minute}`;
-      }
 
       // 載入祝福
       async function loadWishes() {
@@ -303,7 +285,6 @@
               <div class="wish-card">
                 <div class="wish-nickname">${escapeHtml(wish.nickname)}</div>
                 <div class="wish-message">${escapeHtml(wish.message)}</div>
-                <div class="wish-time">${formatTime(wish.createdAt)}</div>
               </div>
             `;
           });
